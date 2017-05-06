@@ -5,9 +5,9 @@ import org.junit.Test;
 /**
  * Created by shiyan on 4/27/17.
  */
-public class TestOauthService {
+public class OauthServiceTest {
 
-    @Test
+    //@Test
     public void testGetBearToken() {
 
     }

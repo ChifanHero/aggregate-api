@@ -1,4 +1,4 @@
-package com.chifanhero.api.services.google.client;
+package com.chifanhero.api.services.google.client.client;
 
 import com.chifanhero.api.common.GetRequest;
 import com.chifanhero.api.models.google.PlaceDetailResponse;

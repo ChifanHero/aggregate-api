@@ -1,4 +1,4 @@
-package com.chifanhero.api.services.google.client;
+package com.chifanhero.api.services.google.client.client;
 
 import com.chifanhero.api.common.GetRequestParams;
 import com.chifanhero.api.common.annotations.ParamKey;

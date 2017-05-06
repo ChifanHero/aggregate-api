@@ -7,7 +7,7 @@ import org.junit.Test;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 
-public class TestGetRequestParams {
+public class GetRequestParamsTest {
 
     @Test
     public void test() {

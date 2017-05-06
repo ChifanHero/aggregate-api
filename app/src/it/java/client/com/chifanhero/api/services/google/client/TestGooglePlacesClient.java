@@ -1,6 +1,9 @@
-package com.chifanhero.api.services.google.client;
+package client.com.chifanhero.api.services.google.client;
 
 import com.chifanhero.api.models.google.PlacesSearchResponse;
+import com.chifanhero.api.services.google.client.client.GooglePlacesClient;
+import com.chifanhero.api.services.google.client.client.LocationParam;
+import com.chifanhero.api.services.google.client.client.NearBySearchRequestParams;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

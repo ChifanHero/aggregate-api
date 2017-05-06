@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 
-public class TestFutures {
+public class FuturesTest {
 
     private ExecutorService executorService = Executors.newCachedThreadPool();
 

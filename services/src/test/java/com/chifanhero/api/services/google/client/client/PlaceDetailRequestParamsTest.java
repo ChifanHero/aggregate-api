@@ -1,11 +1,11 @@
-package com.chifanhero.api.services.google.client;
+package com.chifanhero.api.services.google.client.client;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Map;
 
-public class TestPlaceDetailRequestParams {
+public class PlaceDetailRequestParamsTest {
 
     @Test
     public void test() {

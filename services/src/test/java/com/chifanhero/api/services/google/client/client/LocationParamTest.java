@@ -1,10 +1,10 @@
-package com.chifanhero.api.services.google.client;
+package com.chifanhero.api.services.google.client.client;
 
 
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestLocationParam {
+public class LocationParamTest {
 
     @Test
     public void test() {

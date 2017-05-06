@@ -12,7 +12,7 @@ import javax.validation.ValidatorFactory;
 import java.util.Set;
 
 
-public class TestUnionsValidator {
+public class UnionsValidatorTest {
 
     @Test
     public void testValid() {

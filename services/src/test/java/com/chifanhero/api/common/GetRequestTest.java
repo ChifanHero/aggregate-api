@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by shiyan on 4/29/17.
  */
-public class TestGetRequest {
+public class GetRequestTest {
 
     @Test
     public void testHappyCase() {
