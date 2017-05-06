@@ -1,10 +1,12 @@
 package com.chifanhero.api.models.yelp;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * Created by shiyan on 4/27/17.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BusinessHour {
 
     @JsonProperty("is_overnight")
