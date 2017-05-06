@@ -1,5 +1,6 @@
 package com.chifanhero.api.factories;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class CacheFactory {
 
     @Bean
-    public void buildCache() {
-        CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(24, TimeUnit.HOURS).build();
+    public Cache buildCache() {
+        return CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(24, TimeUnit.HOURS).build();
     }
 }
