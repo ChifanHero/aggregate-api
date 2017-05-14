@@ -14,7 +14,7 @@ public class TextSearchRequest extends SearchRequest {
     private String type = "restaurant";
     private Location location;
     private Integer radius;
-    private String sortOrder = SortOrder.NEAREST.getValue();
+    private String sortOrder = SortOrder.BEST_MATCH.getValue();
     private Boolean openNow = false;
     private Double rating;
 
@@ -91,7 +91,8 @@ public class TextSearchRequest extends SearchRequest {
             errors.add(new Error(ErrorMessage.INVALID_RADIUS, ErrorLevel.ERROR));
         }
         if ((!SortOrder.HOTTEST.getValue().equals(sortOrder))
-                && (!SortOrder.NEAREST.getValue().equals(sortOrder))) {
+                && (!SortOrder.NEAREST.getValue().equals(sortOrder))
+                && (!SortOrder.BEST_MATCH.getValue().equals(sortOrder))) {
             errors.add(new Error(ErrorMessage.INVALID_SORT_ORDER, ErrorLevel.ERROR));
         }
         if (rating != null && (rating < 0.0 || rating > 5.0)) {

@@ -198,7 +198,7 @@ public class TextSearchRequestTest {
     @Test
     public void testDefaultValue() {
         TextSearchRequest textSearchRequest = new TextSearchRequest();
-        Assert.assertEquals(SortOrder.NEAREST.getValue(), textSearchRequest.getSortOrder());
+        Assert.assertEquals(SortOrder.BEST_MATCH.getValue(), textSearchRequest.getSortOrder());
         Assert.assertEquals("restaurant", textSearchRequest.getType());
         Assert.assertEquals(false, textSearchRequest.getOpenNow());
     }

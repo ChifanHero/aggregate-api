@@ -1,8 +1,11 @@
-package com.chifanhero.api.services.google.client.client;
+package com.chifanhero.api.services.google.client;
 
 import com.chifanhero.api.common.GetRequest;
 import com.chifanhero.api.models.google.PlaceDetailResponse;
 import com.chifanhero.api.models.google.PlacesSearchResponse;
+import com.chifanhero.api.services.google.client.request.NearBySearchRequestParams;
+import com.chifanhero.api.services.google.client.request.PlaceDetailRequestParams;
+import com.chifanhero.api.services.google.client.request.TextSearchRequestParams;
 import com.google.common.base.Preconditions;
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;

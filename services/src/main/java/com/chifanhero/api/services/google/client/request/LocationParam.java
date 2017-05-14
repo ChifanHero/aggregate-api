@@ -1,4 +1,4 @@
-package com.chifanhero.api.services.google.client.client;
+package com.chifanhero.api.services.google.client.request;
 
 import com.chifanhero.api.common.GetRequestParam;
 
@@ -37,10 +37,8 @@ public class LocationParam extends GetRequestParam<String> {
     @Override
     public String getParam() {
         validate();
-        StringBuilder sb = new StringBuilder();
-        sb.append(latitude);
-        sb.append(",");
-        sb.append(longitude);
-        return sb.toString();
+        return String.valueOf(latitude) +
+                "," +
+                longitude;
     }
 }

@@ -1,4 +1,4 @@
-package com.chifanhero.api.services.google.client.client;
+package com.chifanhero.api.services.google.client.request;
 
 /**
  * Created by shiyan on 5/2/17.

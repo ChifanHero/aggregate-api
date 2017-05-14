@@ -1,5 +1,6 @@
-package com.chifanhero.api.services.google.client.client;
+package com.chifanhero.api.services.google.client;
 
+import com.chifanhero.api.services.google.client.request.TextSearchRequestParams;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -157,7 +157,7 @@ public class NearbySearchRequestTest {
     @Test
     public void testDefaultValue() {
         NearbySearchRequest nearbySearchRequest = new NearbySearchRequest();
-        Assert.assertEquals(SortOrder.NEAREST.getValue(), nearbySearchRequest.getSortOrder());
+        Assert.assertEquals(SortOrder.BEST_MATCH.getValue(), nearbySearchRequest.getSortOrder());
         Assert.assertEquals("restaurant", nearbySearchRequest.getType());
         Assert.assertEquals("chinese", nearbySearchRequest.getKeyword());
         Assert.assertEquals(false, nearbySearchRequest.getOpenNow());

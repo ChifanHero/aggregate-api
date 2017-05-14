@@ -1,6 +1,7 @@
 package com.chifanhero.api.models.response;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
@@ -17,6 +18,9 @@ public class Result {
 
     private String name;
 
+    @JsonProperty("english_name")
+    private String englighName;
+
     @JsonIgnore
     private String placeId;
 
@@ -27,6 +31,22 @@ public class Result {
 
     @JsonIgnore
     private Source source;
+
+    private Picture picture;
+
+    @JsonIgnore
+    private Boolean permanentlyClosed;
+
+    @JsonIgnore
+    private Boolean openNow;
+
+    private Double distance;
+
+    @JsonIgnore
+    private Coordinates coordinates;
+
+    @JsonIgnore
+    private boolean recommendationCandidate;
 
     public String getAddress() {
         return address;
@@ -54,6 +74,14 @@ public class Result {
 
     public String getName() {
         return name;
+    }
+
+    public String getEnglighName() {
+        return englighName;
+    }
+
+    public void setEnglighName(String englighName) {
+        this.englighName = englighName;
     }
 
     public void setName(String name) {
@@ -90,5 +118,53 @@ public class Result {
 
     public void setSource(Source source) {
         this.source = source;
+    }
+
+    public Picture getPicture() {
+        return picture;
+    }
+
+    public void setPicture(Picture picture) {
+        this.picture = picture;
+    }
+
+    public Boolean getPermanentlyClosed() {
+        return permanentlyClosed;
+    }
+
+    public void setPermanentlyClosed(Boolean permanentlyClosed) {
+        this.permanentlyClosed = permanentlyClosed;
+    }
+
+    public Boolean getOpenNow() {
+        return openNow;
+    }
+
+    public void setOpenNow(Boolean openNow) {
+        this.openNow = openNow;
+    }
+
+    public Double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Double distance) {
+        this.distance = distance;
+    }
+
+    public Coordinates getCoordinates() {
+        return coordinates;
+    }
+
+    public void setCoordinates(Coordinates coordinates) {
+        this.coordinates = coordinates;
+    }
+
+    public boolean isRecommendationCandidate() {
+        return recommendationCandidate;
+    }
+
+    public void setRecommendationCandidate(boolean recommendationCandidate) {
+        this.recommendationCandidate = recommendationCandidate;
     }
 }

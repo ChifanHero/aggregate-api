@@ -1,4 +1,4 @@
-package com.chifanhero.api.services.configs;
+package com.chifanhero.api.configs;
 
 /**
  * Created by shiyan on 4/27/17.

@@ -1,6 +1,6 @@
 package com.chifanhero.api.services.yelp.oauth;
 
-import com.chifanhero.api.services.configs.YelpConfigs;
+import com.chifanhero.api.configs.YelpConfigs;
 import com.google.common.base.Preconditions;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.entity.UrlEncodedFormEntity;

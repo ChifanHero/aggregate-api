@@ -6,7 +6,8 @@ package com.chifanhero.api.models.request;
 public enum SortOrder {
 
     NEAREST("nearest"),
-    HOTTEST("hottest");
+    HOTTEST("hottest"),
+    BEST_MATCH("best_match");
 
     private String value;
 
