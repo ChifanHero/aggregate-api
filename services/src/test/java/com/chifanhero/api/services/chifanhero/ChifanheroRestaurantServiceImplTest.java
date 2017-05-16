@@ -37,7 +37,7 @@ public class ChifanheroRestaurantServiceImplTest {
     @BeforeClass
     public static void prepare() {
         MongoClientURI uri = new MongoClientURI(
-                "mongodb://readwrite:readwrite@chifanhero-shard-00-00-qfihy.mongodb.net:27017,chifanhero-shard-00-01-qfihy.mongodb.net:27017,chifanhero-shard-00-02-qfihy.mongodb.net:27017/<DATABASE>?ssl=true&replicaSet=chifanhero-shard-0&authSource=admin");
+                "mongodb://readwrite:readwrite@chifanhero-shard-00-00-qfihy.mongodb.net:27017,chifanhero-shard-00-01-qfihy.mongodb.net:27017,chifanhero-shard-00-02-qfihy.mongodb.net:27017/admin?ssl=true&replicaSet=chifanhero-shard-0&authSource=admin");
         mongoClient =  new MongoClient(uri);
         service = new ChifanheroRestaurantServiceImpl(mongoClient, null);
     }
@@ -89,6 +89,6 @@ public class ChifanheroRestaurantServiceImplTest {
             Bson filter = Filters.eq(KeyNames.GOOGLE_PLACE_ID, placeId);
             return new DeleteOneModel<Document>(filter);
         }).collect(Collectors.toList());
-        mongoClient.getDatabase(ChifanheroConfigs.DATABASE).getCollection(ChifanheroConfigs.COLLECTION_RESTAURANT).bulkWrite(deletes);
+        mongoClient.getDatabase(ChifanheroConfigs.MONGO_DATABASE).getCollection(ChifanheroConfigs.MONGO_COLLECTION_RESTAURANT).bulkWrite(deletes);
     }
 }

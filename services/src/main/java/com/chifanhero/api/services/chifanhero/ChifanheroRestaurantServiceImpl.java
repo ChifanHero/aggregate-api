@@ -10,7 +10,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.ReplaceOneModel;
 import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
@@ -70,7 +69,7 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
     }
 
     private MongoCollection<Document> getRestaurantCollection() {
-        MongoDatabase database = mongoClient.getDatabase(ChifanheroConfigs.DATABASE);
-        return database.getCollection(ChifanheroConfigs.COLLECTION_RESTAURANT);
+        MongoDatabase database = mongoClient.getDatabase(ChifanheroConfigs.MONGO_DATABASE);
+        return database.getCollection(ChifanheroConfigs.MONGO_COLLECTION_RESTAURANT);
     }
 }
