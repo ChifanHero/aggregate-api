@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * Created by shiyan on 5/13/17.
  */
 @Configuration
-public class ChifanheroMongoClientFactory {
+public class MongoClientFactory {
 
     @Bean
     public MongoClient createMongoClient() {

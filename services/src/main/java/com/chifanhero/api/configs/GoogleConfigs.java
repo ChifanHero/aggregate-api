@@ -1,6 +1,7 @@
 package com.chifanhero.api.configs;
 
 import com.chifanhero.api.common.annotations.Cfg;
+import com.chifanhero.api.configs.helper.ConfigHelper;
 
 /**
  * Created by shiyan on 5/5/17.
@@ -12,7 +13,6 @@ public class GoogleConfigs {
 
     static {
         String prefix = ConfigHelper.getPrefix(GoogleConfigs.class);
-        System.out.println(prefix);
         API_KEY = ConfigHelper.getProperty(prefix + "API_KEY", "AIzaSyDbWSwTi-anJJf25HxNrfBNicmrR0JSaOY");
     }
 

@@ -1,6 +1,7 @@
 package com.chifanhero.api.configs;
 
 import com.chifanhero.api.common.annotations.Cfg;
+import com.chifanhero.api.configs.helper.ConfigHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
