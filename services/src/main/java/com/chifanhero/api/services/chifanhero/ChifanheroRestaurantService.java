@@ -15,4 +15,6 @@ public interface ChifanheroRestaurantService {
     Map<String, Result> batchGetByGooglePlaceId(List<String> googlePlaceIds);
 
     void bulkUpsertInBackground(List<Result> entities);
+
+    void expireDocuments();
 }

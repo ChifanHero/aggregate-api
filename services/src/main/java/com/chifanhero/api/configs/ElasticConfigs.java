@@ -2,7 +2,7 @@ package com.chifanhero.api.configs;
 
 import com.chifanhero.api.common.annotations.Cfg;
 import com.chifanhero.api.configs.helper.ConfigHelper;
-import com.chifanhero.api.services.elasticsearch.Host;
+import com.chifanhero.api.services.elasticsearch.host.Host;
 
 import java.util.Collections;
 import java.util.List;

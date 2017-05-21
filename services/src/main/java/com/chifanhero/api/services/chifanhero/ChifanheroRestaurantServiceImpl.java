@@ -45,6 +45,10 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
             Document updateDocument = new Document("$setOnInsert", new Document(KeyNames.ID, IdGenerator.getNewObjectId()));
             Document document = DocumentConverter.toDocument(entity);
             updateDocument.append("$set", document);
+            //TODO - setOnInsert creation date
+            //TODO - set update date
+            //TODO - set expiration date (14 days)
+            //TODO - update unit tests
             UpdateOptions options = new UpdateOptions().upsert(true);
             assert document != null;
             return new UpdateOneModel<Document>(filter, updateDocument, options);
@@ -66,6 +70,11 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
     @Override
     public void bulkUpsertInBackground(List<Result> entities) {
         executorService.submit(() -> bulkUpsert(entities));
+    }
+
+    @Override
+    public void expireDocuments() {
+        // TODO - for expired documents (expiration date <= now), unset english_name/coordinates
     }
 
     private MongoCollection<Document> getRestaurantCollection() {

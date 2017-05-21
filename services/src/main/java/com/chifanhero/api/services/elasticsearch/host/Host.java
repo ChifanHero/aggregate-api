@@ -1,4 +1,4 @@
-package com.chifanhero.api.services.elasticsearch;
+package com.chifanhero.api.services.elasticsearch.host;
 
 /**
  * Created by shiyan on 5/17/17.
