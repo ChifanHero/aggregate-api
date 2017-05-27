@@ -118,6 +118,16 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-test-framework</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.test</groupId>
+            <artifactId>framework</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -181,6 +191,83 @@
                             <target>
                                 <ant antfile="src/test/ant/integration-tests.xml" target="stop-external-cluster"/>
                             </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>
+                        ${skipUnitTests}
+                    </skipTests>
+                </configuration>
+            </plugin>
+
+            <!-- Run integration tests. Test name must be *IT.java-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <skipTests>
+                        ${skipIntegTests}
+                    </skipTests>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.carrotsearch.randomizedtesting</groupId>
+                <artifactId>junit4-maven-plugin</artifactId>
+                <version>2.3.3</version>
+
+                <configuration>
+                    <assertions enableSystemAssertions="false">
+                        <enable/>
+                    </assertions>
+
+                    <listeners>
+                        <report-text />
+                    </listeners>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>integration-tests</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>junit4</goal>
+                        </goals>
+                        <inherited>true</inherited>
+                        <configuration>
+                            <skipTests>${skipIntegTests}</skipTests>
+                            <includes>
+                                <include>**/*RandomIntegTest.class</include>
+                            </includes>
+                            <excludes>
+                                <exclude>**/*$*</exclude>
+                            </excludes>
+                            <argLine>-Dtests.security.manager=false</argLine>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Add integration test src -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-integration-test-source-as-test-sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/it/java</source>
+                            </sources>
                         </configuration>
                     </execution>
                 </executions>
