@@ -173,6 +173,7 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
+                            <failOnError>false</failOnError>
                             <skip>${skipIntegTests}</skip>
                             <target>
                                 <ant antfile="src/test/ant/integration-tests.xml" target="start-external-cluster-with-plugin"/>
@@ -187,6 +188,7 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
+                            <failOnError>false</failOnError>
                             <skip>${skipIntegTests}</skip>
                             <target>
                                 <ant antfile="src/test/ant/integration-tests.xml" target="stop-external-cluster"/>
@@ -202,6 +204,10 @@
                     <skipTests>
                         ${skipUnitTests}
                     </skipTests>
+                    <excludes>
+                        <exclude>**/*RandomIntegTest.class</exclude>
+                    </excludes>
+                    <argLine>-Dtests.security.manager=false</argLine>
                 </configuration>
             </plugin>
 
@@ -213,6 +219,9 @@
                     <skipTests>
                         ${skipIntegTests}
                     </skipTests>
+                    <excludes>
+                        <exclude>**/*RandomIntegTest.class</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
 

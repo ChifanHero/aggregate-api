@@ -7,7 +7,7 @@
     <available property="integ.pidfile.exists" file="${integ.pidfile}"/>
 
     <!-- name of our cluster, maybe needs changing -->
-    <property name="integ.cluster.name" value="elasticsearch_integration"/>
+    <property name="integ.cluster.name" value="chifanhero"/>
 
     <!-- runs an OS script -->
     <macrodef name="run-script">
