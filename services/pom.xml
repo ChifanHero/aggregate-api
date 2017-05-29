@@ -78,10 +78,6 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>javax.el</groupId>-->
-            <!--<artifactId>javax.el-api</artifactId>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.el</artifactId>
@@ -215,51 +211,20 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <skipTests>
                         ${skipIntegTests}
                     </skipTests>
-                    <excludes>
-                        <exclude>**/*RandomIntegTest.class</exclude>
-                    </excludes>
+                    <argLine>-Dtests.security.manager=false</argLine>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>com.carrotsearch.randomizedtesting</groupId>
-                <artifactId>junit4-maven-plugin</artifactId>
-                <version>2.3.3</version>
-
-                <configuration>
-                    <assertions enableSystemAssertions="false">
-                        <enable/>
-                    </assertions>
-
-                    <listeners>
-                        <report-text />
-                    </listeners>
-                </configuration>
-
-                <executions>
-                    <execution>
-                        <id>integration-tests</id>
-                        <phase>integration-test</phase>
-                        <goals>
-                            <goal>junit4</goal>
-                        </goals>
-                        <inherited>true</inherited>
-                        <configuration>
-                            <skipTests>${skipIntegTests}</skipTests>
-                            <includes>
-                                <include>**/*RandomIntegTest.class</include>
-                            </includes>
-                            <excludes>
-                                <exclude>**/*$*</exclude>
-                            </excludes>
-                            <argLine>-Dtests.security.manager=false</argLine>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
             <!-- Add integration test src -->

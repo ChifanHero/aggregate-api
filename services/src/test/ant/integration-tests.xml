@@ -2,6 +2,8 @@
 <project name="integration-tests" xmlns:if="ant:if" xmlns:unless="ant:unless">
     <!-- our pid file for easy cleanup -->
     <property name="integ.pidfile" location="${project.build.directory}/integration-tests/run/es.pid"/>
+    <property name="integ.data" location="${project.build.directory}/integration-tests/run/elasticsearch-${elasticsearch.version}/data"/>
+    <property name="integ.log" location="${project.build.directory}/integration-tests/run/elasticsearch-${elasticsearch.version}/logs"/>
 
     <!-- if this exists, ES is running (maybe) -->
     <available property="integ.pidfile.exists" file="${integ.pidfile}"/>
@@ -181,6 +183,8 @@
 
     <macrodef name="stop-node">
         <attribute name="es.pidfile" default="${integ.pidfile}"/>
+        <attribute name="es.data" default="${integ.data}"/>
+        <attribute name="es.log" default="${integ.log}"/>
         <sequential>
             <local name="integ.pid"/>
 
@@ -202,6 +206,8 @@
                 <arg value="${integ.pid}"/>
             </exec>
             <delete file="@{es.pidfile}"/>
+            <delete dir="@{es.data}"/>
+            <delete dir="@{es.log}"/>
         </sequential>
     </macrodef>
 

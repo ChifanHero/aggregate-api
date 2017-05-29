@@ -33,9 +33,9 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
  * Created by shiyan on 5/26/17.
  */
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class ElasticsearchServiceImplRandomIntegTest extends ESTestCase {
+public class ElasticsearchServiceImplIT extends ESTestCase {
 
-    protected static final Logger LOGGER = ESLoggerFactory.getLogger(ElasticsearchServiceImplRandomIntegTest.class);
+    protected static final Logger LOGGER = ESLoggerFactory.getLogger(ElasticsearchServiceImplIT.class);
     protected static TransportClient CLIENT;
     private final static List<String> DOCUMENT_IDS = new ArrayList<>();
     private final static String MAPPING = "{\n" +
