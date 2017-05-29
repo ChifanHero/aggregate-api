@@ -172,7 +172,7 @@
                             <failOnError>false</failOnError>
                             <skip>${skipIntegTests}</skip>
                             <target>
-                                <ant antfile="src/test/ant/integration-tests.xml" target="start-external-cluster-with-plugin"/>
+                                <ant antfile="src/it/ant/integration-tests.xml" target="start-external-cluster-with-plugin"/>
                             </target>
                         </configuration>
                     </execution>
@@ -187,7 +187,7 @@
                             <failOnError>false</failOnError>
                             <skip>${skipIntegTests}</skip>
                             <target>
-                                <ant antfile="src/test/ant/integration-tests.xml" target="stop-external-cluster"/>
+                                <ant antfile="src/it/ant/integration-tests.xml" target="stop-external-cluster"/>
                             </target>
                         </configuration>
                     </execution>
