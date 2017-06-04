@@ -124,8 +124,8 @@
         <attribute name="home" default="${project.build.directory}/integration-tests/run/elasticsearch-${elasticsearch.version}"/>
         <attribute name="spawn" default="true"/>
         <attribute name="es.cluster.name" default="${integ.cluster.name}"/>
-        <attribute name="es.http.port" default="${integ.http.port}"/>
-        <attribute name="es.transport.tcp.port" default="${integ.transport.port}"/>
+        <attribute name="es.http.port" default="${es.integ.http.port}"/>
+        <attribute name="es.transport.tcp.port" default="${es.integ.transport.port}"/>
         <attribute name="es.pidfile" default="${integ.pidfile}"/>
         <element name="additional-args" optional="true"/>
         <sequential>
@@ -217,7 +217,7 @@
 
     <target name="setup-workspace" depends="stop-external-cluster">
         <sequential>
-            <delete dir="${project.build.directory}/integration-tests/run"/>
+            <delete dir="${project.build.directory}/integration-tests/run/elasticsearch-${elasticsearch.version}"/>
             <unzip src="${project.build.directory}/integration-tests/binaries/elasticsearch-${elasticsearch.version}.zip"
                    dest="${project.build.directory}/integration-tests/run"/>
         </sequential>

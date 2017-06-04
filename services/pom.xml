@@ -14,11 +14,13 @@
     <properties>
         <elasticsearch.groupid>org.elasticsearch.distribution.zip</elasticsearch.groupid>
         <elasticsearch.version>5.4.0</elasticsearch.version>
+        <mongodb.version>3.4.2</mongodb.version>
         <skipTests>false</skipTests>
 
         <!-- For integration tests using ANT -->
-        <integ.http.port>9200</integ.http.port>
-        <integ.transport.port>9300</integ.transport.port>
+        <es.integ.http.port>9200</es.integ.http.port>
+        <es.integ.transport.port>9300</es.integ.transport.port>
+        <mongodb.integ.port>27017</mongodb.integ.port>
         <skipTests>false</skipTests>
         <skipUnitTests>${skipTests}</skipUnitTests>
         <skipIntegTests>${skipTests}</skipIntegTests>
@@ -163,7 +165,7 @@
                 <executions>
                     <!-- start up external cluster -->
                     <execution>
-                        <id>integ-setup</id>
+                        <id>es-integ-setup</id>
                         <phase>pre-integration-test</phase>
                         <goals>
                             <goal>run</goal>
@@ -172,13 +174,27 @@
                             <failOnError>false</failOnError>
                             <skip>${skipIntegTests}</skip>
                             <target>
-                                <ant antfile="src/it/ant/integration-tests.xml" target="start-external-cluster-with-plugin"/>
+                                <ant antfile="src/it/ant/elasticsearch-integration-tests.xml" target="start-external-cluster-with-plugin"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>mongodb-integ-setup</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <failOnError>false</failOnError>
+                            <skip>${skipIntegTests}</skip>
+                            <target>
+                                <ant antfile="src/it/ant/mongodb-integration-tests.xml" target="start-external-cluster"/>
                             </target>
                         </configuration>
                     </execution>
                     <!-- shut down external cluster -->
                     <execution>
-                        <id>integ-teardown</id>
+                        <id>es-integ-teardown</id>
                         <phase>post-integration-test</phase>
                         <goals>
                             <goal>run</goal>
@@ -187,7 +203,21 @@
                             <failOnError>false</failOnError>
                             <skip>${skipIntegTests}</skip>
                             <target>
-                                <ant antfile="src/it/ant/integration-tests.xml" target="stop-external-cluster"/>
+                                <ant antfile="src/it/ant/elasticsearch-integration-tests.xml" target="stop-external-cluster"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>mongodb-integ-teardown</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <failOnError>false</failOnError>
+                            <skip>${skipIntegTests}</skip>
+                            <target>
+                                <ant antfile="src/it/ant/mongodb-integration-tests.xml" target="stop-external-cluster"/>
                             </target>
                         </configuration>
                     </execution>
