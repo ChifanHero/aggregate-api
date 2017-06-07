@@ -2,12 +2,14 @@
 <project name="integration-tests" xmlns:if="ant:if" xmlns:unless="ant:unless">
     <!-- our pid file for easy cleanup -->
     <property name="integ.pidfile" location="${project.build.directory}/integration-tests/run/es.pid"/>
+    <property name="integ.data" location="${project.build.directory}/integration-tests/run/elasticsearch-${elasticsearch.version}/data"/>
+    <property name="integ.log" location="${project.build.directory}/integration-tests/run/elasticsearch-${elasticsearch.version}/logs"/>
 
     <!-- if this exists, ES is running (maybe) -->
     <available property="integ.pidfile.exists" file="${integ.pidfile}"/>
 
     <!-- name of our cluster, maybe needs changing -->
-    <property name="integ.cluster.name" value="elasticsearch_integration"/>
+    <property name="integ.cluster.name" value="chifanhero"/>
 
     <!-- runs an OS script -->
     <macrodef name="run-script">
@@ -122,8 +124,8 @@
         <attribute name="home" default="${project.build.directory}/integration-tests/run/elasticsearch-${elasticsearch.version}"/>
         <attribute name="spawn" default="true"/>
         <attribute name="es.cluster.name" default="${integ.cluster.name}"/>
-        <attribute name="es.http.port" default="${integ.http.port}"/>
-        <attribute name="es.transport.tcp.port" default="${integ.transport.port}"/>
+        <attribute name="es.http.port" default="${es.integ.http.port}"/>
+        <attribute name="es.transport.tcp.port" default="${es.integ.transport.port}"/>
         <attribute name="es.pidfile" default="${integ.pidfile}"/>
         <element name="additional-args" optional="true"/>
         <sequential>
@@ -181,6 +183,8 @@
 
     <macrodef name="stop-node">
         <attribute name="es.pidfile" default="${integ.pidfile}"/>
+        <attribute name="es.data" default="${integ.data}"/>
+        <attribute name="es.log" default="${integ.log}"/>
         <sequential>
             <local name="integ.pid"/>
 
@@ -202,6 +206,8 @@
                 <arg value="${integ.pid}"/>
             </exec>
             <delete file="@{es.pidfile}"/>
+            <delete dir="@{es.data}"/>
+            <delete dir="@{es.log}"/>
         </sequential>
     </macrodef>
 
@@ -211,7 +217,7 @@
 
     <target name="setup-workspace" depends="stop-external-cluster">
         <sequential>
-            <delete dir="${project.build.directory}/integration-tests/run"/>
+            <delete dir="${project.build.directory}/integration-tests/run/elasticsearch-${elasticsearch.version}"/>
             <unzip src="${project.build.directory}/integration-tests/binaries/elasticsearch-${elasticsearch.version}.zip"
                    dest="${project.build.directory}/integration-tests/run"/>
         </sequential>

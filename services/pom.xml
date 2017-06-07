@@ -14,11 +14,13 @@
     <properties>
         <elasticsearch.groupid>org.elasticsearch.distribution.zip</elasticsearch.groupid>
         <elasticsearch.version>5.4.0</elasticsearch.version>
+        <mongodb.version>3.4.2</mongodb.version>
         <skipTests>false</skipTests>
 
         <!-- For integration tests using ANT -->
-        <integ.http.port>9200</integ.http.port>
-        <integ.transport.port>9300</integ.transport.port>
+        <es.integ.http.port>9200</es.integ.http.port>
+        <es.integ.transport.port>9300</es.integ.transport.port>
+        <mongodb.integ.port>27017</mongodb.integ.port>
         <skipTests>false</skipTests>
         <skipUnitTests>${skipTests}</skipUnitTests>
         <skipIntegTests>${skipTests}</skipIntegTests>
@@ -78,10 +80,6 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>javax.el</groupId>-->
-            <!--<artifactId>javax.el-api</artifactId>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.el</artifactId>
@@ -117,6 +115,20 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-test-framework</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.test</groupId>
+            <artifactId>framework</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.directory.studio</groupId>
+            <artifactId>org.apache.commons.io</artifactId>
         </dependency>
 
     </dependencies>
@@ -157,30 +169,134 @@
                 <executions>
                     <!-- start up external cluster -->
                     <execution>
-                        <id>integ-setup</id>
+                        <id>es-integ-setup</id>
                         <phase>pre-integration-test</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
                         <configuration>
+                            <failOnError>false</failOnError>
                             <skip>${skipIntegTests}</skip>
                             <target>
-                                <ant antfile="src/test/ant/integration-tests.xml" target="start-external-cluster-with-plugin"/>
+                                <ant antfile="src/it/ant/elasticsearch-integration-tests.xml" target="start-external-cluster-with-plugin"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>mongodb-integ-setup</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <failOnError>false</failOnError>
+                            <skip>${skipIntegTests}</skip>
+                            <target>
+                                <ant antfile="src/it/ant/mongodb-integration-tests.xml" target="start-external-cluster"/>
                             </target>
                         </configuration>
                     </execution>
                     <!-- shut down external cluster -->
                     <execution>
-                        <id>integ-teardown</id>
+                        <id>es-integ-teardown</id>
                         <phase>post-integration-test</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
                         <configuration>
+                            <failOnError>false</failOnError>
                             <skip>${skipIntegTests}</skip>
                             <target>
-                                <ant antfile="src/test/ant/integration-tests.xml" target="stop-external-cluster"/>
+                                <ant antfile="src/it/ant/elasticsearch-integration-tests.xml" target="stop-external-cluster"/>
                             </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>mongodb-integ-teardown</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <failOnError>false</failOnError>
+                            <skip>${skipIntegTests}</skip>
+                            <target>
+                                <ant antfile="src/it/ant/mongodb-integration-tests.xml" target="stop-external-cluster"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>
+                        ${skipUnitTests}
+                    </skipTests>
+                    <excludes>
+                        <exclude>**/*RandomIntegTest.class</exclude>
+                    </excludes>
+                    <argLine>-Dtests.security.manager=false</argLine>
+                </configuration>
+            </plugin>
+
+            <!-- Run integration tests. Test name must be *IT.java-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <skipTests>
+                        ${skipIntegTests}
+                    </skipTests>
+                    <argLine>-Dtests.security.manager=false</argLine>
+                </configuration>
+            </plugin>
+
+            <!-- Add integration test src -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-integration-test-source-as-test-sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/it/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--tests initialization-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <id>test-env-initialization</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipIntegTests}</skip>
+                            <mainClass>com.chifanhero.api.services.it.TestEnvInitializer</mainClass>
+                            <classpathScope>test</classpathScope>
                         </configuration>
                     </execution>
                 </executions>
