@@ -14,6 +14,6 @@ public class TestEnvInitializer {
     private final static List<Initializer> INITIALIZERS = Arrays.asList(new MongoDbInitializer());
 
     public static void main(String[] args) {
-        System.out.println("test env intializer");
+        INITIALIZERS.forEach(Initializer::initialize);
     }
 }

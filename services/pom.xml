@@ -126,6 +126,10 @@
             <artifactId>framework</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.directory.studio</groupId>
+            <artifactId>org.apache.commons.io</artifactId>
+        </dependency>
 
     </dependencies>
 
