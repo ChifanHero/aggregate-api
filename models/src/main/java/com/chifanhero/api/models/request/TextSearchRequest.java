@@ -75,7 +75,7 @@ public class TextSearchRequest extends SearchRequest {
     }
 
     @Override
-    List<Error> validate() {
+    public List<Error> validate() {
         List<Error> errors = new ArrayList<>();
         if (query == null || query.isEmpty()) {
             errors.add(new Error(ErrorMessage.INVALID_QUERY, ErrorLevel.ERROR));
