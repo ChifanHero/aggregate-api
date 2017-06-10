@@ -3,7 +3,7 @@ package com.chifanhero.api.services.elasticsearch;
 import com.chifanhero.api.models.request.NearbySearchRequest;
 import com.chifanhero.api.models.request.SortOrder;
 import com.chifanhero.api.models.request.TextSearchRequest;
-import com.chifanhero.api.models.response.SearchResponse;
+import com.chifanhero.api.models.response.RestaurantSearchResponse;
 import com.chifanhero.api.services.elasticsearch.query.FieldNames;
 import com.chifanhero.api.services.elasticsearch.query.helpers.QueryHelper;
 import com.chifanhero.api.services.elasticsearch.query.helpers.SortHelper;
@@ -35,7 +35,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     }
 
     @Override
-    public SearchResponse nearBySearch(NearbySearchRequest nearbySearchRequest) {
+    public RestaurantSearchResponse nearBySearch(NearbySearchRequest nearbySearchRequest) {
         SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch(INDEX)
                 .setTypes(TYPE)
                 .setSearchType(SearchType.DEFAULT)
@@ -49,7 +49,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     }
 
     @Override
-    public SearchResponse textSearch(TextSearchRequest textSearchRequest) {
+    public RestaurantSearchResponse textSearch(TextSearchRequest textSearchRequest) {
         SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch(INDEX)
                 .setTypes(TYPE)
                 .setSearchType(SearchType.DEFAULT)

@@ -1,9 +1,10 @@
 package com.chifanhero.api.services.chifanhero;
 
 import com.chifanhero.api.configs.ChifanheroConfigs;
-import com.chifanhero.api.models.response.Result;
+import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.services.it.MongoClientFactory;
 import com.google.common.collect.ImmutableMap;
+import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.client.model.DeleteOneModel;
 import com.mongodb.client.model.Filters;
@@ -15,6 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,9 +38,6 @@ public class ChifanheroRestaurantServiceImplIT {
 
     @BeforeClass
     public static void prepare() {
-//        MongoClientURI uri = new MongoClientURI(
-//                "mongodb://readwrite:readwrite@chifanhero-shard-00-00-qfihy.mongodb.net:27017,chifanhero-shard-00-01-qfihy.mongodb.net:27017,chifanhero-shard-00-02-qfihy.mongodb.net:27017/admin?ssl=true&replicaSet=chifanhero-shard-0&authSource=admin");
-//        mongoClient =  new MongoClient(uri);
         mongoClient = MongoClientFactory.createMongoClient();
         service = new ChifanheroRestaurantServiceImpl(mongoClient, null);
     }
@@ -47,41 +46,54 @@ public class ChifanheroRestaurantServiceImplIT {
     public void test() throws InterruptedException {
         cleanup();
         assert service.batchGetByGooglePlaceId(new ArrayList<>(PLACEID_NAME_INSERT1.keySet())).size() == 0;
-        List<Result> results = createResults(PLACEID_NAME_INSERT1);
-        service.bulkUpsert(results);
-        Map<String, Result> returned = service.batchGetByGooglePlaceId(new ArrayList<>(PLACEID_NAME_INSERT1.keySet()));
+        List<Restaurant> restaurants = createResults(PLACEID_NAME_INSERT1);
+        service.bulkUpsert(restaurants);
+        Map<String, Restaurant> returned = service.batchGetByGooglePlaceId(new ArrayList<>(PLACEID_NAME_INSERT1.keySet()));
         Assert.assertEquals(PLACEID_NAME_INSERT1.keySet().size(), returned.size());
-        for (Map.Entry<String, Result> entry : returned.entrySet()) {
+        for (Map.Entry<String, Restaurant> entry : returned.entrySet()) {
             Assert.assertEquals(PLACEID_NAME_INSERT1.get(entry.getKey()), entry.getValue().getName());
         }
-        List<Result> newResults = createResults(PLACEID_NAME_INSERT2);
-        service.bulkUpsert(newResults);
-        Map<String, Result> newReturned = service.batchGetByGooglePlaceId(new ArrayList<>(PLACEID_NAME_INSERT1.keySet()));
+        List<Restaurant> newRestaurants = createResults(PLACEID_NAME_INSERT2);
+        service.bulkUpsert(newRestaurants);
+        Map<String, Restaurant> newReturned = service.batchGetByGooglePlaceId(new ArrayList<>(PLACEID_NAME_INSERT1.keySet()));
         Assert.assertEquals(PLACEID_NAME_INSERT2.keySet().size(), newReturned.size());
-        for (Map.Entry<String, Result> entry : newReturned.entrySet()) {
+        for (Map.Entry<String, Restaurant> entry : newReturned.entrySet()) {
             Assert.assertEquals(PLACEID_NAME_INSERT2.get(entry.getKey()), entry.getValue().getName());
         }
     }
 
-    private List<Result> createResults(ImmutableMap<String, String> placeidName) {
-        List<Result> results = new ArrayList<>();
-        for (Map.Entry<String, String> entry : placeidName.entrySet()) {
-            results.add(createResult(entry.getValue(), entry.getKey()));
-        }
-        return results;
+    @Test
+    public void testExpirationDate() {
+        String googlePlaceId = "1";
+        cleanup();
+        assert service.batchGetByGooglePlaceId(Collections.singletonList(googlePlaceId)).size() == 0;
+        Restaurant restaurant = createResult("name", googlePlaceId);
+        service.bulkUpsert(Collections.singletonList(restaurant));
+        mongoClient.getDatabase(ChifanheroConfigs.MONGO_DATABASE).getCollection(ChifanheroConfigs.MONGO_COLLECTION_RESTAURANT)
+                .find(Filters.eq(KeyNames.GOOGLE_PLACE_ID, googlePlaceId)).forEach((Block<? super Document>) document -> {
+            Assert.assertNotNull(document.getDate(KeyNames.EXPIRE_AT));
+        });
     }
 
-    private Result createResult(String name, String googlePlaceId) {
-        Result result = new Result();
-        result.setPlaceId(googlePlaceId);
-        result.setName(name);
-        return result;
+    private List<Restaurant> createResults(ImmutableMap<String, String> placeidName) {
+        List<Restaurant> restaurants = new ArrayList<>();
+        for (Map.Entry<String, String> entry : placeidName.entrySet()) {
+            restaurants.add(createResult(entry.getValue(), entry.getKey()));
+        }
+        return restaurants;
+    }
+
+    private Restaurant createResult(String name, String googlePlaceId) {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setPlaceId(googlePlaceId);
+        restaurant.setName(name);
+        return restaurant;
     }
 
     @AfterClass
     public static void cleanUp() throws InterruptedException {
         cleanup();
-        Map<String, Result> returned = service.batchGetByGooglePlaceId(new ArrayList<>(PLACEID_NAME_INSERT1.keySet()));
+        Map<String, Restaurant> returned = service.batchGetByGooglePlaceId(new ArrayList<>(PLACEID_NAME_INSERT1.keySet()));
         assert returned.size() == 0;
         mongoClient.close();
     }

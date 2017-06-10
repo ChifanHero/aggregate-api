@@ -3,8 +3,8 @@ package com.chifanhero.api.services.google;
 import com.chifanhero.api.async.FutureResolver;
 import com.chifanhero.api.models.request.NearbySearchRequest;
 import com.chifanhero.api.models.request.TextSearchRequest;
-import com.chifanhero.api.models.response.Result;
-import com.chifanhero.api.models.response.SearchResponse;
+import com.chifanhero.api.models.response.Restaurant;
+import com.chifanhero.api.models.response.RestaurantSearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,22 +25,22 @@ public class GooglePlacesServiceImpl implements GooglePlacesService {
     }
 
     @Override
-    public SearchResponse nearBySearch(NearbySearchRequest nearbySearchRequest) {
+    public RestaurantSearchResponse nearBySearch(NearbySearchRequest nearbySearchRequest) {
         return null;
     }
 
     @Override
-    public SearchResponse textSearch(TextSearchRequest textSearchRequest) {
+    public RestaurantSearchResponse textSearch(TextSearchRequest textSearchRequest) {
         return null;
     }
 
     @Override
-    public Result get(String placeId) {
+    public Restaurant get(String placeId) {
         return null;
     }
 
     @Override
-    public Map<String, Result> batchGet(List<String> placeIds) {
+    public Map<String, Restaurant> batchGet(List<String> placeIds) {
         return null;
     }
 }
