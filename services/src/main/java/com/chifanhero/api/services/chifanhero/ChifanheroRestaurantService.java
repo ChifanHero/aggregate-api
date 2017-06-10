@@ -1,6 +1,6 @@
 package com.chifanhero.api.services.chifanhero;
 
-import com.chifanhero.api.models.response.Result;
+import com.chifanhero.api.models.response.Restaurant;
 
 import java.util.List;
 import java.util.Map;
@@ -10,11 +10,11 @@ import java.util.Map;
  */
 public interface ChifanheroRestaurantService {
 
-    void bulkUpsert(List<Result> entities);
+    void bulkUpsert(List<Restaurant> entities);
 
-    Map<String, Result> batchGetByGooglePlaceId(List<String> googlePlaceIds);
+    Map<String, Restaurant> batchGetByGooglePlaceId(List<String> googlePlaceIds);
 
-    void bulkUpsertInBackground(List<Result> entities);
+    void bulkUpsertInBackground(List<Restaurant> entities);
 
     void expireDocuments();
 }

@@ -81,7 +81,7 @@
 
         <sequential>
             <!-- http port is 1000 more than the configured mongod port -->
-            <math operation="+" operator1="@{mongodb.port}" operator2="1000" result="mongodb.http.port"/>
+            <math operation="+" operator1="@{mongodb.port}" operator2="1000" restaurant="mongodb.http.port"/>
             <!-- make sure no mongodb instance is currently running and listening on the port we need -->
             <fail message="This test expects port ${mongodb.port} to be free but mongodb instance is already running and listening on that port.
       Maybe the last test run did not manage to shut down the node correctly?
@@ -124,7 +124,7 @@
         <attribute name="operation"/>
         <attribute name="operator1"/>
         <attribute name="operator2"/>
-        <attribute name="result"/>
+        <attribute name="restaurant"/>
         <sequential>
             <script language="javascript">
                 tmp = 0;
@@ -143,7 +143,7 @@
                 tmp = parseInt("@{operator1}") / parseInt("@{operator2}");
                 break;
                 }
-                project.setProperty("@{result}", tmp);
+                project.setProperty("@{restaurant}", tmp);
             </script>
         </sequential>
     </macrodef>

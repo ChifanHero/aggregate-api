@@ -2,8 +2,8 @@ package com.chifanhero.api.services.google;
 
 import com.chifanhero.api.models.request.NearbySearchRequest;
 import com.chifanhero.api.models.request.TextSearchRequest;
-import com.chifanhero.api.models.response.Result;
-import com.chifanhero.api.models.response.SearchResponse;
+import com.chifanhero.api.models.response.Restaurant;
+import com.chifanhero.api.models.response.RestaurantSearchResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -13,12 +13,12 @@ import java.util.Map;
  */
 public interface GooglePlacesService {
 
-    SearchResponse nearBySearch(NearbySearchRequest nearbySearchRequest);
+    RestaurantSearchResponse nearBySearch(NearbySearchRequest nearbySearchRequest);
 
-    SearchResponse textSearch(TextSearchRequest textSearchRequest);
+    RestaurantSearchResponse textSearch(TextSearchRequest textSearchRequest);
 
-    Result get(String placeId);
+    Restaurant get(String placeId);
 
-    Map<String, Result> batchGet(List<String> placeIds);
+    Map<String, Restaurant> batchGet(List<String> placeIds);
 
 }

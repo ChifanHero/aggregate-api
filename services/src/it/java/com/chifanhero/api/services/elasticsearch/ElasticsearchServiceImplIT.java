@@ -6,8 +6,8 @@ import com.chifanhero.api.models.request.NearbySearchRequest;
 import com.chifanhero.api.models.request.SortOrder;
 import com.chifanhero.api.models.request.TextSearchRequest;
 import com.chifanhero.api.models.response.Coordinates;
-import com.chifanhero.api.models.response.Result;
-import com.chifanhero.api.models.response.SearchResponse;
+import com.chifanhero.api.models.response.Restaurant;
+import com.chifanhero.api.models.response.RestaurantSearchResponse;
 import com.chifanhero.api.models.response.Source;
 import com.chifanhero.api.services.chifanhero.document.IdGenerator;
 import com.chifanhero.api.services.elasticsearch.query.FieldNames;
@@ -77,7 +77,7 @@ public class ElasticsearchServiceImplIT {
         nearbySearchRequest.setSortOrder(SortOrder.NEAREST.name());
         ElasticsearchServiceImpl service = new ElasticsearchServiceImpl(CLIENT);
         nearbySearchRequest.validate();
-        SearchResponse response = service.nearBySearch(nearbySearchRequest);
+        RestaurantSearchResponse response = service.nearBySearch(nearbySearchRequest);
         Assert.assertNotNull(response);
         Assert.assertTrue(response.getResults().size() == 2);
         response.getResults().forEach(result -> {
@@ -104,7 +104,7 @@ public class ElasticsearchServiceImplIT {
         nearbySearchRequest.setSortOrder(SortOrder.HOTTEST.name());
         ElasticsearchServiceImpl service = new ElasticsearchServiceImpl(CLIENT);
         nearbySearchRequest.validate();
-        SearchResponse response = service.nearBySearch(nearbySearchRequest);
+        RestaurantSearchResponse response = service.nearBySearch(nearbySearchRequest);
         Assert.assertNotNull(response);
         Assert.assertTrue(response.getResults().size() == 2);
         response.getResults().forEach(result -> {
@@ -132,17 +132,17 @@ public class ElasticsearchServiceImplIT {
         textSearchRequest.setSortOrder(SortOrder.NEAREST.name());
         ElasticsearchServiceImpl service = new ElasticsearchServiceImpl(CLIENT);
         textSearchRequest.validate();
-        SearchResponse response = service.textSearch(textSearchRequest);
+        RestaurantSearchResponse response = service.textSearch(textSearchRequest);
         Assert.assertNotNull(response);
         Assert.assertTrue(response.getResults().size() == 1);
-        Result result = response.getResults().get(0);
+        Restaurant restaurant = response.getResults().get(0);
         // source, name, english_name, rating, coordinates, google_place_id
-        Assert.assertEquals(Source.CHIFANHERO, result.getSource());
-        Assert.assertEquals("韶山印象", result.getName());
-        Assert.assertEquals("Hunan Impression", result.getEnglighName());
-        Assert.assertTrue(3.5 == result.getRating());
-        Assert.assertEquals("googleplaceid", result.getPlaceId());
-        Coordinates coordinates = result.getCoordinates();
+        Assert.assertEquals(Source.CHIFANHERO, restaurant.getSource());
+        Assert.assertEquals("韶山印象", restaurant.getName());
+        Assert.assertEquals("Hunan Impression", restaurant.getEnglighName());
+        Assert.assertTrue(3.5 == restaurant.getRating());
+        Assert.assertEquals("googleplaceid", restaurant.getPlaceId());
+        Coordinates coordinates = restaurant.getCoordinates();
         Assert.assertTrue(BAY_AREA_COORDINATES[1] == coordinates.getLatitude().doubleValue());
         Assert.assertTrue(BAY_AREA_COORDINATES[0] == coordinates.getLongitude().doubleValue());
 
@@ -160,7 +160,7 @@ public class ElasticsearchServiceImplIT {
         textSearchRequest.setSortOrder(SortOrder.HOTTEST.name());
         ElasticsearchServiceImpl service = new ElasticsearchServiceImpl(CLIENT);
         textSearchRequest.validate();
-        SearchResponse response = service.textSearch(textSearchRequest);
+        RestaurantSearchResponse response = service.textSearch(textSearchRequest);
         Assert.assertNotNull(response);
         Assert.assertTrue(response.getResults().size() == 2);
         response.getResults().forEach(result -> {

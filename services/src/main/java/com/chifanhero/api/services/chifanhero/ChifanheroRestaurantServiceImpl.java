@@ -1,9 +1,10 @@
 package com.chifanhero.api.services.chifanhero;
 
 import com.chifanhero.api.configs.ChifanheroConfigs;
-import com.chifanhero.api.models.response.Result;
+import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.services.chifanhero.document.DocumentConverter;
 import com.chifanhero.api.services.chifanhero.document.IdGenerator;
+import com.chifanhero.api.utils.DateUtil;
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.Block;
 import com.mongodb.MongoClient;
@@ -17,6 +18,7 @@ import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -38,37 +40,37 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
     }
 
     @Override
-    public void bulkUpsert(List<Result> entities) {
+    public void bulkUpsert(List<Restaurant> entities) {
         MongoCollection<Document> collection = getRestaurantCollection();
         List<UpdateOneModel<Document>> upserts = entities.stream().map(entity -> {
             Bson filter = Filters.eq(KeyNames.GOOGLE_PLACE_ID, entity.getPlaceId());
-            Document updateDocument = new Document("$setOnInsert", new Document(KeyNames.ID, IdGenerator.getNewObjectId()));
-            Document document = DocumentConverter.toDocument(entity);
-            updateDocument.append("$set", document);
-            //TODO - setOnInsert creation date
-            //TODO - set update date
-            //TODO - set expiration date (14 days)
+            Document setOnInsertDocument = new Document(KeyNames.ID, IdGenerator.getNewObjectId());
+            setOnInsertDocument.append(KeyNames.CREATED_AT, new Date());
+            Document updateDocument = new Document("$setOnInsert", setOnInsertDocument);
+            Document setDocument = DocumentConverter.toDocument(entity);
+            setDocument.append(KeyNames.UPDATED_AT, new Date());
+            setDocument.append(KeyNames.EXPIRE_AT, DateUtil.addDays(new Date(), 1));
+            updateDocument.append("$set", setDocument);
             //TODO - update unit tests
             UpdateOptions options = new UpdateOptions().upsert(true);
-            assert document != null;
             return new UpdateOneModel<Document>(filter, updateDocument, options);
         }).collect(Collectors.toList());
         collection.bulkWrite(upserts);
     }
 
     @Override
-    public Map<String, Result> batchGetByGooglePlaceId(List<String> googlePlaceIds) {
-        ImmutableMap.Builder<String, Result> results = new ImmutableMap.Builder<>();
+    public Map<String, Restaurant> batchGetByGooglePlaceId(List<String> googlePlaceIds) {
+        ImmutableMap.Builder<String, Restaurant> results = new ImmutableMap.Builder<>();
         MongoCollection<Document> collection = getRestaurantCollection();
         collection.find(Filters.in(KeyNames.GOOGLE_PLACE_ID, googlePlaceIds)).forEach((Block<? super Document>) document -> {
-            Result result = DocumentConverter.toResult(document);
-            results.put(result.getPlaceId(), result);
+            Restaurant restaurant = DocumentConverter.toResult(document);
+            results.put(restaurant.getPlaceId(), restaurant);
         });
         return results.build();
     }
 
     @Override
-    public void bulkUpsertInBackground(List<Result> entities) {
+    public void bulkUpsertInBackground(List<Restaurant> entities) {
         executorService.submit(() -> bulkUpsert(entities));
     }
 

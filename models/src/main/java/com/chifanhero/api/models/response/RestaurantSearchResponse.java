@@ -8,15 +8,15 @@ import java.util.List;
  * Created by shiyan on 5/6/17.
  */
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class SearchResponse {
+public class RestaurantSearchResponse {
 
-    private List<Result> results;
+    private List<Restaurant> results;
 
-    public List<Result> getResults() {
+    public List<Restaurant> getResults() {
         return results;
     }
 
-    public void setResults(List<Result> results) {
+    public void setResults(List<Restaurant> results) {
         this.results = results;
     }
 }
