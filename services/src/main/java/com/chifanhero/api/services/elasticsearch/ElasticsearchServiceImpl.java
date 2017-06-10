@@ -10,13 +10,13 @@ import com.chifanhero.api.services.elasticsearch.query.helpers.SortHelper;
 import com.chifanhero.api.services.elasticsearch.response.SearchResponseConverter;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
+ * Elasticsearch API
  * Created by shiyan on 5/19/17.
  */
 @Service
@@ -26,6 +26,8 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     public final static String TYPE = "Restaurant";
 
     private final TransportClient transportClient;
+
+//    private final static Float MIN_SCORE = 1.0f;
 
     @Autowired
     public ElasticsearchServiceImpl(TransportClient transportClient) {
@@ -57,6 +59,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
         } else if (SortOrder.HOTTEST.name().equals(textSearchRequest.getSortOrder())) {
             searchRequestBuilder.addSort(FieldNames.RATING, org.elasticsearch.search.sort.SortOrder.DESC);
         }
+//        searchRequestBuilder.setMinScore(MIN_SCORE);
         return SearchResponseConverter.toLocalSearchResponse(searchRequestBuilder.get());
     }
 }

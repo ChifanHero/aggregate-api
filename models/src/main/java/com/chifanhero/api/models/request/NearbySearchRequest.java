@@ -75,7 +75,7 @@ public class NearbySearchRequest extends SearchRequest {
     }
 
     @Override
-    List<Error> validate() {
+    public List<Error> validate() {
         List<Error> errors = new ArrayList<>();
         if (location == null) {
             errors.add(new Error(ErrorMessage.NULL_LOCATION, ErrorLevel.ERROR));
