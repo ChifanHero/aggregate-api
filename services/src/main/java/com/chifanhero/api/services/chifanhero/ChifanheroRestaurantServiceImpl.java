@@ -41,6 +41,10 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
 
     @Override
     public void bulkUpsert(List<Restaurant> entities) {
+        bulkUpsert(entities, DateUtil.addDays(new Date(), 14));
+    }
+
+    protected void bulkUpsert(List<Restaurant> entities, Date expireAt) {
         MongoCollection<Document> collection = getRestaurantCollection();
         List<UpdateOneModel<Document>> upserts = entities.stream().map(entity -> {
             Bson filter = Filters.eq(KeyNames.GOOGLE_PLACE_ID, entity.getPlaceId());
@@ -49,9 +53,8 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
             Document updateDocument = new Document("$setOnInsert", setOnInsertDocument);
             Document setDocument = DocumentConverter.toDocument(entity);
             setDocument.append(KeyNames.UPDATED_AT, new Date());
-            setDocument.append(KeyNames.EXPIRE_AT, DateUtil.addDays(new Date(), 1));
+            setDocument.append(KeyNames.EXPIRE_AT, expireAt);
             updateDocument.append("$set", setDocument);
-            //TODO - update unit tests
             UpdateOptions options = new UpdateOptions().upsert(true);
             return new UpdateOneModel<Document>(filter, updateDocument, options);
         }).collect(Collectors.toList());
@@ -75,8 +78,15 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
     }
 
     @Override
-    public void expireDocuments() {
-        // TODO - for expired documents (expiration date <= now), unset english_name/coordinates
+    public void expireData() {
+        MongoCollection<Document> collection = getRestaurantCollection();
+        Bson filter = Filters.lte(KeyNames.EXPIRE_AT, new Date());
+        Document unsetDocument = new Document();
+        unsetDocument.append(KeyNames.ENGLISH_NAME, "");
+        unsetDocument.append(KeyNames.COORDINATES, "");
+        unsetDocument.append(KeyNames.EXPIRE_AT, "");
+        Document updateDocument = new Document("$unset", unsetDocument);
+        collection.updateOne(filter, updateDocument);
     }
 
     private MongoCollection<Document> getRestaurantCollection() {
