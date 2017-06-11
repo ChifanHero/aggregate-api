@@ -7,6 +7,7 @@ import org.bson.Document;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class DocumentConverterTest {
@@ -17,10 +18,15 @@ public class DocumentConverterTest {
         document.append(KeyNames.NAME, "吃饭英雄");
         document.append(KeyNames.ENGLISH_NAME, "chifanhero");
         document.append(KeyNames.GOOGLE_PLACE_ID, "google_place_id");
+        document.append(KeyNames.COORDINATES, Arrays.asList(-121.99 ,37.30));
         Restaurant restaurant = DocumentConverter.toResult(document);
         Assert.assertEquals("吃饭英雄", restaurant.getName());
         Assert.assertEquals("chifanhero", restaurant.getEnglighName());
         Assert.assertEquals("google_place_id", restaurant.getPlaceId());
+        Coordinates coordinates = restaurant.getCoordinates();
+        Assert.assertNotNull(coordinates);
+        Assert.assertEquals(new Double(-121.99), coordinates.getLongitude());
+        Assert.assertEquals(new Double(37.30), coordinates.getLatitude());
     }
 
     @Test

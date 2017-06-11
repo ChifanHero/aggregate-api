@@ -1,8 +1,10 @@
 package com.chifanhero.api.services.chifanhero;
 
 import com.chifanhero.api.configs.ChifanheroConfigs;
+import com.chifanhero.api.models.response.Coordinates;
 import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.services.it.MongoClientFactory;
+import com.chifanhero.api.utils.DateUtil;
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.Block;
 import com.mongodb.MongoClient;
@@ -15,10 +17,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ChifanheroRestaurantServiceImplIT {
@@ -63,7 +62,7 @@ public class ChifanheroRestaurantServiceImplIT {
     }
 
     @Test
-    public void testExpirationDate() {
+    public void testExpirationDateSetCorrectly() {
         String googlePlaceId = "1";
         cleanup();
         assert service.batchGetByGooglePlaceId(Collections.singletonList(googlePlaceId)).size() == 0;
@@ -71,8 +70,61 @@ public class ChifanheroRestaurantServiceImplIT {
         service.bulkUpsert(Collections.singletonList(restaurant));
         mongoClient.getDatabase(ChifanheroConfigs.MONGO_DATABASE).getCollection(ChifanheroConfigs.MONGO_COLLECTION_RESTAURANT)
                 .find(Filters.eq(KeyNames.GOOGLE_PLACE_ID, googlePlaceId)).forEach((Block<? super Document>) document -> {
-            Assert.assertNotNull(document.getDate(KeyNames.EXPIRE_AT));
+            Date expirationDate = document.getDate(KeyNames.EXPIRE_AT);
+            Assert.assertNotNull(expirationDate);
+            long diff = expirationDate.getTime() - new Date().getTime();
+            Assert.assertTrue(diff < 1209600000);
+            Assert.assertTrue(diff > (1209600000) - 10000);
         });
+    }
+
+    @Test
+    public void testDataShouldExpire() {
+        String placeId = "testDataShouldExpire";
+        String name = "name1";
+        Restaurant toExpire = new Restaurant();
+        toExpire.setPlaceId(placeId);
+        toExpire.setName(name);
+        Coordinates coordinates = new Coordinates();
+        coordinates.setLatitude(37.308835);
+        coordinates.setLongitude(-121.99);
+        toExpire.setCoordinates(coordinates);
+        toExpire.setEnglighName("englishname1");
+        service.bulkUpsert(Collections.singletonList(toExpire), new Date());
+        service.expireData();
+        Map<String, Restaurant> restaurants = service.batchGetByGooglePlaceId(Collections.singletonList(placeId));
+        Assert.assertNotNull(restaurants);
+        Assert.assertTrue(restaurants.size() == 1);
+        Restaurant restaurant = restaurants.get(placeId);
+        Assert.assertEquals(placeId, restaurant.getPlaceId());
+        Assert.assertEquals(name, restaurant.getName());
+        Assert.assertNull(restaurant.getEnglighName());
+        Assert.assertNull(restaurant.getCoordinates());
+    }
+
+    @Test
+    public void testDataShouldNotExpire() {
+        String placeId = "testDataShouldNotExpire";
+        String name = "name2";
+        String englishName = "englishname2";
+        Coordinates coordinates = new Coordinates();
+        coordinates.setLatitude(37.308835);
+        coordinates.setLongitude(-121.99);
+        Restaurant notToExpire = new Restaurant();
+        notToExpire.setPlaceId(placeId);
+        notToExpire.setName(name);
+        notToExpire.setCoordinates(coordinates);
+        notToExpire.setEnglighName(englishName);
+        service.bulkUpsert(Collections.singletonList(notToExpire), DateUtil.addDays(new Date(), 10));
+        service.expireData();
+        Map<String, Restaurant> restaurants = service.batchGetByGooglePlaceId(Collections.singletonList(placeId));
+        Assert.assertNotNull(restaurants);
+        Assert.assertTrue(restaurants.size() == 1);
+        Restaurant restaurant = restaurants.get(placeId);
+        Assert.assertEquals(placeId, restaurant.getPlaceId());
+        Assert.assertEquals(name, restaurant.getName());
+        Assert.assertEquals(englishName, restaurant.getEnglighName());
+        Assert.assertNotNull(restaurant.getCoordinates());
     }
 
     private List<Restaurant> createResults(ImmutableMap<String, String> placeidName) {
