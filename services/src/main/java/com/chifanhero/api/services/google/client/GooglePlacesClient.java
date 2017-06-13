@@ -1,6 +1,7 @@
 package com.chifanhero.api.services.google.client;
 
 import com.chifanhero.api.common.GetRequest;
+import com.chifanhero.api.models.google.Place;
 import com.chifanhero.api.models.google.PlaceDetailResponse;
 import com.chifanhero.api.models.google.PlacesSearchResponse;
 import com.chifanhero.api.services.google.client.request.NearBySearchRequestParams;
@@ -13,7 +14,10 @@ import org.asynchttpclient.Response;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Google places API

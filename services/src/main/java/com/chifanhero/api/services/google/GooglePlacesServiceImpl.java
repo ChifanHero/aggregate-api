@@ -5,6 +5,7 @@ import com.chifanhero.api.models.request.NearbySearchRequest;
 import com.chifanhero.api.models.request.TextSearchRequest;
 import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
+import com.chifanhero.api.services.google.client.GooglePlacesClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +19,17 @@ import java.util.Map;
 public class GooglePlacesServiceImpl implements GooglePlacesService {
 
     private final FutureResolver futureResolver;
+    private final GooglePlacesClient client;
 
     @Autowired
-    public GooglePlacesServiceImpl(FutureResolver futureResolver) {
+    public GooglePlacesServiceImpl(FutureResolver futureResolver, GooglePlacesClient client) {
         this.futureResolver = futureResolver;
+        this.client = client;
     }
 
     @Override
     public RestaurantSearchResponse nearBySearch(NearbySearchRequest nearbySearchRequest) {
+//        client.nearBySearch(null).
         return null;
     }
 

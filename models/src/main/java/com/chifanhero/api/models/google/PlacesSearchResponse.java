@@ -1,6 +1,7 @@
 package com.chifanhero.api.models.google;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.List;
 
@@ -9,7 +10,18 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PlacesSearchResponse {
+
+    @JsonProperty("next_page_token")
+    private String nextPageToken;
     private List<Place> results;
+
+    public String getNextPageToken() {
+        return nextPageToken;
+    }
+
+    public void setNextPageToken(String nextPageToken) {
+        this.nextPageToken = nextPageToken;
+    }
 
     public List<Place> getResults() {
         return results;

@@ -4,6 +4,8 @@ import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 import static org.asynchttpclient.Dsl.asyncHttpClient;
 
@@ -14,6 +16,7 @@ import static org.asynchttpclient.Dsl.asyncHttpClient;
 public class AsyncHttpClientFactory {
 
     @Bean
+    @Scope(value="request", proxyMode = ScopedProxyMode.TARGET_CLASS)
     public AsyncHttpClient createAsyncHttpClient() {
         return asyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().setRequestTimeout(2000));
     }
