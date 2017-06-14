@@ -4,6 +4,7 @@ import com.chifanhero.api.models.google.PlacesSearchResponse;
 import com.chifanhero.api.services.google.client.GooglePlacesClient;
 import com.chifanhero.api.services.google.client.request.LocationParam;
 import com.chifanhero.api.services.google.client.request.NearBySearchRequestParams;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +24,12 @@ public class TestGooglePlacesClient {
     @Autowired
     GooglePlacesClient client;
 
-    @Test
+    @Ignore
     public void test() throws ExecutionException, InterruptedException {
-        NearBySearchRequestParams nearBySearchRequestParams = new NearBySearchRequestParams();
-        nearBySearchRequestParams.setLocation(new LocationParam().setLatitude(37.3088354).setLongitude(-121.99380080000003).getParam()).setRadius("500").setType("restaurant").setKeyword("chinese").setKey("AIzaSyBv3gtDERygNxP2lk7fwoPMcNCPfuGZdW0");
-        Future<PlacesSearchResponse> responseFuture = client.nearBySearch(nearBySearchRequestParams);
-        PlacesSearchResponse response = responseFuture.get();
-//        System.out.println(response.getResponseBody());
+//        NearBySearchRequestParams nearBySearchRequestParams = new NearBySearchRequestParams();
+//        nearBySearchRequestParams.setLocation(new LocationParam().setLatitude(37.3088354).setLongitude(-121.99380080000003).getParam()).setRadius("500").setType("restaurant").setKeyword("chinese").setKey("AIzaSyBv3gtDERygNxP2lk7fwoPMcNCPfuGZdW0");
+////        Future<PlacesSearchResponse> responseFuture = client.nearBySearch(nearBySearchRequestParams);
+////        PlacesSearchResponse response = responseFuture.get();
+////        System.out.println(response.getResponseBody());
     }
 }

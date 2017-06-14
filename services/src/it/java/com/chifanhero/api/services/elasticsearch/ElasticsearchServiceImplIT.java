@@ -252,11 +252,6 @@ public class ElasticsearchServiceImplIT {
 //        CLIENT.close();
 //    }
 
-    @Test
-    public void test() {
-
-    }
-
     @AfterClass
     public static void afterClass() {
 //        shutdownTransportClient();

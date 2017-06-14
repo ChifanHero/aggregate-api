@@ -60,7 +60,7 @@ public class NearBySearchRequestParams extends GetRequestParams {
      * Returns the next 20 results from a previously run search. Setting a pagetoken parameter will execute a search with the same parameters used previously — all parameters other than pagetoken will be ignored.
      */
     @ParamKey("pagetoken")
-    private String pageToken;
+    private String pageToken; //TODO - this page token might be handled in a better way
 
     public String getKey() {
         return key;
@@ -145,9 +145,11 @@ public class NearBySearchRequestParams extends GetRequestParams {
 
     @Override
     public void validate() {
-        super.validate();
-        validateRadius();
-        validateRankBy();
+        if (pageToken == null) {
+            super.validate();
+            validateRadius();
+            validateRankBy();
+        }
     }
 
     private void validateRankBy() {

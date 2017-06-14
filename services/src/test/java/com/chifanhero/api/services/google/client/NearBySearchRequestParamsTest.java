@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import java.util.Map;
 
-public class PlaceNearBySearchRequestParamsTest {
+public class NearBySearchRequestParamsTest {
 
     @Test
     public void test() {
@@ -18,7 +18,6 @@ public class PlaceNearBySearchRequestParamsTest {
         placeNearBySearchRequestParams.setKeyword("restaurant");
         placeNearBySearchRequestParams.setLanguage("en");
         placeNearBySearchRequestParams.setOpenNow(true);
-        placeNearBySearchRequestParams.setPageToken("page_token");
         placeNearBySearchRequestParams.setRankBy(RankBy.prominence);
         placeNearBySearchRequestParams.setType("chinese");
         Map<String, Object> params = placeNearBySearchRequestParams.getParams();
@@ -28,7 +27,6 @@ public class PlaceNearBySearchRequestParamsTest {
         Assert.assertEquals("restaurant", params.get("keyword"));
         Assert.assertEquals("en", params.get("language"));
         Assert.assertEquals(true, params.get("opennow"));
-        Assert.assertEquals("page_token", params.get("pagetoken"));
         Assert.assertEquals(RankBy.prominence, params.get("rankby"));
         Assert.assertEquals("chinese", params.get("type"));
     }
@@ -112,5 +110,17 @@ public class PlaceNearBySearchRequestParamsTest {
         Assert.assertEquals("chinese", params.get("type"));
         Assert.assertEquals("37.242312,-121.764886", params.get("location"));
         Assert.assertEquals(RankBy.distance, params.get("rankby"));
+    }
+
+    @Test
+    public void testPageTokenIgnoreError() {
+        NearBySearchRequestParams placeNearBySearchRequestParams = new NearBySearchRequestParams();
+        placeNearBySearchRequestParams.setKey("key");
+        placeNearBySearchRequestParams.setKeyword("chinese");
+        placeNearBySearchRequestParams.setLocation("37.242312,-121.764886");
+        placeNearBySearchRequestParams.setRankBy(RankBy.distance);
+        placeNearBySearchRequestParams.setRadius("500");
+        placeNearBySearchRequestParams.setPageToken("page_token");
+        placeNearBySearchRequestParams.getParams();
     }
 }
