@@ -25,8 +25,17 @@ public class FutureResolver {
         this.executorService = executorService;
     }
 
-    public FutureObserverTask resolve(Future... futures) {
-        FutureObserverTask futureObserverTask = new FutureObserverTask(executorService);
+    public <T> FutureObserverTask<T> resolve(Future<T>... futures) {
+        FutureObserverTask<T> futureObserverTask = new FutureObserverTask<>(executorService);
+        for (Future future : futures) {
+            ObservableFutureTask observableTask = new ObservableFutureTask(future);
+            futureObserverTask.addDependency(observableTask);
+        }
+        return futureObserverTask;
+    }
+
+    public <T> FutureObserverTask<T> resolve(List<Future<T>> futures) {
+        FutureObserverTask<T> futureObserverTask = new FutureObserverTask<>(executorService);
         for (Future future : futures) {
             ObservableFutureTask observableTask = new ObservableFutureTask(future);
             futureObserverTask.addDependency(observableTask);
@@ -54,18 +63,18 @@ public class FutureResolver {
         }
     }
 
-    public class FutureObserverTask implements Callable<List>, Observer {
-        private List<Object> results = new ArrayList<>();
+    public class FutureObserverTask<T> implements Callable<List<T>>, Observer {
+        private List<T> results = new ArrayList<>();
         private AtomicInteger dependencyCounter = new AtomicInteger(0);
         private ExecutorService executorService;
 
-        public FutureObserverTask(ExecutorService executorService) {
+        FutureObserverTask(ExecutorService executorService) {
             this.executorService = executorService;
         }
 
         @Override
         public void update(Observable o, Object arg) {
-            results.add(arg);
+            results.add((T)arg);
             int count = dependencyCounter.decrementAndGet();
             if (count == 0) {
                 notify();
@@ -73,7 +82,7 @@ public class FutureResolver {
         }
 
         @Override
-        public List call() throws Exception {
+        public List<T> call() throws Exception {
             while(dependencyCounter.get() > 0) {
                 synchronized (this) {
                     this.wait();
@@ -88,14 +97,23 @@ public class FutureResolver {
             executorService.submit(dependency);
         }
 
-        public List get(Long timeout, TimeUnit timeUnit) {
-            Future resultFuture = executorService.submit(this);
+        public List<T> get(Long timeout, TimeUnit timeUnit) {
+            Future<List<T>> resultFuture = executorService.submit(this);
             try {
-                return (List) resultFuture.get(timeout, timeUnit);
+                return resultFuture.get(timeout, timeUnit);
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             } catch (TimeoutException e) {
                 return results;
+            }
+        }
+
+        public List<T> get() {
+            Future<List<T>> resultFuture = executorService.submit(this);
+            try {
+                return resultFuture.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
             }
         }
     }
