@@ -9,6 +9,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Place {
 
+    private Geometry geometry;
+
     @JsonProperty("formatted_address")
     private String formattedAddress;
 
@@ -133,5 +135,13 @@ public class Place {
 
     public void setPriceLevel(Integer priceLevel) {
         this.priceLevel = priceLevel;
+    }
+
+    public Geometry getGeometry() {
+        return geometry;
+    }
+
+    public void setGeometry(Geometry geometry) {
+        this.geometry = geometry;
     }
 }

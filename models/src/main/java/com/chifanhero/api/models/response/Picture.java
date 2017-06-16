@@ -3,6 +3,8 @@ package com.chifanhero.api.models.response;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import java.util.List;
+
 /**
  * Created by shiyan on 5/6/17.
  */
@@ -12,6 +14,9 @@ public class Picture {
     @JsonProperty("photo_reference")
     private String photoReference;
     private String url;
+
+    @JsonProperty("html_attributes")
+    private List<String> htmlAttributions;
 
     public String getPhotoReference() {
         return photoReference;
@@ -27,5 +32,13 @@ public class Picture {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public List<String> getHtmlAttributions() {
+        return htmlAttributions;
+    }
+
+    public void setHtmlAttributions(List<String> htmlAttributes) {
+        this.htmlAttributions = htmlAttributes;
     }
 }
