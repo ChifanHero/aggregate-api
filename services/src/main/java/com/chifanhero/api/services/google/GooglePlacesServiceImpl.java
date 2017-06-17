@@ -45,6 +45,7 @@ public class GooglePlacesServiceImpl implements GooglePlacesService {
     @Override
     public RestaurantSearchResponse nearBySearch(NearbySearchRequest nearbySearchRequest) {
         NearBySearchRequestParams nearBySearchRequestParams = NearBySearchRequestConverter.toParams(nearbySearchRequest);
+        nearBySearchRequestParams.setKey(GoogleConfigs.API_KEY);
         try {
             PlacesSearchResponse placesSearchResponse = client.nearBySearch(nearBySearchRequestParams).get();
             return ResponseConverter.toRestaurantSearchResponse(placesSearchResponse);
@@ -56,6 +57,7 @@ public class GooglePlacesServiceImpl implements GooglePlacesService {
     @Override
     public RestaurantSearchResponse textSearch(TextSearchRequest textSearchRequest) {
         TextSearchRequestParams textSearchRequestParams = TextSearchRequestConverter.toParams(textSearchRequest);
+        textSearchRequestParams.setKey(GoogleConfigs.API_KEY);
         try {
             PlacesSearchResponse placesSearchResponse = client.textSearch(textSearchRequestParams).get();
             return ResponseConverter.toRestaurantSearchResponse(placesSearchResponse);

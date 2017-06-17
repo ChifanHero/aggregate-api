@@ -14,7 +14,7 @@ public class NearBySearchRequestConverter {
         nearBySearchRequestParams.setOpenNow(nearbySearchRequest.getOpenNow());
         nearBySearchRequestParams.setType(nearbySearchRequest.getType());
         nearBySearchRequestParams.setKeyword(nearbySearchRequest.getKeyword());
-        if (nearbySearchRequest.getSortOrder().equals(SortOrder.NEAREST.getValue())) {
+        if (nearbySearchRequest.getSortOrder().equals(SortOrder.NEAREST.name())) {
             nearBySearchRequestParams.setRankBy(RankBy.distance);
             nearBySearchRequestParams.setRadius(null);
         }
