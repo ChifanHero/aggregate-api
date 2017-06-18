@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by shiyan on 5/6/17.
  */
-public abstract class SearchRequest {
+public abstract class SearchRequest extends RequestComponent{
 
     abstract List<Error> validate();
 }

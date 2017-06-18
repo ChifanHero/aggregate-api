@@ -7,6 +7,7 @@ import com.chifanhero.api.models.response.ErrorMessage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class TextSearchRequest extends SearchRequest {
 
@@ -99,5 +100,30 @@ public class TextSearchRequest extends SearchRequest {
             errors.add(new Error(ErrorMessage.INVALID_RATING, ErrorLevel.ERROR));
         }
         return Collections.unmodifiableList(errors);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        Optional.ofNullable(query).ifPresent(value ->
+                sb.append("query=").append(value).append(";"));
+        Optional.ofNullable(type).ifPresent(value ->
+                sb.append("type=").append(type).append(";"));
+        Optional.ofNullable(location).ifPresent(value ->
+                sb.append("location=").append(value.toString()).append(";"));
+        Optional.ofNullable(radius).ifPresent(value ->
+                sb.append("radius=").append(value).append(";"));
+        Optional.ofNullable(sortOrder).ifPresent(value ->
+                sb.append("sortOrder=").append(value).append(";"));
+        Optional.ofNullable(openNow).ifPresent(value ->
+                sb.append("openNow=").append(value).append(";"));
+        Optional.ofNullable(rating).ifPresent(value ->
+                sb.append("rating=").append(value).append(";"));
+        if (sb.charAt(sb.length() - 1) == ';') {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        sb.append("}");
+        return sb.toString();
     }
 }
