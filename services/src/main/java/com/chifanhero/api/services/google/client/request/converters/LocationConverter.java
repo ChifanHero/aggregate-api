@@ -6,6 +6,9 @@ import com.chifanhero.api.services.google.client.request.LocationParam;
 public class LocationConverter {
 
     public static String toLocationParam(Location location) {
+        if (location == null) {
+            return null;
+        }
         LocationParam locationParam = new LocationParam();
         locationParam.setLongitude(location.getLon());
         locationParam.setLatitude(location.getLat());
