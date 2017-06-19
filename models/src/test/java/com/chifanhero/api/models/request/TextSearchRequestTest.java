@@ -202,4 +202,40 @@ public class TextSearchRequestTest {
         Assert.assertEquals("restaurant", textSearchRequest.getType());
         Assert.assertEquals(false, textSearchRequest.getOpenNow());
     }
+
+    @Test
+    public void testToString() {
+        TextSearchRequest textSearchRequest = createTextSearchRequest();
+        Assert.assertEquals("{query=hunan impression;type=restaurant;location={lat=37.12;lon=-121.34};radius=500;sortOrder=NEAREST;openNow=true;rating=4.5}", textSearchRequest.toString());
+    }
+
+    @Test
+    public void testCloneAndEquals() {
+        TextSearchRequest textSearchRequest = createTextSearchRequest();
+        TextSearchRequest newTextSearchRequest = textSearchRequest.clone();
+        Assert.assertTrue(textSearchRequest.equals(newTextSearchRequest));
+    }
+
+    @Test
+    public void testNotEqual() {
+        TextSearchRequest textSearchRequest = createTextSearchRequest();
+        TextSearchRequest newTextSearchRequest = textSearchRequest.clone();
+        newTextSearchRequest.setQuery("query");
+        Assert.assertFalse(textSearchRequest.equals(newTextSearchRequest));
+    }
+
+    private TextSearchRequest createTextSearchRequest() {
+        TextSearchRequest textSearchRequest = new TextSearchRequest();
+        Location location = new Location();
+        location.setLat(37.12);
+        location.setLon(-121.34);
+        textSearchRequest.setLocation(location);
+        textSearchRequest.setOpenNow(true);
+        textSearchRequest.setType("restaurant");
+        textSearchRequest.setQuery("hunan impression");
+        textSearchRequest.setRadius(500);
+        textSearchRequest.setRating(4.5);
+        textSearchRequest.setSortOrder(SortOrder.NEAREST.name());
+        return  textSearchRequest;
+    }
 }
