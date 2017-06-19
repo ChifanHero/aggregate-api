@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class TextSearchRequest extends SearchRequest {
+public class TextSearchRequest extends SearchRequest<TextSearchRequest> {
 
     private String query;
     private String type = "restaurant";
@@ -125,5 +125,37 @@ public class TextSearchRequest extends SearchRequest {
         }
         sb.append("}");
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof TextSearchRequest)) {
+            return false;
+        }
+        TextSearchRequest target = (TextSearchRequest) obj;
+        return EqualUtil.equal(location, target.getLocation())
+                && EqualUtil.equal(radius, target.getRadius())
+                && EqualUtil.equal(type, target.getType())
+                && EqualUtil.equal(sortOrder, target.getSortOrder())
+                && EqualUtil.equal(openNow, target.getOpenNow())
+                && EqualUtil.equal(rating, target.getRating())
+                && EqualUtil.equal(query, target.getQuery());
+    }
+
+    @Override
+    public TextSearchRequest clone() {
+        TextSearchRequest textSearchRequest = new TextSearchRequest();
+        Optional.ofNullable(location).ifPresent(value ->
+                textSearchRequest.setLocation(location.clone()));
+        textSearchRequest.setSortOrder(sortOrder);
+        textSearchRequest.setType(type);
+        textSearchRequest.setRating(rating);
+        textSearchRequest.setRadius(radius);
+        textSearchRequest.setOpenNow(openNow);
+        textSearchRequest.setQuery(query);
+        return textSearchRequest;
     }
 }

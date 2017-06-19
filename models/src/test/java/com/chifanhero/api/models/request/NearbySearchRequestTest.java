@@ -165,6 +165,26 @@ public class NearbySearchRequestTest {
 
     @Test
     public void testToString() {
+        NearbySearchRequest nearbySearchRequest = createNearbySearchRequest();
+        Assert.assertEquals("{location={lat=37.12;lon=-121.34};radius=500;type=restaurant;keyword=chinese;sortOrder=NEAREST;openNow=true;rating=4.5}", nearbySearchRequest.toString());
+    }
+
+    @Test
+    public void testCloneAndEquals() {
+        NearbySearchRequest nearbySearchRequest = createNearbySearchRequest();
+        NearbySearchRequest newNearbySearchRequest = nearbySearchRequest.clone();
+        Assert.assertTrue(nearbySearchRequest.equals(newNearbySearchRequest));
+    }
+
+    @Test
+    public void testNotEqual() {
+        NearbySearchRequest nearbySearchRequest = createNearbySearchRequest();
+        NearbySearchRequest newNearbySearchRequest = nearbySearchRequest.clone();
+        newNearbySearchRequest.setType("type");
+        Assert.assertFalse(nearbySearchRequest.equals(newNearbySearchRequest));
+    }
+
+    private NearbySearchRequest createNearbySearchRequest() {
         NearbySearchRequest nearbySearchRequest = new NearbySearchRequest();
         nearbySearchRequest.setKeyword("chinese");
         Location location = new Location();
@@ -175,6 +195,6 @@ public class NearbySearchRequestTest {
         nearbySearchRequest.setRadius(500);
         nearbySearchRequest.setRating(4.5);
         nearbySearchRequest.setOpenNow(true);
-        Assert.assertEquals("{location={lat=37.12;lon=-121.34};radius=500;type=restaurant;keyword=chinese;sortOrder=NEAREST;openNow=true;rating=4.5}", nearbySearchRequest.toString());
+        return nearbySearchRequest;
     }
 }

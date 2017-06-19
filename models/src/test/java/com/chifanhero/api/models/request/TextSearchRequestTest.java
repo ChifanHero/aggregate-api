@@ -205,6 +205,26 @@ public class TextSearchRequestTest {
 
     @Test
     public void testToString() {
+        TextSearchRequest textSearchRequest = createTextSearchRequest();
+        Assert.assertEquals("{query=hunan impression;type=restaurant;location={lat=37.12;lon=-121.34};radius=500;sortOrder=NEAREST;openNow=true;rating=4.5}", textSearchRequest.toString());
+    }
+
+    @Test
+    public void testCloneAndEquals() {
+        TextSearchRequest textSearchRequest = createTextSearchRequest();
+        TextSearchRequest newTextSearchRequest = textSearchRequest.clone();
+        Assert.assertTrue(textSearchRequest.equals(newTextSearchRequest));
+    }
+
+    @Test
+    public void testNotEqual() {
+        TextSearchRequest textSearchRequest = createTextSearchRequest();
+        TextSearchRequest newTextSearchRequest = textSearchRequest.clone();
+        newTextSearchRequest.setQuery("query");
+        Assert.assertFalse(textSearchRequest.equals(newTextSearchRequest));
+    }
+
+    private TextSearchRequest createTextSearchRequest() {
         TextSearchRequest textSearchRequest = new TextSearchRequest();
         Location location = new Location();
         location.setLat(37.12);
@@ -216,6 +236,6 @@ public class TextSearchRequestTest {
         textSearchRequest.setRadius(500);
         textSearchRequest.setRating(4.5);
         textSearchRequest.setSortOrder(SortOrder.NEAREST.name());
-        Assert.assertEquals("{query=hunan impression;type=restaurant;location={lat=37.12;lon=-121.34};radius=500;sortOrder=NEAREST;openNow=true;rating=4.5}", textSearchRequest.toString());
+        return  textSearchRequest;
     }
 }

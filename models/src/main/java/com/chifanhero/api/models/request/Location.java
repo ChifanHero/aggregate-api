@@ -5,7 +5,7 @@ import java.util.Optional;
 /**
  * Created by shiyan on 5/6/17.
  */
-public class Location extends RequestComponent {
+public class Location extends RequestComponent<Location> {
     private Double lat;
     private Double lon;
 
@@ -40,5 +40,25 @@ public class Location extends RequestComponent {
         }
         sb.append("}");
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Location)) {
+            return false;
+        }
+        return EqualUtil.equal(lat, ((Location) obj).getLat())
+                && EqualUtil.equal(lon, ((Location) obj).getLon());
+    }
+
+    @Override
+    public Location clone() {
+        Location location = new Location();
+        location.setLat(lat);
+        location.setLon(lon);
+        return location;
     }
 }

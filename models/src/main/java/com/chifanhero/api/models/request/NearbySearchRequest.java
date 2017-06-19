@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class NearbySearchRequest extends SearchRequest {
+public class NearbySearchRequest extends SearchRequest<NearbySearchRequest> {
 
     private Location location;
     private Integer radius;
@@ -125,7 +125,35 @@ public class NearbySearchRequest extends SearchRequest {
     }
 
     @Override
-    public Object clone() {
-        return null;
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof NearbySearchRequest)) {
+            return false;
+        }
+        NearbySearchRequest target = (NearbySearchRequest) obj;
+        return EqualUtil.equal(location, target.getLocation())
+                && EqualUtil.equal(radius, target.getRadius())
+                && EqualUtil.equal(type, target.getType())
+                && EqualUtil.equal(keyword, target.getKeyword())
+                && EqualUtil.equal(sortOrder, target.getSortOrder())
+                && EqualUtil.equal(openNow, target.getOpenNow())
+                && EqualUtil.equal(rating, target.getRating());
     }
+
+    @Override
+    public NearbySearchRequest clone() {
+        NearbySearchRequest nearbySearchRequest = new NearbySearchRequest();
+        Optional.ofNullable(location).ifPresent(value ->
+                nearbySearchRequest.setLocation(location.clone()));
+        nearbySearchRequest.setOpenNow(openNow);
+        nearbySearchRequest.setRating(rating);
+        nearbySearchRequest.setRadius(radius);
+        nearbySearchRequest.setKeyword(keyword);
+        nearbySearchRequest.setSortOrder(sortOrder);
+        nearbySearchRequest.setType(type);
+        return nearbySearchRequest;
+    }
+
 }
