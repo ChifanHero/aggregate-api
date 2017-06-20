@@ -23,10 +23,7 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -36,6 +33,7 @@ import java.util.List;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
+//@Ignore
 public class ElasticsearchServiceImplIT {
 
     protected static final Logger LOGGER = ESLoggerFactory.getLogger(ElasticsearchServiceImplIT.class);
