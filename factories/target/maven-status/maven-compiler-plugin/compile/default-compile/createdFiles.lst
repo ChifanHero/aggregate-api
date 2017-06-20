@@ -1,0 +1,5 @@
+com/chifanhero/api/factories/CacheFactory.class
+com/chifanhero/api/factories/MongoClientFactory.class
+com/chifanhero/api/factories/AsyncHttpClientFactory.class
+com/chifanhero/api/factories/ElasticSearchTransportClientFactory.class
+com/chifanhero/api/factories/ExecutorServiceFactory.class

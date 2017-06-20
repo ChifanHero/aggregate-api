@@ -19,7 +19,7 @@ import static org.asynchttpclient.Dsl.asyncHttpClient;
 //TODO - this test relies on google API and hence is unstable. Should probably record the downstream http request for test
 public class GooglePlacesClientIT {
 
-    private final AsyncHttpClient asyncHttpClient = asyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().setRequestTimeout(2000));
+    private final AsyncHttpClient asyncHttpClient = asyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().setRequestTimeout(4000));
     private final GooglePlacesClient client = new GooglePlacesClient(asyncHttpClient);
 
     @Test
@@ -54,7 +54,7 @@ public class GooglePlacesClientIT {
         NearBySearchRequestParams newParams = new NearBySearchRequestParams();
         newParams.setKey(GoogleConfigs.API_KEY);
         newParams.setPageToken(placesSearchResponse.getNextPageToken());
-        Thread.sleep(1050);
+        Thread.sleep(2000);
         Future<PlacesSearchResponse> newResponseFuture = client.nearBySearch(newParams);
         PlacesSearchResponse newResponse = newResponseFuture.get();
         Assert.assertTrue(newResponse.getResults().size() > 0);

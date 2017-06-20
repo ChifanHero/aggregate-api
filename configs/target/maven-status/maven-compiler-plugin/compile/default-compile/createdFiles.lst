@@ -1,0 +1,8 @@
+com/chifanhero/api/configs/annotation/Cfg.class
+com/chifanhero/api/configs/helper/ConfigHelper.class
+com/chifanhero/api/configs/ChifanheroConfigs.class
+com/chifanhero/api/configs/YelpConfigs.class
+com/chifanhero/api/configs/type/Host.class
+com/chifanhero/api/configs/GoogleConfigs.class
+com/chifanhero/api/configs/helper/ConfigHelper$TypeConverter.class
+com/chifanhero/api/configs/ElasticConfigs.class

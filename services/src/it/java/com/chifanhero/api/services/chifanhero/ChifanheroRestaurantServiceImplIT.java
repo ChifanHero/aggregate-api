@@ -12,14 +12,12 @@ import com.mongodb.client.model.DeleteOneModel;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Ignore
 public class ChifanheroRestaurantServiceImplIT {
 
     private static MongoClient mongoClient;

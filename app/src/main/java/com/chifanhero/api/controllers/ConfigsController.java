@@ -1,6 +1,6 @@
 package com.chifanhero.api.controllers;
 
-import com.chifanhero.api.common.annotations.Cfg;
+import com.chifanhero.api.configs.annotation.Cfg;
 import org.reflections.Reflections;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
