@@ -4,10 +4,7 @@ import com.chifanhero.api.models.request.NearbySearchRequest;
 import com.chifanhero.api.models.request.TextSearchRequest;
 import com.chifanhero.api.services.elasticsearch.query.FieldNames;
 import org.elasticsearch.common.unit.DistanceUnit;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.GeoDistanceQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.*;
 
 /**
  * Created by shiyan on 5/20/17.

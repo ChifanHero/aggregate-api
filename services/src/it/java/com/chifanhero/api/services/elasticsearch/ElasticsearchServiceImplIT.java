@@ -11,10 +11,8 @@ import com.chifanhero.api.models.response.Source;
 import com.chifanhero.api.services.chifanhero.document.IdGenerator;
 import com.chifanhero.api.services.elasticsearch.client.ElasticsearchRestClient;
 import com.chifanhero.api.services.elasticsearch.query.FieldNames;
-import org.apache.logging.log4j.Logger;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -29,10 +27,8 @@ import static org.asynchttpclient.Dsl.asyncHttpClient;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 //@Ignore
-public class ElasticsearchServiceImpl2IT {
+public class ElasticsearchServiceImplIT {
 
-    protected static final Logger LOGGER = ESLoggerFactory.getLogger(ElasticsearchServiceImplIT.class);
-//    protected static TransportClient CLIENT;
     private static AsyncHttpClient HTTP_CLIENT;
     private static ElasticsearchRestClient ELASTIC_REST_CLIENT;
     private final static List<String> DOCUMENT_IDS = new ArrayList<>();
@@ -62,7 +58,6 @@ public class ElasticsearchServiceImpl2IT {
 
     @BeforeClass
     public static void beforeClass() {
-//        createTransportClient();
         createAsyncHttpClient();
         createElasticRestClient();
         createIndex();
@@ -88,7 +83,7 @@ public class ElasticsearchServiceImpl2IT {
         nearbySearchRequest.setLocation(location);
         nearbySearchRequest.setRadius(2000);
         nearbySearchRequest.setSortOrder(SortOrder.NEAREST.name());
-        ElasticsearchServiceImpl2 service = new ElasticsearchServiceImpl2(ELASTIC_REST_CLIENT);
+        ElasticsearchServiceImpl service = new ElasticsearchServiceImpl(ELASTIC_REST_CLIENT);
         nearbySearchRequest.validate();
         RestaurantSearchResponse response = service.nearBySearch(nearbySearchRequest);
         Assert.assertNotNull(response);
@@ -115,7 +110,7 @@ public class ElasticsearchServiceImpl2IT {
         nearbySearchRequest.setLocation(location);
         nearbySearchRequest.setRadius(2000);
         nearbySearchRequest.setSortOrder(SortOrder.HOTTEST.name());
-        ElasticsearchServiceImpl2 service = new ElasticsearchServiceImpl2(ELASTIC_REST_CLIENT);
+        ElasticsearchServiceImpl service = new ElasticsearchServiceImpl(ELASTIC_REST_CLIENT);
         nearbySearchRequest.validate();
         RestaurantSearchResponse response = service.nearBySearch(nearbySearchRequest);
         Assert.assertNotNull(response);
@@ -143,7 +138,7 @@ public class ElasticsearchServiceImpl2IT {
         textSearchRequest.setLocation(location);
         textSearchRequest.setRadius(2000);
         textSearchRequest.setSortOrder(SortOrder.NEAREST.name());
-        ElasticsearchServiceImpl2 service = new ElasticsearchServiceImpl2(ELASTIC_REST_CLIENT);
+        ElasticsearchServiceImpl service = new ElasticsearchServiceImpl(ELASTIC_REST_CLIENT);
         textSearchRequest.validate();
         RestaurantSearchResponse response = service.textSearch(textSearchRequest);
         Assert.assertNotNull(response);
@@ -171,7 +166,7 @@ public class ElasticsearchServiceImpl2IT {
         textSearchRequest.setLocation(location);
         textSearchRequest.setRadius(2000);
         textSearchRequest.setSortOrder(SortOrder.HOTTEST.name());
-        ElasticsearchServiceImpl2 service = new ElasticsearchServiceImpl2(ELASTIC_REST_CLIENT);
+        ElasticsearchServiceImpl service = new ElasticsearchServiceImpl(ELASTIC_REST_CLIENT);
         textSearchRequest.validate();
         RestaurantSearchResponse response = service.textSearch(textSearchRequest);
         Assert.assertNotNull(response);
@@ -190,22 +185,14 @@ public class ElasticsearchServiceImpl2IT {
     }
 
     private static void putMapping() {
-//        PutMappingResponse putMappingResponse = CLIENT.admin().indices().preparePutMapping(ElasticsearchServiceImpl.INDEX)
-//                .setType(ElasticsearchServiceImpl.TYPE)
-//                .setSource(MAPPING, XContentType.JSON)
-//                .get();
-//        assert putMappingResponse.isAcknowledged();
         ELASTIC_REST_CLIENT.createMapping(ElasticsearchServiceImpl.INDEX, ElasticsearchServiceImpl.TYPE, MAPPING);
     }
 
     private static void createIndex() {
-//        CreateIndexResponse createIndexResponse = CLIENT.admin().indices().prepareCreate(ElasticsearchServiceImpl.INDEX).get();
-//        assert createIndexResponse.isAcknowledged();
         ELASTIC_REST_CLIENT.createIndex(ElasticsearchServiceImpl.INDEX, SETTINGS);
     }
 
     private static void prepareTestData() {
-//        BulkRequestBuilder bulkRequest = CLIENT.prepareBulk();
         List<XContentBuilder> documents = new ArrayList<>();
         XContentBuilder document1 = createDocument("韶山印象", "Hunan Impression", 3.5, BAY_AREA_COORDINATES, "googleplaceid");
         XContentBuilder document2 = createDocument("巴蜀风", "Szechuan Chili", 5.0, BAY_AREA_COORDINATES2, "googleplaceid");
@@ -220,20 +207,12 @@ public class ElasticsearchServiceImpl2IT {
         documents.forEach(document -> {
             String documentId = IdGenerator.getNewObjectId();
             DOCUMENT_IDS.add(documentId);
-//            bulkRequest.add(
-//                    CLIENT.prepareIndex(ElasticsearchServiceImpl.INDEX, ElasticsearchServiceImpl.TYPE, documentId)
-//                            .setSource(document)
-//            );
             try {
                 ELASTIC_REST_CLIENT.indexDocument(ElasticsearchServiceImpl.INDEX, ElasticsearchServiceImpl.TYPE, documentId, document.string());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
-//        BulkResponse bulkItemResponses = bulkRequest.get();
-//        if (bulkItemResponses.hasFailures()) {
-//            throw new RuntimeException(bulkItemResponses.buildFailureMessage());
-//        }
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -256,35 +235,8 @@ public class ElasticsearchServiceImpl2IT {
         }
     }
 
-//    private static void createTransportClient() {
-//        Settings settings = Settings.builder().put("cluster.name", ElasticConfigs.CLUSTER_NAME).build();
-//        CLIENT = new PreBuiltTransportClient(settings);
-//        ElasticConfigs.HOSTS.forEach(host -> {
-//            try {
-//                CLIENT.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
-//            } catch (UnknownHostException e) {
-//                throw new RuntimeException(e);
-//            }
-//        });
-//    }
-
-//    private static void shutdownTransportClient() {
-//        CLIENT.close();
-//    }
-
     @AfterClass
     public static void afterClass() {
-//        shutdownTransportClient();
-//        deleteTestData();
     }
-
-//    private static void deleteTestData() {
-//        BulkRequestBuilder bulkRequest = CLIENT.prepareBulk();
-//        DOCUMENT_IDS.forEach(id -> bulkRequest.add(CLIENT.prepareDelete(ElasticsearchServiceImpl.INDEX, ElasticsearchServiceImpl.TYPE, id)));
-//        BulkResponse bulkItemResponses = bulkRequest.get();
-//        if (bulkItemResponses.hasFailures()) {
-//            throw new RuntimeException(bulkItemResponses.buildFailureMessage());
-//        }
-//    }
 }
 

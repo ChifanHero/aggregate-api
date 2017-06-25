@@ -6,11 +6,11 @@ import com.chifanhero.api.models.response.RestaurantSearchResponse;
 import com.chifanhero.api.models.response.Source;
 import com.chifanhero.api.services.elasticsearch.query.FieldNames;
 import com.google.common.base.Preconditions;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Convert elasticsearch response to domain response
@@ -18,30 +18,47 @@ import java.util.stream.Collectors;
  */
 public class SearchResponseConverter {
 
-    public static RestaurantSearchResponse toLocalSearchResponse(org.elasticsearch.action.search.SearchResponse searchResponse) {
+    public static RestaurantSearchResponse toLocalSearchResponse(JSONObject searchResponse) {
         Preconditions.checkNotNull(searchResponse);
         RestaurantSearchResponse response = new RestaurantSearchResponse();
-        List<Restaurant> restaurants = Optional.ofNullable(searchResponse.getHits()).map(SearchHits::getHits).map(searchHits -> Arrays.stream(searchHits).map(SearchResponseConverter::hitToResult).collect(Collectors.toList())).orElse(Collections.emptyList());
-        response.setResults(restaurants);
+        if (searchResponse.has("hits")) {
+            JSONObject hits = searchResponse.getJSONObject("hits");
+            if (hits.has("hits")) {
+                JSONArray hitsArray = hits.getJSONArray("hits");
+                List<Restaurant> results = new ArrayList<>();
+                for (int i = 0; i < hitsArray.length(); i++) {
+                    results.add(SearchResponseConverter.toRestaurant(hitsArray.getJSONObject(i)));
+                }
+                response.setResults(results);
+            }
+        }
         return response;
     }
 
-    private static Restaurant hitToResult(SearchHit searchHit) {
-        Preconditions.checkNotNull(searchHit);
+    private static Restaurant toRestaurant(JSONObject hit) {
+        Preconditions.checkNotNull(hit);
         Restaurant restaurant = new Restaurant();
         restaurant.setSource(Source.CHIFANHERO);
-        Map<String, Object> source = searchHit.getSourceAsMap();
-        Optional.ofNullable(source.get(FieldNames.NAME)).ifPresent(name -> restaurant.setName((String) name));
-        Optional.ofNullable(source.get(FieldNames.ENGLISH_NAME)).ifPresent(englishName -> restaurant.setEnglighName((String) englishName));
-        Optional.ofNullable(source.get(FieldNames.RATING)).ifPresent(rating -> restaurant.setRating((Double) rating));
-        Optional.ofNullable(source.get(FieldNames.GOOGLE_PLACE_ID)).ifPresent(placeId -> restaurant.setPlaceId((String) placeId));
-        Optional.ofNullable(source.get(FieldNames.COORDINATES)).ifPresent(lonlat -> {
-            List<Double> lonlatList = (List<Double>) lonlat;
+        JSONObject source = hit.getJSONObject("_source");
+        if (source.has(FieldNames.NAME)) {
+            restaurant.setName(source.getString(FieldNames.NAME));
+        }
+        if (source.has(FieldNames.ENGLISH_NAME)) {
+            restaurant.setEnglighName(source.getString(FieldNames.ENGLISH_NAME));
+        }
+        if (source.has(FieldNames.RATING)) {
+            restaurant.setRating(source.getDouble(FieldNames.RATING));
+        }
+        if (source.has(FieldNames.GOOGLE_PLACE_ID)) {
+            restaurant.setPlaceId(source.getString(FieldNames.GOOGLE_PLACE_ID));
+        }
+        if (source.has(FieldNames.COORDINATES)) {
+            JSONArray lonlat = source.getJSONArray(FieldNames.COORDINATES);
             Coordinates coordinates = new Coordinates();
-            coordinates.setLongitude(lonlatList.get(0));
-            coordinates.setLatitude(lonlatList.get(1));
+            coordinates.setLongitude(lonlat.getDouble(0));
+            coordinates.setLatitude(lonlat.getDouble(1));
             restaurant.setCoordinates(coordinates);
-        });
+        }
         return restaurant;
     }
 }

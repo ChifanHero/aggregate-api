@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
  * Created by shiyan on 5/19/17.
  */
 @Service
-public class ElasticsearchServiceImpl2 implements ElasticsearchService {
+public class ElasticsearchServiceImpl implements ElasticsearchService {
 
     public final static String INDEX = "chifanhero";
     public final static String TYPE = "Restaurant";
@@ -30,7 +30,7 @@ public class ElasticsearchServiceImpl2 implements ElasticsearchService {
     private final ElasticsearchRestClient restClient;
 
     @Autowired
-    public ElasticsearchServiceImpl2(ElasticsearchRestClient restClient) {
+    public ElasticsearchServiceImpl(ElasticsearchRestClient restClient) {
         this.restClient = restClient;
     }
 
