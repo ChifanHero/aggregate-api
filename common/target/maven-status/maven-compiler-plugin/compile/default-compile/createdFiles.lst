@@ -1,7 +1,0 @@
-com/chifanhero/api/common/annotations/Union.class
-com/chifanhero/api/common/annotations/Bonds.class
-com/chifanhero/api/common/validators/UnionsValidator.class
-com/chifanhero/api/common/annotations/Bond.class
-com/chifanhero/api/common/annotations/Unions.class
-com/chifanhero/api/common/validators/BondsValidator.class
-com/chifanhero/api/common/annotations/ParamKey.class
