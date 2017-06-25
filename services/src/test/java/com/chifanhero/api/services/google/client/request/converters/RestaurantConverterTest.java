@@ -5,15 +5,13 @@ import com.chifanhero.api.models.google.Geometry;
 import com.chifanhero.api.models.google.Photo;
 import com.chifanhero.api.models.google.Place;
 import com.chifanhero.api.models.response.Restaurant;
+import com.chifanhero.api.models.response.Source;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by shiyan on 6/15/17.
- */
 public class RestaurantConverterTest {
 
     @Test
@@ -35,6 +33,7 @@ public class RestaurantConverterTest {
         geometry.setLocation(coordinates);
         place.setGeometry(geometry);
         Restaurant restaurant = RestaurantConverter.toRestaurant(place);
+        Assert.assertEquals(Source.GOOGLE, restaurant.getSource());
         Assert.assertEquals("Hunan Impression", restaurant.getEnglighName());
         Assert.assertEquals("5152 Moorpark Ave, San Jose, CA, 95125", restaurant.getAddress());
         Assert.assertEquals("408-123-4567", restaurant.getPhone());

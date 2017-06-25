@@ -4,6 +4,7 @@ import com.chifanhero.api.models.google.Geometry;
 import com.chifanhero.api.models.google.Place;
 import com.chifanhero.api.models.response.Picture;
 import com.chifanhero.api.models.response.Restaurant;
+import com.chifanhero.api.models.response.Source;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,7 @@ public class RestaurantConverter {
         restaurant.setPlaceId(place.getPlaceId());
         restaurant.setEnglighName(place.getName());
         restaurant.setPermanentlyClosed(place.getPermanentlyClosed());
+        restaurant.setSource(Source.GOOGLE);
         Optional.ofNullable(place.getGeometry())
                 .map(Geometry::getLocation)
                 .ifPresent(location ->
