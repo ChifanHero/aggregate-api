@@ -11,6 +11,7 @@ import java.util.List;
 public class RestaurantSearchResponse {
 
     private List<Restaurant> results;
+    private List<Error> errors;
 
     public List<Restaurant> getResults() {
         return results;
@@ -18,5 +19,13 @@ public class RestaurantSearchResponse {
 
     public void setResults(List<Restaurant> results) {
         this.results = results;
+    }
+
+    public List<Error> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(List<Error> errors) {
+        this.errors = errors;
     }
 }
