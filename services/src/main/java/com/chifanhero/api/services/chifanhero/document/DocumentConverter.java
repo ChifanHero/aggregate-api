@@ -17,8 +17,7 @@ public class DocumentConverter {
         Preconditions.checkNotNull(restaurant);
         Preconditions.checkNotNull(restaurant.getPlaceId());
         Document document = new Document();
-        document.append(KeyNames.IS_RECOMMENDATION_CANDIDATE, restaurant.isRecommendationCandidate())
-                .append(KeyNames.GOOGLE_PLACE_ID, restaurant.getPlaceId());
+        document.append(KeyNames.GOOGLE_PLACE_ID, restaurant.getPlaceId());
         Optional.ofNullable(restaurant.getName()).ifPresent(name -> document.append(KeyNames.NAME, restaurant.getName()));
         Optional.ofNullable(restaurant.getEnglighName()).ifPresent(englishName -> document.append(KeyNames.ENGLISH_NAME, restaurant.getEnglighName()));
         Optional.ofNullable(restaurant.getCoordinates()).filter(coordinates -> coordinates.getLatitude() != null && coordinates.getLongitude() != null)

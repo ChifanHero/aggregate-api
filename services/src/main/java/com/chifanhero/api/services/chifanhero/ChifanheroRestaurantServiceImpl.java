@@ -89,6 +89,12 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
         collection.updateOne(filter, updateDocument);
     }
 
+    @Override
+    public void markRecommendations(List<Restaurant> restaurants) {
+        // for each restaurant, if rating >= 4.0
+
+    }
+
     private MongoCollection<Document> getRestaurantCollection() {
         MongoDatabase database = mongoClient.getDatabase(ChifanheroConfigs.MONGO_DATABASE);
         return database.getCollection(ChifanheroConfigs.MONGO_COLLECTION_RESTAURANT);

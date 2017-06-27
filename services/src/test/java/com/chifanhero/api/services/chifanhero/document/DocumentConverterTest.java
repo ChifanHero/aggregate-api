@@ -34,7 +34,6 @@ public class DocumentConverterTest {
         Restaurant restaurant = new Restaurant();
         restaurant.setName("吃饭英雄");
         restaurant.setEnglighName("chifanhero");
-        restaurant.setRecommendationCandidate(true);
         restaurant.setPlaceId("place_id");
         Coordinates coordinates = new Coordinates();
         coordinates.setLatitude(37.242312);
@@ -44,7 +43,6 @@ public class DocumentConverterTest {
         Assert.assertEquals("吃饭英雄", document.getString(KeyNames.NAME));
         Assert.assertEquals("chifanhero", document.getString(KeyNames.ENGLISH_NAME));
         Assert.assertNull(document.getString(KeyNames.ID));
-        Assert.assertTrue(document.getBoolean(KeyNames.IS_RECOMMENDATION_CANDIDATE));
         List lonlat = (List) document.get(KeyNames.COORDINATES);
         Assert.assertEquals(-121.764887, lonlat.get(0));
         Assert.assertEquals(37.242312, lonlat.get(1));
