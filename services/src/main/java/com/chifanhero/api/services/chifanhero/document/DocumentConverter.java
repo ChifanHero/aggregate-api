@@ -13,12 +13,11 @@ import java.util.Optional;
 
 public class DocumentConverter {
 
-    public static Document  toDocument(Restaurant restaurant) {
+    public static Document toDocument(Restaurant restaurant) {
         Preconditions.checkNotNull(restaurant);
         Preconditions.checkNotNull(restaurant.getPlaceId());
         Document document = new Document();
-        document.append(KeyNames.IS_RECOMMENDATION_CANDIDATE, restaurant.isRecommendationCandidate())
-                .append(KeyNames.GOOGLE_PLACE_ID, restaurant.getPlaceId());
+        document.append(KeyNames.GOOGLE_PLACE_ID, restaurant.getPlaceId());
         Optional.ofNullable(restaurant.getName()).ifPresent(name -> document.append(KeyNames.NAME, restaurant.getName()));
         Optional.ofNullable(restaurant.getEnglighName()).ifPresent(englishName -> document.append(KeyNames.ENGLISH_NAME, restaurant.getEnglighName()));
         Optional.ofNullable(restaurant.getCoordinates()).filter(coordinates -> coordinates.getLatitude() != null && coordinates.getLongitude() != null)
@@ -33,6 +32,7 @@ public class DocumentConverter {
         restaurant.setName(document.getString(KeyNames.NAME));
         restaurant.setEnglighName(document.getString(KeyNames.ENGLISH_NAME));
         restaurant.setPlaceId(document.getString(KeyNames.GOOGLE_PLACE_ID));
+        restaurant.setRecommendationCandidate(document.getBoolean(KeyNames.IS_RECOMMENDATION_CANDIDATE));
         Optional.ofNullable(document.get(KeyNames.COORDINATES)).ifPresent(lonlat -> {
             List<Double> lonlatList = (List<Double>) lonlat;
             Coordinates coordinates = new Coordinates();

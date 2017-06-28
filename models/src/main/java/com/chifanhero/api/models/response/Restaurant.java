@@ -46,7 +46,7 @@ public class Restaurant {
     private Coordinates coordinates;
 
     @JsonIgnore
-    private boolean recommendationCandidate;
+    private Boolean recommendationCandidate;
 
     public String getAddress() {
         return address;
@@ -164,7 +164,7 @@ public class Restaurant {
         return recommendationCandidate;
     }
 
-    public void setRecommendationCandidate(boolean recommendationCandidate) {
+    public void setRecommendationCandidate(Boolean recommendationCandidate) {
         this.recommendationCandidate = recommendationCandidate;
     }
 }

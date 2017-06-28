@@ -17,4 +17,6 @@ public interface ChifanheroRestaurantService {
     void bulkUpsertInBackground(List<Restaurant> entities);
 
     void expireData();
+
+    void markRecommendations(List<Restaurant> restaurants);
 }
