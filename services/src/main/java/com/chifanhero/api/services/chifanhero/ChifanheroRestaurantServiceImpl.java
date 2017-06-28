@@ -92,7 +92,21 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
     @Override
     public void markRecommendations(List<Restaurant> restaurants) {
         // for each restaurant, if rating >= 4.0
-
+        if (restaurants != null) {
+            MongoCollection<Document> collection = getRestaurantCollection();
+            List<UpdateOneModel<Document>> upserts = restaurants.stream().filter(
+                    restaurant -> restaurant.getRating() != null && restaurant.getRating() > 4.0
+            ).map(restaurant -> {
+                Bson filter = Filters.eq(KeyNames.GOOGLE_PLACE_ID, restaurant.getPlaceId());
+                Document updateDocument = new Document();
+                Document setDocument = new Document();
+                setDocument.append(KeyNames.IS_RECOMMENDATION_CANDIDATE, true);
+                updateDocument.append("$set", setDocument);
+                UpdateOptions options = new UpdateOptions().upsert(false);
+                return new UpdateOneModel<Document>(filter, updateDocument, options);
+            }).collect(Collectors.toList());
+            collection.bulkWrite(upserts);
+        }
     }
 
     private MongoCollection<Document> getRestaurantCollection() {

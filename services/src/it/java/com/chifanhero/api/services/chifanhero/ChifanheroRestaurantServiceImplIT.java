@@ -17,7 +17,6 @@ import org.junit.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Ignore
 public class ChifanheroRestaurantServiceImplIT {
 
     private static MongoClient mongoClient;
@@ -123,6 +122,32 @@ public class ChifanheroRestaurantServiceImplIT {
         Assert.assertEquals(name, restaurant.getName());
         Assert.assertEquals(englishName, restaurant.getEnglighName());
         Assert.assertNotNull(restaurant.getCoordinates());
+    }
+
+    @Test
+    public void testMarkRecommendation() {
+        String placeId = "testMarkRecommendation";
+        String name = "name1";
+        String englishName = "englishname1";
+        Restaurant restaurant = new Restaurant();
+        restaurant.setPlaceId(placeId);
+        restaurant.setName(name);
+        Coordinates coordinates = new Coordinates();
+        coordinates.setLatitude(37.308835);
+        coordinates.setLongitude(-121.99);
+        restaurant.setCoordinates(coordinates);
+        restaurant.setEnglighName(englishName);
+        service.bulkUpsert(Collections.singletonList(restaurant), new Date());
+        restaurant.setRating(4.5);
+        service.markRecommendations(Collections.singletonList(restaurant));
+        Map<String, Restaurant> restaurants = service.batchGetByGooglePlaceId(Collections.singletonList(placeId));
+        Assert.assertTrue(restaurants.size() == 1);
+        Restaurant rest = restaurants.get(placeId);
+        Assert.assertEquals(placeId, rest.getPlaceId());
+        Assert.assertEquals(name, rest.getName());
+        Assert.assertEquals(englishName, rest.getEnglighName());
+        Assert.assertNotNull(rest.getCoordinates());
+        Assert.assertEquals(true, rest.isRecommendationCandidate());
     }
 
     private List<Restaurant> createResults(ImmutableMap<String, String> placeidName) {

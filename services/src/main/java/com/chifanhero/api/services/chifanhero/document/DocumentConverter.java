@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public class DocumentConverter {
 
-    public static Document  toDocument(Restaurant restaurant) {
+    public static Document toDocument(Restaurant restaurant) {
         Preconditions.checkNotNull(restaurant);
         Preconditions.checkNotNull(restaurant.getPlaceId());
         Document document = new Document();
@@ -32,6 +32,7 @@ public class DocumentConverter {
         restaurant.setName(document.getString(KeyNames.NAME));
         restaurant.setEnglighName(document.getString(KeyNames.ENGLISH_NAME));
         restaurant.setPlaceId(document.getString(KeyNames.GOOGLE_PLACE_ID));
+        restaurant.setRecommendationCandidate(document.getBoolean(KeyNames.IS_RECOMMENDATION_CANDIDATE));
         Optional.ofNullable(document.get(KeyNames.COORDINATES)).ifPresent(lonlat -> {
             List<Double> lonlatList = (List<Double>) lonlat;
             Coordinates coordinates = new Coordinates();
