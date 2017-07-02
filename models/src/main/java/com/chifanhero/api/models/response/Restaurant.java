@@ -167,4 +167,24 @@ public class Restaurant {
     public void setRecommendationCandidate(Boolean recommendationCandidate) {
         this.recommendationCandidate = recommendationCandidate;
     }
+
+    public void applyPatch(Restaurant patch) {
+        if (patch == null) {
+            return;
+        }
+        if (!placeId.equals(patch.getPlaceId())) {
+            throw new IllegalArgumentException("Place id has to be same.");
+        }
+        address = address == null? patch.getAddress(): address;
+        phone = phone == null? patch.getPhone(): phone;
+        id = id == null? patch.getId(): id;
+        name = name == null? patch.getName(): name;
+        englighName = englighName == null? patch.getEnglighName(): englighName;
+        rating = rating == null? patch.getRating(): rating;
+        picture = picture == null? patch.getPicture(): picture;
+        permanentlyClosed = permanentlyClosed == null? patch.getPermanentlyClosed(): permanentlyClosed;
+        openNow = openNow == null? patch.getOpenNow(): openNow;
+        distance = distance == null? patch.getDistance(): distance;
+        coordinates = coordinates == null? patch.getCoordinates(): coordinates;
+    }
 }

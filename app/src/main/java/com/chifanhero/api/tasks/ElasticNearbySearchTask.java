@@ -2,6 +2,7 @@ package com.chifanhero.api.tasks;
 
 import com.chifanhero.api.models.request.NearbySearchRequest;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
+import com.chifanhero.api.services.elasticsearch.ElasticsearchService;
 
 import java.util.concurrent.Callable;
 
@@ -10,12 +11,16 @@ import java.util.concurrent.Callable;
  */
 public class ElasticNearbySearchTask implements Callable<RestaurantSearchResponse> {
 
-    public ElasticNearbySearchTask(NearbySearchRequest nearbySearchRequest) {
+    private NearbySearchRequest nearbySearchRequest;
+    private final ElasticsearchService elasticsearchService;
 
+    public ElasticNearbySearchTask(NearbySearchRequest nearbySearchRequest, ElasticsearchService elasticsearchService) {
+        this.nearbySearchRequest = nearbySearchRequest;
+        this.elasticsearchService = elasticsearchService;
     }
 
     @Override
     public RestaurantSearchResponse call() throws Exception {
-        return null;
+        return elasticsearchService.nearBySearch(nearbySearchRequest);
     }
 }
