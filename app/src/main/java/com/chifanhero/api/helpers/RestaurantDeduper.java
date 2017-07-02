@@ -29,6 +29,9 @@ public class RestaurantDeduper {
                 map.put(restaurant.getPlaceId(), restaurant);
             } else {
                 if (existing.getSource() == Source.CHIFANHERO) {
+                    existing.applyPatch(restaurant);
+                } else if (existing.getSource() == Source.GOOGLE) {
+                    restaurant.applyPatch(existing);
                     map.put(restaurant.getPlaceId(), restaurant);
                 }
             }

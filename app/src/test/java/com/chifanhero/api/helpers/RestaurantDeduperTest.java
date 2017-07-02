@@ -50,7 +50,7 @@ public class RestaurantDeduperTest {
         Assert.assertEquals(2, deduped.size());
         deduped.sort(Comparator.comparing(Restaurant::getPlaceId));
         Assert.assertEquals("1", deduped.get(0).getPlaceId());
-        Assert.assertEquals(Source.GOOGLE, deduped.get(0).getSource());
+        Assert.assertEquals(Source.CHIFANHERO, deduped.get(0).getSource());
         Assert.assertEquals("2", deduped.get(1).getPlaceId());
         Assert.assertEquals(Source.CHIFANHERO, deduped.get(1).getSource());
     }

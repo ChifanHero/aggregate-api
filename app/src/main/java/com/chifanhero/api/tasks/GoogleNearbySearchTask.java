@@ -2,6 +2,7 @@ package com.chifanhero.api.tasks;
 
 import com.chifanhero.api.models.request.NearbySearchRequest;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
+import com.chifanhero.api.services.google.GooglePlacesService;
 
 import java.util.concurrent.Callable;
 
@@ -10,12 +11,16 @@ import java.util.concurrent.Callable;
  */
 public class GoogleNearbySearchTask implements Callable<RestaurantSearchResponse> {
 
-    public GoogleNearbySearchTask(NearbySearchRequest nearbySearchRequest) {
+    private NearbySearchRequest nearbySearchRequest;
+    private final GooglePlacesService googlePlacesService;
 
+    public GoogleNearbySearchTask(NearbySearchRequest nearbySearchRequest, GooglePlacesService googlePlacesService) {
+        this.nearbySearchRequest = nearbySearchRequest;
+        this.googlePlacesService = googlePlacesService;
     }
 
     @Override
     public RestaurantSearchResponse call() throws Exception {
-        return null;
+        return googlePlacesService.nearBySearch(nearbySearchRequest);
     }
 }
