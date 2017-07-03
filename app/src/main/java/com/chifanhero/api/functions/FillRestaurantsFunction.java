@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 /**
  * Created by shiyan on 6/26/17.
  */
-public class FulfillRestaurantsFunction implements Function<RestaurantSearchResponse, RestaurantSearchResponse> {
+public class FillRestaurantsFunction implements Function<RestaurantSearchResponse, RestaurantSearchResponse> {
 
     private final GooglePlacesService googlePlacesService;
 
-    public FulfillRestaurantsFunction(GooglePlacesService googlePlacesService) {
+    public FillRestaurantsFunction(GooglePlacesService googlePlacesService) {
         this.googlePlacesService = googlePlacesService;
     }
 

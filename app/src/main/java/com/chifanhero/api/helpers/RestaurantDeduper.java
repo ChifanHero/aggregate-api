@@ -17,13 +17,13 @@ public class RestaurantDeduper {
      * @param restaurants
      * @return
      */
-    public static List<Restaurant> dedupe(List<Restaurant> restaurants) {
+    public List<Restaurant> dedupe(List<Restaurant> restaurants) {
         if (restaurants == null || restaurants.isEmpty()) {
             return Collections.emptyList();
         }
         List<Restaurant> deduped = new ArrayList<>();
         Map<String, Restaurant> map = new HashMap<>();
-        restaurants.stream().filter(RestaurantDeduper::isValid).forEach(restaurant -> {
+        restaurants.stream().filter(this::isValid).forEach(restaurant -> {
             Restaurant existing = map.get(restaurant.getPlaceId());
             if (existing == null) {
                 map.put(restaurant.getPlaceId(), restaurant);
@@ -40,7 +40,7 @@ public class RestaurantDeduper {
         return deduped;
     }
 
-    private static boolean isValid(Restaurant restaurant) {
+    private boolean isValid(Restaurant restaurant) {
         return restaurant != null
                 && restaurant.getSource() != null
                 && restaurant.getPlaceId() != null;

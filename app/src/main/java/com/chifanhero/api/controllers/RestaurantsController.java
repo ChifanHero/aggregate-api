@@ -1,6 +1,8 @@
 package com.chifanhero.api.controllers;
 
+import com.chifanhero.api.cache.CacheKeyRetriever;
 import com.chifanhero.api.functions.*;
+import com.chifanhero.api.helpers.RestaurantDeduper;
 import com.chifanhero.api.models.request.NearbySearchRequest;
 import com.chifanhero.api.models.request.SortOrder;
 import com.chifanhero.api.models.response.Error;
@@ -12,6 +14,7 @@ import com.chifanhero.api.tasks.CacheUpdateTask;
 import com.chifanhero.api.tasks.DBUpdateTask;
 import com.chifanhero.api.tasks.ElasticNearbySearchTask;
 import com.chifanhero.api.tasks.GoogleNearbySearchTask;
+import com.google.common.cache.Cache;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -32,17 +35,20 @@ public class RestaurantsController {
     private final ChifanheroRestaurantService chifanheroRestaurantService;
     private final ElasticsearchService elasticsearchService;
     private final GooglePlacesService googlePlacesService;
+    private final Cache<String, RestaurantSearchResponse> cache;
 
     @Autowired
     public RestaurantsController(
             ListeningExecutorService service,
             ChifanheroRestaurantService chifanheroRestaurantService,
             ElasticsearchService elasticsearchService,
-            GooglePlacesService googlePlacesService) {
+            GooglePlacesService googlePlacesService,
+            Cache cache) {
         this.executorService = service;
         this.chifanheroRestaurantService = chifanheroRestaurantService;
         this.elasticsearchService = elasticsearchService;
         this.googlePlacesService = googlePlacesService;
+        this.cache = cache;
     }
 
     // http://localhost:8080/nearBy?radius=500&location.lat=123.4&location.lon=234.5&rating=4.5
@@ -54,18 +60,22 @@ public class RestaurantsController {
             searchResponse.setErrors(errors);
             return searchResponse;
         }
+        if (nearbySearchRequest.getOpenNow() != Boolean.TRUE) {
+            return cache.getIfPresent(CacheKeyRetriever.from(nearbySearchRequest));
+        }
         ElasticNearbySearchTask elasticNearbySearchTask = new ElasticNearbySearchTask(nearbySearchRequest, elasticsearchService);
         GoogleNearbySearchTask googleNearbySearchTask = new GoogleNearbySearchTask(nearbySearchRequest, googlePlacesService);
         ListenableFuture<RestaurantSearchResponse> elasticNearbySearchFuture = executorService.submit(elasticNearbySearchTask);
         ListenableFuture<RestaurantSearchResponse> googleNearbySearchFuture = executorService.submit(googleNearbySearchTask);
-        DBUpdateTask dbUpdateTask = new DBUpdateTask(googleNearbySearchFuture);
+        DBUpdateTask dbUpdateTask = new DBUpdateTask(chifanheroRestaurantService, googleNearbySearchFuture);
         googleNearbySearchFuture.addListener(dbUpdateTask, executorService);
         ListenableFuture<List<RestaurantSearchResponse>> listListenableFuture = Futures.successfulAsList(elasticNearbySearchFuture, googleNearbySearchFuture);
-        ListenableFuture<RestaurantSearchResponse> dedupeFuture = Futures.transform(listListenableFuture, new RestaurantsMergeFunction());
-        ListenableFuture<RestaurantSearchResponse> fulfillRestaurantFuture = Futures.transform(dedupeFuture, new FulfillRestaurantsFunction(googlePlacesService));
-        fulfillRestaurantFuture.addListener(new CacheUpdateTask(nearbySearchRequest, fulfillRestaurantFuture), executorService);
+        ListenableFuture<RestaurantSearchResponse> dedupeFuture = Futures.transform(listListenableFuture, new RestaurantsMergeFunction(new RestaurantDeduper()));
+        ListenableFuture<RestaurantSearchResponse> fulfillRestaurantFuture = Futures.transform(dedupeFuture, new FillRestaurantsFunction(googlePlacesService));
+        fulfillRestaurantFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, fulfillRestaurantFuture), executorService);
         ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(fulfillRestaurantFuture, new FilterFunction(nearbySearchRequest));
-        ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(filteredFuture, new SortFunction(SortOrder.valueOf(nearbySearchRequest.getSortOrder())));
+        ListenableFuture<RestaurantSearchResponse> calculatedFuture = Futures.transform(filteredFuture, new CalculateDistanceFunction(nearbySearchRequest.getLocation()));
+        ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(calculatedFuture, new SortFunction(SortOrder.valueOf(nearbySearchRequest.getSortOrder())));
         ListenableFuture<RestaurantSearchResponse> result = Futures.transform(sortedFuture, new CalculateDistanceFunction(nearbySearchRequest.getLocation()));
         try {
             return result.get(5, TimeUnit.SECONDS);

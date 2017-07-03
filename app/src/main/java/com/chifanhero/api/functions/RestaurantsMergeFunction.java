@@ -14,6 +14,13 @@ import java.util.Optional;
  * Created by shiyan on 6/26/17.
  */
 public class RestaurantsMergeFunction implements Function<List<RestaurantSearchResponse>, RestaurantSearchResponse> {
+
+    private final RestaurantDeduper deduper;
+
+    public RestaurantsMergeFunction(RestaurantDeduper deduper) {
+        this.deduper = deduper;
+    }
+
     @Override
     public RestaurantSearchResponse apply(List<RestaurantSearchResponse> restaurantSearchResponses) {
         RestaurantSearchResponse restaurantSearchResponse = new RestaurantSearchResponse();
@@ -23,7 +30,7 @@ public class RestaurantsMergeFunction implements Function<List<RestaurantSearchR
             Optional.ofNullable(searchResponse.getErrors()).ifPresent(errors::addAll);
             Optional.ofNullable(searchResponse.getResults()).ifPresent(results::addAll);
         });
-        List<Restaurant> deduped = RestaurantDeduper.dedupe(results);
+        List<Restaurant> deduped = deduper.dedupe(results);
         restaurantSearchResponse.setErrors(errors);
         restaurantSearchResponse.setResults(deduped);
         return restaurantSearchResponse;

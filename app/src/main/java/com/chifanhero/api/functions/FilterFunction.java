@@ -2,10 +2,13 @@ package com.chifanhero.api.functions;
 
 import com.chifanhero.api.models.request.NearbySearchRequest;
 import com.chifanhero.api.models.request.TextSearchRequest;
+import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
 import com.google.common.base.Function;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by shiyan on 6/28/17.
@@ -32,7 +35,8 @@ public class FilterFunction implements Function<RestaurantSearchResponse, Restau
             return input;
         }
         Optional.ofNullable(input.getResults()).ifPresent(restaurants -> {
-            restaurants.removeIf(restaurant -> restaurant.getOpenNow() == null || !restaurant.getOpenNow());
+            List<Restaurant> filtered = restaurants.stream().filter(restaurant -> Boolean.TRUE.equals(restaurant.getOpenNow())).collect(Collectors.toList());
+            input.setResults(filtered);
         });
         return input;
     }
