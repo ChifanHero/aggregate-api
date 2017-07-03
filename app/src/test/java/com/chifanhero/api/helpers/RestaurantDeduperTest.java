@@ -16,7 +16,7 @@ public class RestaurantDeduperTest {
         Restaurant restaurant1 = createRestaurant("1", Source.GOOGLE);
         Restaurant restaurant2 = createRestaurant("2", Source.CHIFANHERO);
         Restaurant restaurant3 = createRestaurant("3", Source.CHIFANHERO);
-        List<Restaurant> deduped = RestaurantDeduper.dedupe(Arrays.asList(restaurant1, restaurant2, restaurant3));
+        List<Restaurant> deduped = new RestaurantDeduper().dedupe(Arrays.asList(restaurant1, restaurant2, restaurant3));
         Assert.assertEquals(3, deduped.size());
         deduped.sort(Comparator.comparing(Restaurant::getPlaceId));
         Assert.assertEquals("1", deduped.get(0).getPlaceId());
@@ -32,7 +32,7 @@ public class RestaurantDeduperTest {
         Restaurant restaurant1 = createRestaurant("1", Source.GOOGLE);
         Restaurant restaurant2 = createRestaurant("2", Source.CHIFANHERO);
         Restaurant restaurant3 = createRestaurant("3", null);
-        List<Restaurant> deduped = RestaurantDeduper.dedupe(Arrays.asList(restaurant1, restaurant2, restaurant3));
+        List<Restaurant> deduped = new RestaurantDeduper().dedupe(Arrays.asList(restaurant1, restaurant2, restaurant3));
         Assert.assertEquals(2, deduped.size());
         deduped.sort(Comparator.comparing(Restaurant::getPlaceId));
         Assert.assertEquals("1", deduped.get(0).getPlaceId());
@@ -46,7 +46,7 @@ public class RestaurantDeduperTest {
         Restaurant restaurant1 = createRestaurant("1", Source.GOOGLE);
         Restaurant restaurant2 = createRestaurant("2", Source.CHIFANHERO);
         Restaurant restaurant3 = createRestaurant("1", Source.CHIFANHERO);
-        List<Restaurant> deduped = RestaurantDeduper.dedupe(Arrays.asList(restaurant1, restaurant2, restaurant3));
+        List<Restaurant> deduped = new RestaurantDeduper().dedupe(Arrays.asList(restaurant1, restaurant2, restaurant3));
         Assert.assertEquals(2, deduped.size());
         deduped.sort(Comparator.comparing(Restaurant::getPlaceId));
         Assert.assertEquals("1", deduped.get(0).getPlaceId());

@@ -21,16 +21,24 @@ public class SortFunction implements Function<RestaurantSearchResponse, Restaura
     public RestaurantSearchResponse apply(RestaurantSearchResponse input) {
         Optional.ofNullable(input.getResults()).ifPresent(restaurants -> {
             if (sortOrder == SortOrder.NEAREST) {
-                restaurants.sort((restaurant1, restaurant2) -> restaurant1.getDistance() >= restaurant2.getDistance()? 1: -1);
+                restaurants.sort((restaurant1, restaurant2) -> {
+                    if (restaurant1.getDistance() == null) {
+                        return 1;
+                    }
+                    if (restaurant2.getDistance() == null) {
+                        return -1;
+                    }
+                    return restaurant1.getDistance() >= restaurant2.getDistance()? 1: -1;
+                });
             } else if (sortOrder == SortOrder.HOTTEST) {
                 restaurants.sort((restaurant1, restaurant2) -> {
                     if (restaurant1.getRating() == null) {
                         return 1;
                     }
                     if (restaurant2.getRating() == null) {
-                        return 2;
+                        return -1;
                     }
-                    return restaurant1.getRating() > restaurant2.getRating()? 1: -1;
+                    return restaurant1.getRating() >= restaurant2.getRating()? -1: 1;
                 });
             }
         });

@@ -26,8 +26,10 @@ public class CalculateDistanceFunction implements Function<RestaurantSearchRespo
     public RestaurantSearchResponse apply(RestaurantSearchResponse input) {
         Optional.ofNullable(input.getResults()).ifPresent(restaurants -> restaurants.forEach(restaurant -> {
             Coordinates coordinates = restaurant.getCoordinates();
-            Double distanceInMi = DistanceCalculator.getDistanceInMi(center.getLat(), center.getLon(), coordinates.getLatitude(), coordinates.getLongitude(), 2);
-            restaurant.setDistance(distanceInMi);
+            if (coordinates != null) {
+                Double distanceInMi = DistanceCalculator.getDistanceInMi(center.getLat(), center.getLon(), coordinates.getLatitude(), coordinates.getLongitude(), 2);
+                restaurant.setDistance(distanceInMi);
+            }
         }));
         return input;
     }
