@@ -18,7 +18,6 @@ public class NearBySearchRequestConverter {
             nearBySearchRequestParams.setRankBy(RankBy.distance);
             nearBySearchRequestParams.setRadius(null);
         }
-        //TODO - page token?
         return nearBySearchRequestParams;
     }
 }

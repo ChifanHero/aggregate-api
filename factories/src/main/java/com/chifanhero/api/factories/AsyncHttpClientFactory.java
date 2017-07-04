@@ -16,7 +16,6 @@ import static org.asynchttpclient.Dsl.asyncHttpClient;
 public class AsyncHttpClientFactory {
 
     @Bean
-    @Scope(value="request", proxyMode = ScopedProxyMode.TARGET_CLASS)
     public AsyncHttpClient createAsyncHttpClient() {
         return asyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().setRequestTimeout(2000));
     }

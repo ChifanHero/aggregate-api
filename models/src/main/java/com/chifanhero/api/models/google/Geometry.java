@@ -1,6 +1,7 @@
 package com.chifanhero.api.models.google;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Created by shiyan on 6/14/17.

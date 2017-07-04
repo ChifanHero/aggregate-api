@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 @Configuration
 public class ListenableExecutorServiceFactory {
 
-    @Bean
+    @Bean(name = "listenableExecutorService")
     public ListeningExecutorService createListenableExecutorService() {
         return MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
     }

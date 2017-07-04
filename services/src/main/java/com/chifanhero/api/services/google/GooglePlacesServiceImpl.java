@@ -17,12 +17,17 @@ import com.chifanhero.api.services.google.client.request.converters.NearBySearch
 import com.chifanhero.api.services.google.client.request.converters.ResponseConverter;
 import com.chifanhero.api.services.google.client.request.converters.RestaurantConverter;
 import com.chifanhero.api.services.google.client.request.converters.TextSearchRequestConverter;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -35,11 +40,13 @@ public class GooglePlacesServiceImpl implements GooglePlacesService {
 
     private final FutureResolver futureResolver;
     private final GooglePlacesClient client;
+    private final ListeningExecutorService executorService;
 
     @Autowired
-    public GooglePlacesServiceImpl(FutureResolver futureResolver, GooglePlacesClient client) {
+    public GooglePlacesServiceImpl(FutureResolver futureResolver, GooglePlacesClient client, @Qualifier("listenableExecutorService") ListeningExecutorService executorService) {
         this.futureResolver = futureResolver;
         this.client = client;
+        this.executorService = executorService;
     }
 
     @Override
@@ -81,15 +88,20 @@ public class GooglePlacesServiceImpl implements GooglePlacesService {
 
     @Override
     public Map<String, Restaurant> batchGet(List<String> placeIds) {
-        List<Future<PlaceDetailResponse>> collect = placeIds.stream().map(placeId -> {
+        List<ListenableFuture<PlaceDetailResponse>> collect = placeIds.stream().map(placeId -> {
             PlaceDetailRequestParams placeDetailRequestParams = new PlaceDetailRequestParams();
             placeDetailRequestParams.setKey(GoogleConfigs.API_KEY);
             placeDetailRequestParams.setPlaceId(placeId);
-            return client.getPlaceDetail(placeDetailRequestParams);
+            return executorService.submit(() -> client.getPlaceDetail(placeDetailRequestParams).get());
         }).collect(Collectors.toList());
-        List<PlaceDetailResponse> list = futureResolver.resolve(collect).get();
-        return list.stream()
-                .map(PlaceDetailResponse::getResult)
-                .collect(Collectors.toMap(Place::getPlaceId, RestaurantConverter::toRestaurant));
+        ListenableFuture<List<PlaceDetailResponse>> resultFuture = Futures.allAsList(collect);
+        try {
+            List<PlaceDetailResponse> placeDetailResponses = resultFuture.get();
+            return placeDetailResponses.stream()
+                    .map(PlaceDetailResponse::getResult)
+                    .collect(Collectors.toMap(Place::getPlaceId, RestaurantConverter::toRestaurant));
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.chifanhero.api.models.response;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Created by shiyan on 4/27/17.

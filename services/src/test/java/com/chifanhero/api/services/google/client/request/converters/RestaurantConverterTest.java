@@ -28,7 +28,7 @@ public class RestaurantConverterTest {
         place.setPhotos(photos);
         Geometry geometry = new Geometry();
         Coordinates coordinates = new Coordinates();
-        coordinates.setLon(-121.33);
+        coordinates.setLng(-121.33);
         coordinates.setLat(37.45);
         geometry.setLocation(coordinates);
         place.setGeometry(geometry);

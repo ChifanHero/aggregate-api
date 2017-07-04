@@ -16,7 +16,7 @@ public class NearbySearchRequest extends SearchRequest<NearbySearchRequest> {
     private String type = "restaurant";
     private String keyword = "chinese";
     private String sortOrder = SortOrder.BEST_MATCH.getValue();
-    private Boolean openNow = false;
+    private Boolean openNow;
     private Double rating;
 
     public Location getLocation() {

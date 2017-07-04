@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 @Configuration
 public class ExecutorServiceFactory {
 
-    @Bean
+    @Bean(name = "executorService")
     public ExecutorService createExecutorService() {
         return Executors.newCachedThreadPool();
     }
