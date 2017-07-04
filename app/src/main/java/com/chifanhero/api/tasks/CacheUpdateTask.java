@@ -6,10 +6,10 @@ import com.chifanhero.api.models.request.SearchRequest;
 import com.chifanhero.api.models.request.TextSearchRequest;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
 import com.google.common.cache.Cache;
-import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Created by shiyan on 6/25/17.
@@ -18,9 +18,9 @@ public class CacheUpdateTask implements Runnable {
 
     private final Cache<String, RestaurantSearchResponse> cache;
     private SearchRequest searchRequest;
-    private ListenableFuture<RestaurantSearchResponse> responseFuture;
+    private Future<RestaurantSearchResponse> responseFuture;
 
-    public CacheUpdateTask(Cache<String, RestaurantSearchResponse> cache, SearchRequest searchRequest, ListenableFuture<RestaurantSearchResponse> future) {
+    public CacheUpdateTask(Cache<String, RestaurantSearchResponse> cache, SearchRequest searchRequest, Future<RestaurantSearchResponse> future) {
         this.cache = cache;
         this.searchRequest = searchRequest;
         this.responseFuture = future;
