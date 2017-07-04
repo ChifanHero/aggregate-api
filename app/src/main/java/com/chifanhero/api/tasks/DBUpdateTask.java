@@ -2,10 +2,10 @@ package com.chifanhero.api.tasks;
 
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
 import com.chifanhero.api.services.chifanhero.ChifanheroRestaurantService;
-import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Created by shiyan on 6/25/17.
@@ -13,9 +13,9 @@ import java.util.concurrent.ExecutionException;
 public class DBUpdateTask implements Runnable {
 
     private final ChifanheroRestaurantService chifanheroRestaurantService;
-    private ListenableFuture<RestaurantSearchResponse> responseFuture;
+    private Future<RestaurantSearchResponse> responseFuture;
 
-    public DBUpdateTask(ChifanheroRestaurantService chifanheroRestaurantService, ListenableFuture<RestaurantSearchResponse> searchFuture) {
+    public DBUpdateTask(ChifanheroRestaurantService chifanheroRestaurantService, Future<RestaurantSearchResponse> searchFuture) {
         this.chifanheroRestaurantService = chifanheroRestaurantService;
         this.responseFuture = searchFuture;
     }
