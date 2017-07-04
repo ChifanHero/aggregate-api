@@ -13,7 +13,7 @@ public class CacheKeyRetrieverTest {
     public void testNearbySearchRequest() {
         NearbySearchRequest nearbySearchRequest = createNearbySearchRequest();
         String cacheKey = CacheKeyRetriever.from(nearbySearchRequest);
-        Assert.assertEquals("{location={lat=37.1235;lon=-121.6543};radius=500;type=restaurant;keyword=chinese;sortOrder=NEAREST;openNow=false;rating=4.5}", cacheKey);
+        Assert.assertEquals("{location={lat=37.1235;lon=-121.6543};radius=500;type=restaurant;keyword=chinese;sortOrder=NEAREST;rating=4.5}", cacheKey);
     }
 
     @Test

@@ -13,7 +13,7 @@ public class CoordinatesConverterTest {
     public void test() {
         Coordinates googleCoordinates = new Coordinates();
         googleCoordinates.setLat(37.335);
-        googleCoordinates.setLon(-122.015);
+        googleCoordinates.setLng(-122.015);
         com.chifanhero.api.models.response.Coordinates coordinates = CoordinatesConverter.toCommonCoordinates(googleCoordinates);
         Assert.assertTrue(coordinates.getLatitude() == 37.335);
         Assert.assertTrue(coordinates.getLongitude() == -122.015);

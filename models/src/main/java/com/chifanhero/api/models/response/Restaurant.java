@@ -1,13 +1,12 @@
 package com.chifanhero.api.models.response;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Created by shiyan on 5/6/17.
  */
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Restaurant {
 
     private String address;
@@ -160,7 +159,7 @@ public class Restaurant {
         this.coordinates = coordinates;
     }
 
-    public boolean isRecommendationCandidate() {
+    public Boolean getRecommendationCandidate() {
         return recommendationCandidate;
     }
 

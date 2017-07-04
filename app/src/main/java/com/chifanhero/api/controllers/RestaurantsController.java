@@ -19,14 +19,13 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 @RestController
 public class RestaurantsController {
@@ -39,11 +38,11 @@ public class RestaurantsController {
 
     @Autowired
     public RestaurantsController(
-            ListeningExecutorService service,
+            @Qualifier("listenableExecutorService") ListeningExecutorService service,
             ChifanheroRestaurantService chifanheroRestaurantService,
             ElasticsearchService elasticsearchService,
             GooglePlacesService googlePlacesService,
-            Cache cache) {
+            Cache<String, RestaurantSearchResponse> cache) {
         this.executorService = service;
         this.chifanheroRestaurantService = chifanheroRestaurantService;
         this.elasticsearchService = elasticsearchService;
@@ -61,7 +60,10 @@ public class RestaurantsController {
             return searchResponse;
         }
         if (nearbySearchRequest.getOpenNow() != Boolean.TRUE) {
-            return cache.getIfPresent(CacheKeyRetriever.from(nearbySearchRequest));
+            searchResponse = cache.getIfPresent(CacheKeyRetriever.from(nearbySearchRequest));
+            if (searchResponse != null) {
+                return searchResponse;
+            }
         }
         ElasticNearbySearchTask elasticNearbySearchTask = new ElasticNearbySearchTask(nearbySearchRequest, elasticsearchService);
         GoogleNearbySearchTask googleNearbySearchTask = new GoogleNearbySearchTask(nearbySearchRequest, googlePlacesService);
@@ -69,17 +71,19 @@ public class RestaurantsController {
         ListenableFuture<RestaurantSearchResponse> googleNearbySearchFuture = executorService.submit(googleNearbySearchTask);
         DBUpdateTask dbUpdateTask = new DBUpdateTask(chifanheroRestaurantService, googleNearbySearchFuture);
         googleNearbySearchFuture.addListener(dbUpdateTask, executorService);
-        ListenableFuture<List<RestaurantSearchResponse>> listListenableFuture = Futures.successfulAsList(elasticNearbySearchFuture, googleNearbySearchFuture);
+        ListenableFuture<List<RestaurantSearchResponse>> listListenableFuture = Futures.allAsList(elasticNearbySearchFuture, googleNearbySearchFuture);
         ListenableFuture<RestaurantSearchResponse> dedupeFuture = Futures.transform(listListenableFuture, new RestaurantsMergeFunction(new RestaurantDeduper()));
         ListenableFuture<RestaurantSearchResponse> fulfillRestaurantFuture = Futures.transform(dedupeFuture, new FillRestaurantsFunction(googlePlacesService));
+        //TODO - fix
         fulfillRestaurantFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, fulfillRestaurantFuture), executorService);
         ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(fulfillRestaurantFuture, new FilterFunction(nearbySearchRequest));
         ListenableFuture<RestaurantSearchResponse> calculatedFuture = Futures.transform(filteredFuture, new CalculateDistanceFunction(nearbySearchRequest.getLocation()));
-        ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(calculatedFuture, new SortFunction(SortOrder.valueOf(nearbySearchRequest.getSortOrder())));
+        ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(calculatedFuture, new SortFunction(SortOrder.valueOf(nearbySearchRequest.getSortOrder().toUpperCase())));
         ListenableFuture<RestaurantSearchResponse> result = Futures.transform(sortedFuture, new CalculateDistanceFunction(nearbySearchRequest.getLocation()));
         try {
-            return result.get(5, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            RestaurantSearchResponse restaurantSearchResponse = result.get();
+            return restaurantSearchResponse;
+        } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }

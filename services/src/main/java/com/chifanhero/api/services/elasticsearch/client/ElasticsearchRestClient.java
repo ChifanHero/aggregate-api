@@ -2,12 +2,11 @@ package com.chifanhero.api.services.elasticsearch.client;
 
 import com.chifanhero.api.configs.ElasticConfigs;
 import com.chifanhero.api.configs.type.Host;
-import io.netty.handler.codec.http.HttpHeaderValues;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHeaders;
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.Response;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

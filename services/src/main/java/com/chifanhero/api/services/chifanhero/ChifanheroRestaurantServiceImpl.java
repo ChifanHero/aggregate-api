@@ -16,6 +16,7 @@ import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -34,7 +35,7 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
     private final ExecutorService executorService;
 
     @Autowired
-    public ChifanheroRestaurantServiceImpl(MongoClient mongoClient, ExecutorService executorService) {
+    public ChifanheroRestaurantServiceImpl(MongoClient mongoClient, @Qualifier("executorService") ExecutorService executorService) {
         this.mongoClient = mongoClient;
         this.executorService = executorService;
     }
@@ -58,7 +59,10 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
             UpdateOptions options = new UpdateOptions().upsert(true);
             return new UpdateOneModel<Document>(filter, updateDocument, options);
         }).collect(Collectors.toList());
-        collection.bulkWrite(upserts);
+        if (!upserts.isEmpty()) {
+            collection.bulkWrite(upserts);
+        }
+
     }
 
     @Override
@@ -105,7 +109,9 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
                 UpdateOptions options = new UpdateOptions().upsert(false);
                 return new UpdateOneModel<Document>(filter, updateDocument, options);
             }).collect(Collectors.toList());
-            collection.bulkWrite(upserts);
+            if (!upserts.isEmpty()) {
+                collection.bulkWrite(upserts);
+            }
         }
     }
 

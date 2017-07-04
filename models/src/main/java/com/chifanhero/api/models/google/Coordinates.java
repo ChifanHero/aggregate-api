@@ -1,6 +1,7 @@
 package com.chifanhero.api.models.google;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Created by shiyan on 6/14/17.
@@ -9,7 +10,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 public class Coordinates {
 
     private Double lat;
-    private Double lon;
+    private Double lng;
 
     public Double getLat() {
         return lat;
@@ -19,11 +20,11 @@ public class Coordinates {
         this.lat = lat;
     }
 
-    public Double getLon() {
-        return lon;
+    public Double getLng() {
+        return lng;
     }
 
-    public void setLon(Double lon) {
-        this.lon = lon;
+    public void setLng(Double lng) {
+        this.lng = lng;
     }
 }

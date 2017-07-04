@@ -147,7 +147,7 @@ public class ChifanheroRestaurantServiceImplIT {
         Assert.assertEquals(name, rest.getName());
         Assert.assertEquals(englishName, rest.getEnglighName());
         Assert.assertNotNull(rest.getCoordinates());
-        Assert.assertEquals(true, rest.isRecommendationCandidate());
+        Assert.assertEquals(true, rest.getRecommendationCandidate());
     }
 
     private List<Restaurant> createResults(ImmutableMap<String, String> placeidName) {

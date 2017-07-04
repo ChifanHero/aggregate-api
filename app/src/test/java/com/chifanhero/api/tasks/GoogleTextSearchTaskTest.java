@@ -1,6 +1,5 @@
 package com.chifanhero.api.tasks;
 
-import com.chifanhero.api.models.request.NearbySearchRequest;
 import com.chifanhero.api.models.request.TextSearchRequest;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
 import com.chifanhero.api.services.google.GooglePlacesService;
