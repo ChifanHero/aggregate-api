@@ -20,6 +20,21 @@ public class GoogleNearbySearchTaskTest {
     @Test
     public void test() throws Exception {
         NearbySearchRequest nearbySearchRequest = new NearbySearchRequest();
+        nearbySearchRequest.setRadius(1999);
+        nearbySearchRequest.setKeyword("chinese");
+        GooglePlacesService mockService = EasyMock.mock(GooglePlacesService.class);
+        RestaurantSearchResponse restaurantSearchResponse = new RestaurantSearchResponse();
+        EasyMock.expect(mockService.nearBySearch(nearbySearchRequest)).andReturn(restaurantSearchResponse);
+        EasyMock.replay(mockService);
+        GoogleNearbySearchTask googleNearbySearchTask = new GoogleNearbySearchTask(nearbySearchRequest, mockService);
+        RestaurantSearchResponse response = googleNearbySearchTask.call();
+        Assert.assertTrue(response == restaurantSearchResponse);
+    }
+
+    @Test
+    public void testRaduis2000() throws Exception {
+        NearbySearchRequest nearbySearchRequest = new NearbySearchRequest();
+        nearbySearchRequest.setRadius(2000);
         Location location = new Location();
         location.setLat(37.45);
         location.setLon(-121.34);

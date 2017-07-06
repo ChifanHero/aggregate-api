@@ -26,14 +26,19 @@ public class GoogleNearbySearchTask implements Callable<RestaurantSearchResponse
 
     @Override
     public RestaurantSearchResponse call() throws Exception {
-        double[][] coordinatesGroup = GeoUtil.getCoordinatesGroup(nearbySearchRequest.getLocation().getLat(), nearbySearchRequest.getLocation().getLon(), 2.0);
-        List<Location> locations = new ArrayList<>();
-        for (double[] coordinates : coordinatesGroup) {
-            Location location = new Location();
-            location.setLat(coordinates[0]);
-            location.setLon(coordinates[1]);
-            locations.add(location);
+        if (nearbySearchRequest.getRadius() != null && nearbySearchRequest.getRadius() >= 2000) {
+            double[][] coordinatesGroup = GeoUtil.getCoordinatesGroup(nearbySearchRequest.getLocation().getLat(), nearbySearchRequest.getLocation().getLon(), 2.0);
+            List<Location> locations = new ArrayList<>();
+            for (double[] coordinates : coordinatesGroup) {
+                Location location = new Location();
+                location.setLat(coordinates[0]);
+                location.setLon(coordinates[1]);
+                locations.add(location);
+            }
+            return googlePlacesService.nearBySearch(nearbySearchRequest, locations);
+        } else {
+            return googlePlacesService.nearBySearch(nearbySearchRequest);
         }
-        return googlePlacesService.nearBySearch(nearbySearchRequest, locations);
+
     }
 }
