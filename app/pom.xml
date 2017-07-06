@@ -11,6 +11,13 @@
 
     <artifactId>app</artifactId>
 
+    <properties>
+        <skipTests>false</skipTests>
+        <skipUnitTests>${skipTests}</skipUnitTests>
+        <skipIntegTests>${skipTests}</skipIntegTests>
+    </properties>
+
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -53,12 +60,22 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>
+                        ${skipUnitTests}
+                    </skipTests>
+                </configuration>
             </plugin>
 
             <!-- Run integration tests. Test name must be *IT.java-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <skipTests>
+                        ${skipIntegTests}
+                    </skipTests>
+                </configuration>
             </plugin>
 
             <!-- Add integration test src -->

@@ -44,7 +44,7 @@ public class SearchResponseConverter {
             restaurant.setName(source.getString(FieldNames.NAME));
         }
         if (source.has(FieldNames.ENGLISH_NAME)) {
-            restaurant.setEnglighName(source.getString(FieldNames.ENGLISH_NAME));
+            restaurant.setGoogleName(source.getString(FieldNames.ENGLISH_NAME));
         }
         if (source.has(FieldNames.RATING)) {
             restaurant.setRating(source.getDouble(FieldNames.RATING));

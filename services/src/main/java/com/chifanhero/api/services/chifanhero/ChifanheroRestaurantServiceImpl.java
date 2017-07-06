@@ -86,7 +86,7 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
         MongoCollection<Document> collection = getRestaurantCollection();
         Bson filter = Filters.lte(KeyNames.EXPIRE_AT, new Date());
         Document unsetDocument = new Document();
-        unsetDocument.append(KeyNames.ENGLISH_NAME, "");
+        unsetDocument.append(KeyNames.GOOGLE_NAME, "");
         unsetDocument.append(KeyNames.COORDINATES, "");
         unsetDocument.append(KeyNames.EXPIRE_AT, "");
         Document updateDocument = new Document("$unset", unsetDocument);

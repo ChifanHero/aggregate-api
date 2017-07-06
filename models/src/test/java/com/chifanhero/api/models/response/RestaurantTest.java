@@ -60,7 +60,7 @@ public class RestaurantTest {
 
     private void assertDefaultRestaurant(Restaurant restaurant) {
         Assert.assertEquals("name", restaurant.getName());
-        Assert.assertEquals("englishName", restaurant.getEnglighName());
+        Assert.assertEquals("englishName", restaurant.getGoogleName());
         Assert.assertEquals("placeId", restaurant.getPlaceId());
         Assert.assertEquals("address", restaurant.getAddress());
         Assert.assertEquals("1234567", restaurant.getPhone());
@@ -82,7 +82,7 @@ public class RestaurantTest {
                                         Boolean openNow, Double distance, Coordinates coordinates, Boolean blacklisted) {
         Restaurant restaurant = new Restaurant();
         restaurant.setName(name);
-        restaurant.setEnglighName(englishName);
+        restaurant.setGoogleName(englishName);
         restaurant.setPlaceId(placeId);
         restaurant.setAddress(address);
         restaurant.setPhone(phone);

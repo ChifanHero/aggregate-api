@@ -16,12 +16,12 @@ public class DocumentConverterTest {
     public void testDocumentToResult() {
         Document document = new Document();
         document.append(KeyNames.NAME, "吃饭英雄");
-        document.append(KeyNames.ENGLISH_NAME, "chifanhero");
+        document.append(KeyNames.GOOGLE_NAME, "chifanhero");
         document.append(KeyNames.GOOGLE_PLACE_ID, "google_place_id");
         document.append(KeyNames.COORDINATES, Arrays.asList(-121.99 ,37.30));
         Restaurant restaurant = DocumentConverter.toResult(document);
         Assert.assertEquals("吃饭英雄", restaurant.getName());
-        Assert.assertEquals("chifanhero", restaurant.getEnglighName());
+        Assert.assertEquals("chifanhero", restaurant.getGoogleName());
         Assert.assertEquals("google_place_id", restaurant.getPlaceId());
         Coordinates coordinates = restaurant.getCoordinates();
         Assert.assertNotNull(coordinates);
@@ -33,7 +33,7 @@ public class DocumentConverterTest {
     public void testResultToDocument() {
         Restaurant restaurant = new Restaurant();
         restaurant.setName("吃饭英雄");
-        restaurant.setEnglighName("chifanhero");
+        restaurant.setGoogleName("chifanhero");
         restaurant.setPlaceId("place_id");
         Coordinates coordinates = new Coordinates();
         coordinates.setLatitude(37.242312);
@@ -41,7 +41,7 @@ public class DocumentConverterTest {
         restaurant.setCoordinates(coordinates);
         Document document = DocumentConverter.toDocument(restaurant);
         Assert.assertEquals("吃饭英雄", document.getString(KeyNames.NAME));
-        Assert.assertEquals("chifanhero", document.getString(KeyNames.ENGLISH_NAME));
+        Assert.assertEquals("chifanhero", document.getString(KeyNames.GOOGLE_NAME));
         Assert.assertNull(document.getString(KeyNames.ID));
         List lonlat = (List) document.get(KeyNames.COORDINATES);
         Assert.assertEquals(-121.764887, lonlat.get(0));

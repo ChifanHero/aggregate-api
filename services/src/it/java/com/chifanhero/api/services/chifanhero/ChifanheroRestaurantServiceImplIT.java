@@ -86,7 +86,7 @@ public class ChifanheroRestaurantServiceImplIT {
         coordinates.setLatitude(37.308835);
         coordinates.setLongitude(-121.99);
         toExpire.setCoordinates(coordinates);
-        toExpire.setEnglighName("englishname1");
+        toExpire.setGoogleName("englishname1");
         service.bulkUpsert(Collections.singletonList(toExpire), new Date());
         service.expireData();
         Map<String, Restaurant> restaurants = service.batchGetByGooglePlaceId(Collections.singletonList(placeId));
@@ -95,7 +95,7 @@ public class ChifanheroRestaurantServiceImplIT {
         Restaurant restaurant = restaurants.get(placeId);
         Assert.assertEquals(placeId, restaurant.getPlaceId());
         Assert.assertEquals(name, restaurant.getName());
-        Assert.assertNull(restaurant.getEnglighName());
+        Assert.assertNull(restaurant.getGoogleName());
         Assert.assertNull(restaurant.getCoordinates());
     }
 
@@ -111,7 +111,7 @@ public class ChifanheroRestaurantServiceImplIT {
         notToExpire.setPlaceId(placeId);
         notToExpire.setName(name);
         notToExpire.setCoordinates(coordinates);
-        notToExpire.setEnglighName(englishName);
+        notToExpire.setGoogleName(englishName);
         service.bulkUpsert(Collections.singletonList(notToExpire), DateUtil.addDays(new Date(), 10));
         service.expireData();
         Map<String, Restaurant> restaurants = service.batchGetByGooglePlaceId(Collections.singletonList(placeId));
@@ -120,7 +120,7 @@ public class ChifanheroRestaurantServiceImplIT {
         Restaurant restaurant = restaurants.get(placeId);
         Assert.assertEquals(placeId, restaurant.getPlaceId());
         Assert.assertEquals(name, restaurant.getName());
-        Assert.assertEquals(englishName, restaurant.getEnglighName());
+        Assert.assertEquals(englishName, restaurant.getGoogleName());
         Assert.assertNotNull(restaurant.getCoordinates());
     }
 
@@ -136,7 +136,7 @@ public class ChifanheroRestaurantServiceImplIT {
         coordinates.setLatitude(37.308835);
         coordinates.setLongitude(-121.99);
         restaurant.setCoordinates(coordinates);
-        restaurant.setEnglighName(englishName);
+        restaurant.setGoogleName(englishName);
         service.bulkUpsert(Collections.singletonList(restaurant), new Date());
         restaurant.setRating(4.5);
         service.markRecommendations(Collections.singletonList(restaurant));
@@ -145,7 +145,7 @@ public class ChifanheroRestaurantServiceImplIT {
         Restaurant rest = restaurants.get(placeId);
         Assert.assertEquals(placeId, rest.getPlaceId());
         Assert.assertEquals(name, rest.getName());
-        Assert.assertEquals(englishName, rest.getEnglighName());
+        Assert.assertEquals(englishName, rest.getGoogleName());
         Assert.assertNotNull(rest.getCoordinates());
         Assert.assertEquals(true, rest.getRecommendationCandidate());
     }

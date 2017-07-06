@@ -17,8 +17,8 @@ public class Restaurant {
 
     private String name;
 
-    @JsonProperty("english_name")
-    private String englighName;
+    @JsonProperty("google_name")
+    private String googleName;
 
     @JsonIgnore
     private String placeId;
@@ -78,12 +78,12 @@ public class Restaurant {
         return name;
     }
 
-    public String getEnglighName() {
-        return englighName;
+    public String getGoogleName() {
+        return googleName;
     }
 
-    public void setEnglighName(String englighName) {
-        this.englighName = englighName;
+    public void setGoogleName(String googleName) {
+        this.googleName = googleName;
     }
 
     public void setName(String name) {
@@ -189,7 +189,7 @@ public class Restaurant {
         phone = phone == null? patch.getPhone(): phone;
         id = id == null? patch.getId(): id;
         name = name == null? patch.getName(): name;
-        englighName = englighName == null? patch.getEnglighName(): englighName;
+        googleName = googleName == null? patch.getGoogleName(): googleName;
         rating = rating == null? patch.getRating(): rating;
         picture = picture == null? patch.getPicture(): picture;
         permanentlyClosed = permanentlyClosed == null? patch.getPermanentlyClosed(): permanentlyClosed;
