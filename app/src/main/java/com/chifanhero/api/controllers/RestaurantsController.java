@@ -74,15 +74,13 @@ public class RestaurantsController {
         ListenableFuture<List<RestaurantSearchResponse>> listListenableFuture = Futures.allAsList(elasticNearbySearchFuture, googleNearbySearchFuture);
         ListenableFuture<RestaurantSearchResponse> dedupeFuture = Futures.transform(listListenableFuture, new RestaurantsMergeFunction(new RestaurantDeduper()));
         ListenableFuture<RestaurantSearchResponse> fulfillRestaurantFuture = Futures.transform(dedupeFuture, new FillRestaurantsFunction(googlePlacesService));
-        //TODO - fix
-        fulfillRestaurantFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, fulfillRestaurantFuture), executorService);
-        ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(fulfillRestaurantFuture, new FilterFunction(nearbySearchRequest));
-        ListenableFuture<RestaurantSearchResponse> calculatedFuture = Futures.transform(filteredFuture, new CalculateDistanceFunction(nearbySearchRequest.getLocation()));
-        ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(calculatedFuture, new SortFunction(SortOrder.valueOf(nearbySearchRequest.getSortOrder().toUpperCase())));
+        ListenableFuture<RestaurantSearchResponse> calculatedFuture = Futures.transform(fulfillRestaurantFuture, new CalculateDistanceFunction(nearbySearchRequest.getLocation()));
+        ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(calculatedFuture, new FilterFunction(nearbySearchRequest));
+        ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(filteredFuture, new SortFunction(SortOrder.valueOf(nearbySearchRequest.getSortOrder().toUpperCase())));
         ListenableFuture<RestaurantSearchResponse> result = Futures.transform(sortedFuture, new CalculateDistanceFunction(nearbySearchRequest.getLocation()));
+        fulfillRestaurantFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, result), executorService);
         try {
-            RestaurantSearchResponse restaurantSearchResponse = result.get();
-            return restaurantSearchResponse;
+            return result.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }

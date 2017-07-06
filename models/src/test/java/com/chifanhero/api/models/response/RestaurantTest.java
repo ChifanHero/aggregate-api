@@ -55,7 +55,7 @@ public class RestaurantTest {
     private Restaurant createDefaultRestaurant() {
         return createRestaurant("name", "englishName", "placeId", "address",
                 "1234567", 4.5, createPicture("http://url", "photoReference"), false,
-                false, 2.5, createCoordinates(37.2, -121.3));
+                false, 2.5, createCoordinates(37.2, -121.3), true);
     }
 
     private void assertDefaultRestaurant(Restaurant restaurant) {
@@ -74,11 +74,12 @@ public class RestaurantTest {
         Assert.assertNotNull(restaurant.getCoordinates());
         Assert.assertTrue(restaurant.getCoordinates().getLatitude() == 37.2);
         Assert.assertTrue(restaurant.getCoordinates().getLongitude() == -121.3);
+        Assert.assertTrue(restaurant.getBlacklisted());
     }
 
     private Restaurant createRestaurant(String name, String englishName, String placeId, String address, String phone,
                                         Double rating, Picture picture, Boolean permanentlyClosed,
-                                        Boolean openNow, Double distance, Coordinates coordinates) {
+                                        Boolean openNow, Double distance, Coordinates coordinates, Boolean blacklisted) {
         Restaurant restaurant = new Restaurant();
         restaurant.setName(name);
         restaurant.setEnglighName(englishName);
@@ -91,6 +92,7 @@ public class RestaurantTest {
         restaurant.setOpenNow(openNow);
         restaurant.setDistance(distance);
         restaurant.setCoordinates(coordinates);
+        restaurant.setBlacklisted(blacklisted);
         return restaurant;
     }
 

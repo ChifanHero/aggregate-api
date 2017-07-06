@@ -22,6 +22,7 @@ public class RestaurantConverterTest {
         place.setFormattedPhoneNumber("408-123-4567");
         place.setPlaceId("place-id");
         place.setPermanentlyClosed(true);
+        place.setRating(4.5);
         List<Photo> photos = new ArrayList<>();
         photos.add(createPhoto("reference1"));
         photos.add(createPhoto("reference2"));
@@ -38,6 +39,7 @@ public class RestaurantConverterTest {
         Assert.assertEquals("5152 Moorpark Ave, San Jose, CA, 95125", restaurant.getAddress());
         Assert.assertEquals("408-123-4567", restaurant.getPhone());
         Assert.assertEquals("place-id", restaurant.getPlaceId());
+        Assert.assertTrue(restaurant.getRating() == 4.5);
         com.chifanhero.api.models.response.Coordinates coordinates1 = restaurant.getCoordinates();
         Assert.assertEquals(new Double(-121.33), coordinates1.getLongitude());
         Assert.assertEquals(new Double(37.45), coordinates1.getLatitude());

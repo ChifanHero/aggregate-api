@@ -1,10 +1,10 @@
 package com.chifanhero.api.services.google;
 
-import com.chifanhero.api.async.FutureResolver;
 import com.chifanhero.api.configs.GoogleConfigs;
 import com.chifanhero.api.models.google.Place;
 import com.chifanhero.api.models.google.PlaceDetailResponse;
 import com.chifanhero.api.models.google.PlacesSearchResponse;
+import com.chifanhero.api.models.request.Location;
 import com.chifanhero.api.models.request.NearbySearchRequest;
 import com.chifanhero.api.models.request.TextSearchRequest;
 import com.chifanhero.api.models.response.Restaurant;
@@ -17,6 +17,7 @@ import com.chifanhero.api.services.google.client.request.converters.NearBySearch
 import com.chifanhero.api.services.google.client.request.converters.ResponseConverter;
 import com.chifanhero.api.services.google.client.request.converters.RestaurantConverter;
 import com.chifanhero.api.services.google.client.request.converters.TextSearchRequestConverter;
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -38,13 +39,11 @@ import java.util.stream.Collectors;
 @Service
 public class GooglePlacesServiceImpl implements GooglePlacesService {
 
-    private final FutureResolver futureResolver;
     private final GooglePlacesClient client;
     private final ListeningExecutorService executorService;
 
     @Autowired
-    public GooglePlacesServiceImpl(FutureResolver futureResolver, GooglePlacesClient client, @Qualifier("listenableExecutorService") ListeningExecutorService executorService) {
-        this.futureResolver = futureResolver;
+    public GooglePlacesServiceImpl(GooglePlacesClient client, @Qualifier("listenableExecutorService") ListeningExecutorService executorService) {
         this.client = client;
         this.executorService = executorService;
     }
@@ -62,6 +61,36 @@ public class GooglePlacesServiceImpl implements GooglePlacesService {
     }
 
     @Override
+    public RestaurantSearchResponse nearBySearch(NearbySearchRequest nearbySearchRequest, List<Location> pointsGroup) {
+        Preconditions.checkNotNull(nearbySearchRequest);
+        Preconditions.checkNotNull(pointsGroup);
+        List<NearbySearchRequest> requests = pointsGroup.stream().map(points -> {
+            NearbySearchRequest clonedRequest = nearbySearchRequest.clone();
+            clonedRequest.setLocation(points);
+            return clonedRequest;
+        }).collect(Collectors.toList());
+        requests.add(nearbySearchRequest);
+        List<ListenableFuture<PlacesSearchResponse>> futures = requests.stream().map(request -> {
+            NearBySearchRequestParams nearBySearchRequestParams = NearBySearchRequestConverter.toParams(request);
+            nearBySearchRequestParams.setKey(GoogleConfigs.API_KEY);
+            return executorService.submit(() -> client.nearBySearch(nearBySearchRequestParams).get());
+        }).collect(Collectors.toList());
+        ListenableFuture<List<PlacesSearchResponse>> resultFuture = Futures.allAsList(futures);
+        try {
+            List<PlacesSearchResponse> placesSearchResponses = resultFuture.get();
+            List<RestaurantSearchResponse> converted = placesSearchResponses.stream().map(ResponseConverter::toRestaurantSearchResponse).collect(Collectors.toList());
+            RestaurantSearchResponse searchResponse = new RestaurantSearchResponse();
+            converted.forEach(restaurantSearchResponse -> {
+                searchResponse.setResults(restaurantSearchResponse.getResults());
+                searchResponse.setErrors(restaurantSearchResponse.getErrors());
+            });
+            return searchResponse;
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public RestaurantSearchResponse textSearch(TextSearchRequest textSearchRequest) {
         TextSearchRequestParams textSearchRequestParams = TextSearchRequestConverter.toParams(textSearchRequest);
         textSearchRequestParams.setKey(GoogleConfigs.API_KEY);
@@ -71,6 +100,11 @@ public class GooglePlacesServiceImpl implements GooglePlacesService {
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public RestaurantSearchResponse textSearch(TextSearchRequest textSearchRequest, List<Location> pointsGroup) {
+        return null;
     }
 
     @Override

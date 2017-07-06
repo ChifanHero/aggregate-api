@@ -19,11 +19,11 @@ public class GetRequestTest {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("param1", 1);
         params.put("param2", true);
-        params.put("param3", "foo");
+        params.put("param3", "foo foo");
         params.put("param4", new BigDecimal("1.2"));
         GetRequest getRequest = new GetRequest(baseUrl, params);
         String url = getRequest.getUrl();
-        assertEquals("http://chifanhero.com?param1=1&param2=true&param3=foo&param4=1.2", url);
+        assertEquals("http://chifanhero.com?param1=1&param2=true&param3=foo+foo&param4=1.2", url);
     }
 
     @Test(expected = IllegalArgumentException.class)

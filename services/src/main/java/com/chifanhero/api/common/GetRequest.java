@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -34,7 +36,11 @@ public class GetRequest { // This class should probably be moved to a separate m
             requestParams.entrySet().forEach(paramEntry -> {
                 urlBuilder.append(paramEntry.getKey());
                 urlBuilder.append("=");
-                urlBuilder.append(paramEntry.getValue().toString());
+                try {
+                    urlBuilder.append(URLEncoder.encode(paramEntry.getValue().toString(), "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
                 urlBuilder.append("&");
             });
             urlBuilder.deleteCharAt(urlBuilder.length() - 1);
