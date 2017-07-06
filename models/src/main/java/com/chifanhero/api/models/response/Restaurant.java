@@ -47,6 +47,9 @@ public class Restaurant {
     @JsonIgnore
     private Boolean recommendationCandidate;
 
+    @JsonIgnore
+    private Boolean blacklisted;
+
     public String getAddress() {
         return address;
     }
@@ -167,6 +170,14 @@ public class Restaurant {
         this.recommendationCandidate = recommendationCandidate;
     }
 
+    public Boolean getBlacklisted() {
+        return blacklisted;
+    }
+
+    public void setBlacklisted(Boolean blacklisted) {
+        this.blacklisted = blacklisted;
+    }
+
     public void applyPatch(Restaurant patch) {
         if (patch == null) {
             return;
@@ -185,5 +196,6 @@ public class Restaurant {
         openNow = openNow == null? patch.getOpenNow(): openNow;
         distance = distance == null? patch.getDistance(): distance;
         coordinates = coordinates == null? patch.getCoordinates(): coordinates;
+        blacklisted = blacklisted == null? patch.getBlacklisted(): blacklisted;
     }
 }

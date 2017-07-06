@@ -33,10 +33,18 @@ public class FilterFunction implements Function<RestaurantSearchResponse, Restau
 
     @Override
     public RestaurantSearchResponse apply(RestaurantSearchResponse input) {
+        filterBlacklisted(input);
         filterByOpennow(input);
         filterByDistance(input);
         filterByRating(input);
         return input;
+    }
+
+    private void filterBlacklisted(RestaurantSearchResponse input) {
+        Optional.ofNullable(input.getResults()).ifPresent(restaurants -> {
+            List<Restaurant> filtered = restaurants.stream().filter(restaurant -> restaurant.getBlacklisted() == null || !restaurant.getBlacklisted()).collect(Collectors.toList());
+            input.setResults(filtered);
+        });
     }
 
     private void filterByRating(RestaurantSearchResponse input) {

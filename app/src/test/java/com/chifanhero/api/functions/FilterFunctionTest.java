@@ -51,6 +51,23 @@ public class FilterFunctionTest {
         RestaurantSearchResponse response = filterFunction.apply(createInputForRadiusTest());
         Assert.assertNotNull(response);
         Assert.assertEquals(1, response.getResults().size());
+        Assert.assertTrue(response.getResults().get(0).getDistance() == 1.5);
+    }
+
+    @Test
+    public void testBlacklisted() {
+        RestaurantSearchResponse input = new RestaurantSearchResponse();
+        Restaurant restaurant = new Restaurant();
+        restaurant.setBlacklisted(true);
+        Restaurant restaurant2 = new Restaurant();
+        restaurant2.setBlacklisted(false);
+        input.setResults(Arrays.asList(restaurant, restaurant2));
+        NearbySearchRequest nearbySearchRequest = new NearbySearchRequest();
+        FilterFunction filterFunction = new FilterFunction(nearbySearchRequest);
+        RestaurantSearchResponse response = filterFunction.apply(input);
+        Assert.assertNotNull(response);
+        Assert.assertEquals(1, response.getResults().size());
+        Assert.assertFalse(response.getResults().get(0).getBlacklisted());
     }
 
     private RestaurantSearchResponse createInputForOpennowTest() {
