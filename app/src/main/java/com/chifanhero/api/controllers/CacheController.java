@@ -23,4 +23,10 @@ public class CacheController {
     public long check() {
         return cache.size();
     }
+
+    @RequestMapping("/cache/clear")
+    public boolean clear() {
+        cache.invalidateAll();
+        return true;
+    }
 }
