@@ -15,12 +15,14 @@ import java.util.stream.Collectors;
  */
 public class FilterFunction implements Function<RestaurantSearchResponse, RestaurantSearchResponse> {
 
-    private boolean openNow = false;
+    private Boolean openNow = false;
+    private Double rating;
+    private Integer radius;
 
     public FilterFunction(NearbySearchRequest nearbySearchRequest) {
-        if (nearbySearchRequest.getOpenNow() != null) {
-            openNow = nearbySearchRequest.getOpenNow();
-        }
+        openNow = nearbySearchRequest.getOpenNow();
+        radius = nearbySearchRequest.getRadius();
+        rating = nearbySearchRequest.getRating();
     }
 
     public FilterFunction(TextSearchRequest textSearchRequest) {
@@ -31,13 +33,37 @@ public class FilterFunction implements Function<RestaurantSearchResponse, Restau
 
     @Override
     public RestaurantSearchResponse apply(RestaurantSearchResponse input) {
-        if (!openNow) {
-            return input;
-        }
-        Optional.ofNullable(input.getResults()).ifPresent(restaurants -> {
-            List<Restaurant> filtered = restaurants.stream().filter(restaurant -> Boolean.TRUE.equals(restaurant.getOpenNow())).collect(Collectors.toList());
-            input.setResults(filtered);
-        });
+        filterByOpennow(input);
+        filterByDistance(input);
+        filterByRating(input);
         return input;
+    }
+
+    private void filterByRating(RestaurantSearchResponse input) {
+        if (rating != null) {
+            Optional.ofNullable(input.getResults()).ifPresent(restaurants -> {
+                List<Restaurant> filtered = restaurants.stream().filter(restaurant -> restaurant.getRating() != null && restaurant.getRating() >= rating).collect(Collectors.toList());
+                input.setResults(filtered);
+            });
+        }
+    }
+
+    private void filterByDistance(RestaurantSearchResponse input) {
+        if (radius != null) {
+            Double radiusInMi = ((double) radius) / (1.6d * 1000.0d);
+            Optional.ofNullable(input.getResults()).ifPresent(restaurants -> {
+                List<Restaurant> filtered = restaurants.stream().filter(restaurant -> restaurant.getDistance() != null && restaurant.getDistance() >= radiusInMi).collect(Collectors.toList());
+                input.setResults(filtered);
+            });
+        }
+    }
+
+    private void filterByOpennow(RestaurantSearchResponse input) {
+        if (openNow != null && openNow) {
+            Optional.ofNullable(input.getResults()).ifPresent(restaurants -> {
+                List<Restaurant> filtered = restaurants.stream().filter(restaurant -> Boolean.TRUE.equals(restaurant.getOpenNow())).collect(Collectors.toList());
+                input.setResults(filtered);
+            });
+        }
     }
 }

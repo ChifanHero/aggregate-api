@@ -26,6 +26,7 @@ public class RestaurantConverter {
         restaurant.setEnglighName(place.getName());
         restaurant.setPermanentlyClosed(place.getPermanentlyClosed());
         restaurant.setSource(Source.GOOGLE);
+        restaurant.setRating(place.getRating());
         Optional.ofNullable(place.getGeometry())
                 .map(Geometry::getLocation)
                 .ifPresent(location ->
