@@ -19,7 +19,7 @@ public class DocumentConverter {
         Document document = new Document();
         document.append(KeyNames.GOOGLE_PLACE_ID, restaurant.getPlaceId());
 //        Optional.ofNullable(restaurant.getName()).ifPresent(name -> document.append(KeyNames.NAME, restaurant.getName()));
-        Optional.ofNullable(restaurant.getGoogleName()).ifPresent(englishName -> document.append(KeyNames.GOOGLE_NAME, restaurant.getGoogleName()));
+        Optional.ofNullable(restaurant.getGoogleName()).ifPresent(googleName -> document.append(KeyNames.GOOGLE_NAME, restaurant.getGoogleName()));
         Optional.ofNullable(restaurant.getCoordinates()).filter(coordinates -> coordinates.getLatitude() != null && coordinates.getLongitude() != null)
                 .ifPresent(coordinates -> document.append(KeyNames.COORDINATES, Arrays.asList(restaurant.getCoordinates().getLongitude(),
                         restaurant.getCoordinates().getLatitude())));
