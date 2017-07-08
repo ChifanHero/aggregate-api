@@ -59,6 +59,9 @@ public class SearchResponseConverter {
             coordinates.setLatitude(lonlat.getDouble(1));
             restaurant.setCoordinates(coordinates);
         }
+        if (source.has(FieldNames.BLACKLISTED)) {
+            restaurant.setBlacklisted(source.getBoolean(FieldNames.BLACKLISTED));
+        }
         return restaurant;
     }
 }

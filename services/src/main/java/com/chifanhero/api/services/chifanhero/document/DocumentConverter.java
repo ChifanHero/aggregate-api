@@ -18,7 +18,7 @@ public class DocumentConverter {
         Preconditions.checkNotNull(restaurant.getPlaceId());
         Document document = new Document();
         document.append(KeyNames.GOOGLE_PLACE_ID, restaurant.getPlaceId());
-        Optional.ofNullable(restaurant.getName()).ifPresent(name -> document.append(KeyNames.NAME, restaurant.getName()));
+//        Optional.ofNullable(restaurant.getName()).ifPresent(name -> document.append(KeyNames.NAME, restaurant.getName()));
         Optional.ofNullable(restaurant.getGoogleName()).ifPresent(englishName -> document.append(KeyNames.GOOGLE_NAME, restaurant.getGoogleName()));
         Optional.ofNullable(restaurant.getCoordinates()).filter(coordinates -> coordinates.getLatitude() != null && coordinates.getLongitude() != null)
                 .ifPresent(coordinates -> document.append(KeyNames.COORDINATES, Arrays.asList(restaurant.getCoordinates().getLongitude(),
@@ -28,7 +28,7 @@ public class DocumentConverter {
 
     public static Restaurant toResult(Document document) {
         Restaurant restaurant = new Restaurant();
-        // Currently only need names and coordinates
+        // Currently only need names and coordinates for testing
         restaurant.setName(document.getString(KeyNames.NAME));
         restaurant.setGoogleName(document.getString(KeyNames.GOOGLE_NAME));
         restaurant.setPlaceId(document.getString(KeyNames.GOOGLE_PLACE_ID));

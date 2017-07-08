@@ -58,6 +58,11 @@ public class ChifanheroRestaurantServiceImplIT {
         }
     }
 
+    @Test //TODO
+    public void testSetOnInsert() {
+
+    }
+
     @Test
     public void testExpirationDateSetCorrectly() {
         String googlePlaceId = "1";
