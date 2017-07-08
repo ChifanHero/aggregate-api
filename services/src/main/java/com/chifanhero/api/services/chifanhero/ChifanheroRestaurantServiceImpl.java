@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,8 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
             Bson filter = Filters.eq(KeyNames.GOOGLE_PLACE_ID, entity.getPlaceId());
             Document setOnInsertDocument = new Document(KeyNames.ID, IdGenerator.getNewObjectId());
             setOnInsertDocument.append(KeyNames.CREATED_AT, new Date());
+            // set rating on insert just to get initial rating
+            Optional.ofNullable(entity.getRating()).ifPresent(rating -> setOnInsertDocument.append(KeyNames.RATING, rating));
             Document updateDocument = new Document("$setOnInsert", setOnInsertDocument);
             Document setDocument = DocumentConverter.toDocument(entity);
             setDocument.append(KeyNames.UPDATED_AT, new Date());
@@ -86,7 +89,7 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
         MongoCollection<Document> collection = getRestaurantCollection();
         Bson filter = Filters.lte(KeyNames.EXPIRE_AT, new Date());
         Document unsetDocument = new Document();
-        unsetDocument.append(KeyNames.ENGLISH_NAME, "");
+        unsetDocument.append(KeyNames.GOOGLE_NAME, "");
         unsetDocument.append(KeyNames.COORDINATES, "");
         unsetDocument.append(KeyNames.EXPIRE_AT, "");
         Document updateDocument = new Document("$unset", unsetDocument);

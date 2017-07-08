@@ -35,7 +35,7 @@ public class RestaurantConverterTest {
         place.setGeometry(geometry);
         Restaurant restaurant = RestaurantConverter.toRestaurant(place);
         Assert.assertEquals(Source.GOOGLE, restaurant.getSource());
-        Assert.assertEquals("Hunan Impression", restaurant.getEnglighName());
+        Assert.assertEquals("Hunan Impression", restaurant.getGoogleName());
         Assert.assertEquals("5152 Moorpark Ave, San Jose, CA, 95125", restaurant.getAddress());
         Assert.assertEquals("408-123-4567", restaurant.getPhone());
         Assert.assertEquals("place-id", restaurant.getPlaceId());

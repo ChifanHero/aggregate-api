@@ -44,7 +44,7 @@ public class SearchResponseConverter {
             restaurant.setName(source.getString(FieldNames.NAME));
         }
         if (source.has(FieldNames.ENGLISH_NAME)) {
-            restaurant.setEnglighName(source.getString(FieldNames.ENGLISH_NAME));
+            restaurant.setGoogleName(source.getString(FieldNames.ENGLISH_NAME));
         }
         if (source.has(FieldNames.RATING)) {
             restaurant.setRating(source.getDouble(FieldNames.RATING));
@@ -58,6 +58,9 @@ public class SearchResponseConverter {
             coordinates.setLongitude(lonlat.getDouble(0));
             coordinates.setLatitude(lonlat.getDouble(1));
             restaurant.setCoordinates(coordinates);
+        }
+        if (source.has(FieldNames.BLACKLISTED)) {
+            restaurant.setBlacklisted(source.getBoolean(FieldNames.BLACKLISTED));
         }
         return restaurant;
     }

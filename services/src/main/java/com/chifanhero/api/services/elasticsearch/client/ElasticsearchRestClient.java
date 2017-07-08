@@ -62,12 +62,6 @@ public class ElasticsearchRestClient {
         }
     }
 
-    public static void main(String[] args) throws UnsupportedEncodingException {
-        PrintStream out = new PrintStream(System.out, true, "UTF-16");
-        out.println("知道");
-        System.out.println(Charset.defaultCharset().toString());
-    }
-
     //http://ec2-54-69-87-122.us-west-2.compute.amazonaws.com:9200/chifanhero/Restaurant/_search
     public JSONObject search(String index, String type, String query) {
         String endPoint = baseUrl + index + "/" + type + "/_search";

@@ -47,15 +47,32 @@ public class ChifanheroRestaurantServiceImplIT {
         Map<String, Restaurant> returned = service.batchGetByGooglePlaceId(new ArrayList<>(PLACEID_NAME_INSERT1.keySet()));
         Assert.assertEquals(PLACEID_NAME_INSERT1.keySet().size(), returned.size());
         for (Map.Entry<String, Restaurant> entry : returned.entrySet()) {
-            Assert.assertEquals(PLACEID_NAME_INSERT1.get(entry.getKey()), entry.getValue().getName());
+            Assert.assertEquals(PLACEID_NAME_INSERT1.get(entry.getKey()), entry.getValue().getGoogleName());
         }
         List<Restaurant> newRestaurants = createResults(PLACEID_NAME_INSERT2);
         service.bulkUpsert(newRestaurants);
-        Map<String, Restaurant> newReturned = service.batchGetByGooglePlaceId(new ArrayList<>(PLACEID_NAME_INSERT1.keySet()));
+        Map<String, Restaurant> newReturned = service.batchGetByGooglePlaceId(new ArrayList<>(PLACEID_NAME_INSERT2.keySet()));
         Assert.assertEquals(PLACEID_NAME_INSERT2.keySet().size(), newReturned.size());
         for (Map.Entry<String, Restaurant> entry : newReturned.entrySet()) {
-            Assert.assertEquals(PLACEID_NAME_INSERT2.get(entry.getKey()), entry.getValue().getName());
+            Assert.assertEquals(PLACEID_NAME_INSERT2.get(entry.getKey()), entry.getValue().getGoogleName());
         }
+    }
+
+    @Test
+    public void testSetOnInsert() {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setPlaceId("testSetOnInsert");
+        restaurant.setRating(4.5);
+        List<Restaurant> restaurants = Collections.singletonList(restaurant);
+        service.bulkUpsert(restaurants);
+        restaurant = new Restaurant();
+        restaurant.setPlaceId("testSetOnInsert");
+        restaurant.setRating(3.5);
+        restaurants = Collections.singletonList(restaurant);
+        service.bulkUpsert(restaurants);
+        Map<String, Restaurant> results = service.batchGetByGooglePlaceId(Collections.singletonList("testSetOnInsert"));
+        Restaurant result = results.get("testSetOnInsert");
+        Assert.assertTrue(result.getRating() == 4.5);
     }
 
     @Test
@@ -78,15 +95,13 @@ public class ChifanheroRestaurantServiceImplIT {
     @Test
     public void testDataShouldExpire() {
         String placeId = "testDataShouldExpire";
-        String name = "name1";
         Restaurant toExpire = new Restaurant();
         toExpire.setPlaceId(placeId);
-        toExpire.setName(name);
         Coordinates coordinates = new Coordinates();
         coordinates.setLatitude(37.308835);
         coordinates.setLongitude(-121.99);
         toExpire.setCoordinates(coordinates);
-        toExpire.setEnglighName("englishname1");
+        toExpire.setGoogleName("googlename1");
         service.bulkUpsert(Collections.singletonList(toExpire), new Date());
         service.expireData();
         Map<String, Restaurant> restaurants = service.batchGetByGooglePlaceId(Collections.singletonList(placeId));
@@ -94,8 +109,7 @@ public class ChifanheroRestaurantServiceImplIT {
         Assert.assertTrue(restaurants.size() == 1);
         Restaurant restaurant = restaurants.get(placeId);
         Assert.assertEquals(placeId, restaurant.getPlaceId());
-        Assert.assertEquals(name, restaurant.getName());
-        Assert.assertNull(restaurant.getEnglighName());
+        Assert.assertNull(restaurant.getGoogleName());
         Assert.assertNull(restaurant.getCoordinates());
     }
 
@@ -103,7 +117,7 @@ public class ChifanheroRestaurantServiceImplIT {
     public void testDataShouldNotExpire() {
         String placeId = "testDataShouldNotExpire";
         String name = "name2";
-        String englishName = "englishname2";
+        String googleName2 = "googlename2";
         Coordinates coordinates = new Coordinates();
         coordinates.setLatitude(37.308835);
         coordinates.setLongitude(-121.99);
@@ -111,7 +125,7 @@ public class ChifanheroRestaurantServiceImplIT {
         notToExpire.setPlaceId(placeId);
         notToExpire.setName(name);
         notToExpire.setCoordinates(coordinates);
-        notToExpire.setEnglighName(englishName);
+        notToExpire.setGoogleName(googleName2);
         service.bulkUpsert(Collections.singletonList(notToExpire), DateUtil.addDays(new Date(), 10));
         service.expireData();
         Map<String, Restaurant> restaurants = service.batchGetByGooglePlaceId(Collections.singletonList(placeId));
@@ -119,24 +133,21 @@ public class ChifanheroRestaurantServiceImplIT {
         Assert.assertTrue(restaurants.size() == 1);
         Restaurant restaurant = restaurants.get(placeId);
         Assert.assertEquals(placeId, restaurant.getPlaceId());
-        Assert.assertEquals(name, restaurant.getName());
-        Assert.assertEquals(englishName, restaurant.getEnglighName());
+        Assert.assertEquals(googleName2, restaurant.getGoogleName());
         Assert.assertNotNull(restaurant.getCoordinates());
     }
 
     @Test
     public void testMarkRecommendation() {
         String placeId = "testMarkRecommendation";
-        String name = "name1";
-        String englishName = "englishname1";
+        String googleName1 = "googlename1";
         Restaurant restaurant = new Restaurant();
         restaurant.setPlaceId(placeId);
-        restaurant.setName(name);
         Coordinates coordinates = new Coordinates();
         coordinates.setLatitude(37.308835);
         coordinates.setLongitude(-121.99);
         restaurant.setCoordinates(coordinates);
-        restaurant.setEnglighName(englishName);
+        restaurant.setGoogleName(googleName1);
         service.bulkUpsert(Collections.singletonList(restaurant), new Date());
         restaurant.setRating(4.5);
         service.markRecommendations(Collections.singletonList(restaurant));
@@ -144,8 +155,7 @@ public class ChifanheroRestaurantServiceImplIT {
         Assert.assertTrue(restaurants.size() == 1);
         Restaurant rest = restaurants.get(placeId);
         Assert.assertEquals(placeId, rest.getPlaceId());
-        Assert.assertEquals(name, rest.getName());
-        Assert.assertEquals(englishName, rest.getEnglighName());
+        Assert.assertEquals(googleName1, rest.getGoogleName());
         Assert.assertNotNull(rest.getCoordinates());
         Assert.assertEquals(true, rest.getRecommendationCandidate());
     }
@@ -158,10 +168,10 @@ public class ChifanheroRestaurantServiceImplIT {
         return restaurants;
     }
 
-    private Restaurant createResult(String name, String googlePlaceId) {
+    private Restaurant createResult(String googleName, String googlePlaceId) {
         Restaurant restaurant = new Restaurant();
         restaurant.setPlaceId(googlePlaceId);
-        restaurant.setName(name);
+        restaurant.setGoogleName(googleName);
         return restaurant;
     }
 

@@ -7,11 +7,12 @@ public class KeyNames {
 
     public final static String ID = "_id";
     public final static String NAME = "name";
-    public final static String ENGLISH_NAME = "english_name";
+    public final static String GOOGLE_NAME = "google_name";
     public final static String COORDINATES = "coordinates";
     public final static String GOOGLE_PLACE_ID = "google_place_id";
     public final static String IS_RECOMMENDATION_CANDIDATE = "is_recommendation_candidate";
     public final static String CREATED_AT = "_created_at";
+    public final static String RATING = "rating";
     public final static String UPDATED_AT = "_updated_at";
     public final static String EXPIRE_AT = "expire_at";
 

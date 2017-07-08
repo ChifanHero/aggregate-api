@@ -15,7 +15,6 @@
         <elasticsearch.groupid>org.elasticsearch.distribution.zip</elasticsearch.groupid>
         <elasticsearch.version>5.4.0</elasticsearch.version>
         <mongodb.version>3.4.2</mongodb.version>
-        <skipTests>false</skipTests>
 
         <!-- For integration tests using ANT -->
         <es.integ.http.port>9200</es.integ.http.port>

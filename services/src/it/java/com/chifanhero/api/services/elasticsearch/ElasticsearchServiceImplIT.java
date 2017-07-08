@@ -92,7 +92,7 @@ public class ElasticsearchServiceImplIT {
             // source, name, english_name, rating, coordinates, google_place_id
             Assert.assertEquals(Source.CHIFANHERO, result.getSource());
             Assert.assertNotNull(result.getName());
-            Assert.assertNotNull(result.getEnglighName());
+            Assert.assertNotNull(result.getGoogleName());
             Assert.assertNotNull(result.getRating());
             Assert.assertNotNull(result.getPlaceId());
             Assert.assertNotNull(result.getCoordinates());
@@ -119,7 +119,7 @@ public class ElasticsearchServiceImplIT {
             // source, name, english_name, rating, coordinates, google_place_id
             Assert.assertEquals(Source.CHIFANHERO, result.getSource());
             Assert.assertNotNull(result.getName());
-            Assert.assertNotNull(result.getEnglighName());
+            Assert.assertNotNull(result.getGoogleName());
             Assert.assertNotNull(result.getRating());
             Assert.assertNotNull(result.getPlaceId());
             Assert.assertNotNull(result.getCoordinates());
@@ -147,7 +147,7 @@ public class ElasticsearchServiceImplIT {
         // source, name, english_name, rating, coordinates, google_place_id
         Assert.assertEquals(Source.CHIFANHERO, restaurant.getSource());
         Assert.assertEquals("韶山印象", restaurant.getName());
-        Assert.assertEquals("Hunan Impression", restaurant.getEnglighName());
+        Assert.assertEquals("Hunan Impression", restaurant.getGoogleName());
         Assert.assertTrue(3.5 == restaurant.getRating());
         Assert.assertEquals("googleplaceid", restaurant.getPlaceId());
         Coordinates coordinates = restaurant.getCoordinates();
@@ -175,7 +175,7 @@ public class ElasticsearchServiceImplIT {
             // source, name, english_name, rating, coordinates, google_place_id
             Assert.assertEquals(Source.CHIFANHERO, result.getSource());
             Assert.assertNotNull(result.getName());
-            Assert.assertNotNull(result.getEnglighName());
+            Assert.assertNotNull(result.getGoogleName());
             Assert.assertNotNull(result.getRating());
             Assert.assertNotNull(result.getPlaceId());
             Assert.assertNotNull(result.getCoordinates());

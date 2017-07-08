@@ -2,13 +2,10 @@ package com.chifanhero.api.services.google.client.request.converters;
 
 import com.chifanhero.api.models.google.Geometry;
 import com.chifanhero.api.models.google.Place;
-import com.chifanhero.api.models.response.Picture;
 import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.models.response.Source;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Created by shiyan on 6/13/17.
@@ -23,7 +20,7 @@ public class RestaurantConverter {
         restaurant.setAddress(place.getFormattedAddress());
         restaurant.setPhone(place.getFormattedPhoneNumber());
         restaurant.setPlaceId(place.getPlaceId());
-        restaurant.setEnglighName(place.getName());
+        restaurant.setGoogleName(place.getName());
         restaurant.setPermanentlyClosed(place.getPermanentlyClosed());
         restaurant.setSource(Source.GOOGLE);
         restaurant.setRating(place.getRating());
