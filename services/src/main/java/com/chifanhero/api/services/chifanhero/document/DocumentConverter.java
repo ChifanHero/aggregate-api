@@ -28,11 +28,12 @@ public class DocumentConverter {
 
     public static Restaurant toResult(Document document) {
         Restaurant restaurant = new Restaurant();
-        // Currently only need names and coordinates for testing
+        // Currently only need names, coordinates and rating for testing
         restaurant.setName(document.getString(KeyNames.NAME));
         restaurant.setGoogleName(document.getString(KeyNames.GOOGLE_NAME));
         restaurant.setPlaceId(document.getString(KeyNames.GOOGLE_PLACE_ID));
         restaurant.setRecommendationCandidate(document.getBoolean(KeyNames.IS_RECOMMENDATION_CANDIDATE));
+        restaurant.setRating(document.getDouble(KeyNames.RATING));
         Optional.ofNullable(document.get(KeyNames.COORDINATES)).ifPresent(lonlat -> {
             List<Double> lonlatList = (List<Double>) lonlat;
             Coordinates coordinates = new Coordinates();

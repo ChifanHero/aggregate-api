@@ -58,9 +58,21 @@ public class ChifanheroRestaurantServiceImplIT {
         }
     }
 
-    @Test //TODO
+    @Test
     public void testSetOnInsert() {
-
+        Restaurant restaurant = new Restaurant();
+        restaurant.setPlaceId("testSetOnInsert");
+        restaurant.setRating(4.5);
+        List<Restaurant> restaurants = Collections.singletonList(restaurant);
+        service.bulkUpsert(restaurants);
+        restaurant = new Restaurant();
+        restaurant.setPlaceId("testSetOnInsert");
+        restaurant.setRating(3.5);
+        restaurants = Collections.singletonList(restaurant);
+        service.bulkUpsert(restaurants);
+        Map<String, Restaurant> results = service.batchGetByGooglePlaceId(Collections.singletonList("testSetOnInsert"));
+        Restaurant result = results.get("testSetOnInsert");
+        Assert.assertTrue(result.getRating() == 4.5);
     }
 
     @Test
