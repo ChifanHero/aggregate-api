@@ -2,13 +2,11 @@ package com.chifanhero.api.functions;
 
 import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
+import com.chifanhero.api.models.response.Source;
 import com.chifanhero.api.services.google.GooglePlacesService;
 import com.google.common.base.Function;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,10 +23,23 @@ public class FillRestaurantsFunction implements Function<RestaurantSearchRespons
     @Override
     public RestaurantSearchResponse apply(RestaurantSearchResponse input) {
         Optional.ofNullable(input.getResults()).ifPresent(restaurants -> {
-            List<String> placeIds = restaurants.stream().map(Restaurant::getPlaceId).collect(Collectors.toList());
-            Map<String, Restaurant> restaurantMap = googlePlacesService.batchGet(placeIds);
-            List<Restaurant> fulfilled = new ArrayList<>(restaurantMap.values());
-            input.setResults(fulfilled);
+            Map<String, Restaurant> linkedMap = new LinkedHashMap<>(); // use linked hashmap to preserve order
+            Set<String> placeToFill = new HashSet<>();
+            for (Restaurant restaurant : restaurants) {
+                linkedMap.put(restaurant.getPlaceId(), restaurant);
+                if (restaurant.getSource() == Source.CHIFANHERO) {
+                    placeToFill.add(restaurant.getPlaceId());
+                }
+            }
+            Map<String, Restaurant> filled = googlePlacesService.batchGet(new ArrayList<>(placeToFill));
+            for (Map.Entry<String, Restaurant> entry : linkedMap.entrySet()) {
+                if (placeToFill.contains(entry.getKey())) {
+                    Restaurant filledRestaurant = entry.getValue();
+                    filledRestaurant.applyPatch(filled.get(entry.getKey()));
+                    linkedMap.put(entry.getKey(), filledRestaurant);
+                }
+            }
+            input.setResults(new ArrayList<>(linkedMap.values()));
         });
         return input;
     }

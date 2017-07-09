@@ -2,12 +2,14 @@ package com.chifanhero.api.functions;
 
 import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
+import com.chifanhero.api.models.response.Source;
 import com.chifanhero.api.services.google.GooglePlacesService;
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,9 +21,9 @@ public class FillRestaurantsFunctionTest {
     @Test
     public void test() {
         RestaurantSearchResponse input = new RestaurantSearchResponse();
-        input.setResults(Arrays.asList(createRestaurant("1"), createRestaurant("2")));
+        input.setResults(Arrays.asList(createRestaurant("1", Source.CHIFANHERO, null), createRestaurant("2", Source.GOOGLE, "restaurant2")));
         GooglePlacesService mockGooglePlacesService = EasyMock.mock(GooglePlacesService.class);
-        EasyMock.expect(mockGooglePlacesService.batchGet(Arrays.asList("1", "2"))).andReturn(createResponseMap());
+        EasyMock.expect(mockGooglePlacesService.batchGet(Collections.singletonList("1"))).andReturn(createResponseMap());
         EasyMock.replay(mockGooglePlacesService);
         FillRestaurantsFunction fillRestaurantsFunction = new FillRestaurantsFunction(mockGooglePlacesService);
         RestaurantSearchResponse response = fillRestaurantsFunction.apply(input);
@@ -40,18 +42,16 @@ public class FillRestaurantsFunctionTest {
 
     private Map<String,Restaurant> createResponseMap() {
         Map<String, Restaurant> responseMap = new HashMap<>();
-        Restaurant restaurant1 = createRestaurant("1");
-        restaurant1.setName("restaurant1");
+        Restaurant restaurant1 = createRestaurant("1", Source.CHIFANHERO, "restaurant1");
         responseMap.put("1", restaurant1);
-        Restaurant restaurant2 = createRestaurant("2");
-        restaurant2.setName("restaurant2");
-        responseMap.put("2", restaurant2);
         return responseMap;
     }
 
-    private Restaurant createRestaurant(String placeId) {
+    private Restaurant createRestaurant(String placeId, Source source, String name) {
         Restaurant restaurant = new Restaurant();
+        restaurant.setSource(source);
         restaurant.setPlaceId(placeId);
+        restaurant.setName(name);
         return restaurant;
     }
 }

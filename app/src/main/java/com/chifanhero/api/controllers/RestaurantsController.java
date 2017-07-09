@@ -5,15 +5,13 @@ import com.chifanhero.api.functions.*;
 import com.chifanhero.api.helpers.RestaurantDeduper;
 import com.chifanhero.api.models.request.NearbySearchRequest;
 import com.chifanhero.api.models.request.SortOrder;
+import com.chifanhero.api.models.request.TextSearchRequest;
 import com.chifanhero.api.models.response.Error;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
 import com.chifanhero.api.services.chifanhero.ChifanheroRestaurantService;
 import com.chifanhero.api.services.elasticsearch.ElasticsearchService;
 import com.chifanhero.api.services.google.GooglePlacesService;
-import com.chifanhero.api.tasks.CacheUpdateTask;
-import com.chifanhero.api.tasks.DBUpdateTask;
-import com.chifanhero.api.tasks.ElasticNearbySearchTask;
-import com.chifanhero.api.tasks.GoogleNearbySearchTask;
+import com.chifanhero.api.tasks.*;
 import com.google.common.cache.Cache;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -77,10 +75,32 @@ public class RestaurantsController {
         ListenableFuture<RestaurantSearchResponse> calculatedFuture = Futures.transform(fulfillRestaurantFuture, new CalculateDistanceFunction(nearbySearchRequest.getLocation()));
         ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(calculatedFuture, new FilterFunction(nearbySearchRequest));
         ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(filteredFuture, new SortFunction(SortOrder.valueOf(nearbySearchRequest.getSortOrder().toUpperCase())));
-        ListenableFuture<RestaurantSearchResponse> result = Futures.transform(sortedFuture, new CalculateDistanceFunction(nearbySearchRequest.getLocation()));
-        fulfillRestaurantFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, result), executorService);
+//        ListenableFuture<RestaurantSearchResponse> result = Futures.transform(sortedFuture, new CalculateDistanceFunction(nearbySearchRequest.getLocation()));
+        fulfillRestaurantFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, sortedFuture), executorService);
         try {
-            return result.get();
+            return sortedFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @RequestMapping("/text")
+    public RestaurantSearchResponse textSearch(TextSearchRequest textSearchRequest, HttpServletResponse response) {
+        ElasticTextSearchTask elasticTextSearchTask = new ElasticTextSearchTask(textSearchRequest, elasticsearchService);
+        GoogleTextSearchTask googleTextSearchTask = new GoogleTextSearchTask(textSearchRequest, googlePlacesService);
+        ListenableFuture<RestaurantSearchResponse> elasticTextSearchFuture = executorService.submit(elasticTextSearchTask);
+        ListenableFuture<RestaurantSearchResponse> googleTextSearchFuture = executorService.submit(googleTextSearchTask);
+        DBUpdateTask dbUpdateTask = new DBUpdateTask(chifanheroRestaurantService, googleTextSearchFuture);
+        googleTextSearchFuture.addListener(dbUpdateTask, executorService);
+        ListenableFuture<List<RestaurantSearchResponse>> listListenableFuture = Futures.allAsList(elasticTextSearchFuture, googleTextSearchFuture);
+        ListenableFuture<RestaurantSearchResponse> dedupeFuture = Futures.transform(listListenableFuture, new RestaurantsMergeFunction(new RestaurantDeduper()));
+        ListenableFuture<RestaurantSearchResponse> fulfillRestaurantFuture = Futures.transform(dedupeFuture, new FillRestaurantsFunction(googlePlacesService));
+        ListenableFuture<RestaurantSearchResponse> calculatedFuture = Futures.transform(fulfillRestaurantFuture, new CalculateDistanceFunction(textSearchRequest.getLocation()));
+        ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(calculatedFuture, new FilterFunction(textSearchRequest));
+        ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(filteredFuture, new SortFunction(SortOrder.valueOf(textSearchRequest.getSortOrder().toUpperCase())));
+//        ListenableFuture<RestaurantSearchResponse> result = Futures.transform(sortedFuture, new CalculateDistanceFunction(textSearchRequest.getLocation()));
+        try {
+            return sortedFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }

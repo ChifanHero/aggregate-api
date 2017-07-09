@@ -26,9 +26,9 @@ public class FilterFunction implements Function<RestaurantSearchResponse, Restau
     }
 
     public FilterFunction(TextSearchRequest textSearchRequest) {
-        if (textSearchRequest.getOpenNow() != null) {
-            openNow = textSearchRequest.getOpenNow();
-        }
+        openNow = textSearchRequest.getOpenNow();
+        radius = textSearchRequest.getRadius();
+        rating = textSearchRequest.getRating();
     }
 
     @Override
