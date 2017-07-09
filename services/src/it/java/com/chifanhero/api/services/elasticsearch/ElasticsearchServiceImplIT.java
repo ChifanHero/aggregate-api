@@ -225,7 +225,7 @@ public class ElasticsearchServiceImplIT {
             return jsonBuilder()
                     .startObject()
                     .field(FieldNames.NAME, name)
-                    .field(FieldNames.ENGLISH_NAME, englishName)
+                    .field(FieldNames.GOOGLE_NAME, englishName)
                     .field(FieldNames.RATING, rating)
                     .field(FieldNames.COORDINATES, geoPoint)
                     .field(FieldNames.GOOGLE_PLACE_ID, googlePlaceId)

@@ -57,6 +57,6 @@ public class QueryHelper {
     private static org.elasticsearch.index.query.QueryBuilder buildTextQuery(String keyword) {
         return QueryBuilders.disMaxQuery()
                 .add(QueryBuilders.matchQuery(FieldNames.NAME, keyword))
-                .add(QueryBuilders.matchQuery(FieldNames.ENGLISH_NAME, keyword));
+                .add(QueryBuilders.matchQuery(FieldNames.GOOGLE_NAME, keyword));
     }
 }
