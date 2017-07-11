@@ -50,6 +50,9 @@ public class Restaurant {
     @JsonIgnore
     private Boolean blacklisted;
 
+    @JsonIgnore
+    private Double score;
+
     public String getAddress() {
         return address;
     }
@@ -178,6 +181,14 @@ public class Restaurant {
         this.blacklisted = blacklisted;
     }
 
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
+    }
+
     public void applyPatch(Restaurant patch) {
         if (patch == null) {
             return;
@@ -197,5 +208,6 @@ public class Restaurant {
         distance = distance == null? patch.getDistance(): distance;
         coordinates = coordinates == null? patch.getCoordinates(): coordinates;
         blacklisted = blacklisted == null? patch.getBlacklisted(): blacklisted;
+        score = score == null? patch.getScore(): score;
     }
 }

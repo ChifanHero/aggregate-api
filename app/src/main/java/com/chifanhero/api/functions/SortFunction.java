@@ -40,6 +40,25 @@ public class SortFunction implements Function<RestaurantSearchResponse, Restaura
                     }
                     return restaurant1.getRating() >= restaurant2.getRating()? -1: 1;
                 });
+            } else {
+                // promote chifanhero restaurants with score > 1
+                restaurants.sort((restaurant1, restaurant2) -> {
+                    Double score1 = 0.0;
+                    Double score2 = 0.0;
+                    if (restaurant1.getScore() != null) {
+                        score1 = restaurant1.getScore() >= 1? restaurant1.getScore(): score1;
+                    }
+                    if (restaurant2.getScore() != null) {
+                        score2 = restaurant2.getScore() >= 1? restaurant2.getScore(): score2;
+                    }
+                    if (score1 > score2) {
+                        return -1;
+                    } else if (score1.equals(score2)) {
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                });
             }
         });
         return input;
