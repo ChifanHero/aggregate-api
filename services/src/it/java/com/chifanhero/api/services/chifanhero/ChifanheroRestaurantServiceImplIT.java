@@ -3,6 +3,7 @@ package com.chifanhero.api.services.chifanhero;
 import com.chifanhero.api.configs.ChifanheroConfigs;
 import com.chifanhero.api.models.response.Coordinates;
 import com.chifanhero.api.models.response.Restaurant;
+import com.chifanhero.api.services.chifanhero.document.IdGenerator;
 import com.chifanhero.api.services.it.MongoClientFactory;
 import com.chifanhero.api.utils.DateUtil;
 import com.google.common.collect.ImmutableMap;
@@ -62,17 +63,20 @@ public class ChifanheroRestaurantServiceImplIT {
     public void testSetOnInsert() {
         Restaurant restaurant = new Restaurant();
         restaurant.setPlaceId("testSetOnInsert");
+        restaurant.setId("123456");
         restaurant.setRating(4.5);
         List<Restaurant> restaurants = Collections.singletonList(restaurant);
         service.bulkUpsert(restaurants);
         restaurant = new Restaurant();
         restaurant.setPlaceId("testSetOnInsert");
+        restaurant.setId("1234567");
         restaurant.setRating(3.5);
         restaurants = Collections.singletonList(restaurant);
         service.bulkUpsert(restaurants);
         Map<String, Restaurant> results = service.batchGetByGooglePlaceId(Collections.singletonList("testSetOnInsert"));
         Restaurant result = results.get("testSetOnInsert");
         Assert.assertTrue(result.getRating() == 4.5);
+        Assert.assertEquals("123456", result.getId());
     }
 
     @Test
@@ -97,6 +101,7 @@ public class ChifanheroRestaurantServiceImplIT {
         String placeId = "testDataShouldExpire";
         Restaurant toExpire = new Restaurant();
         toExpire.setPlaceId(placeId);
+        toExpire.setId("testDataShouldExpire");
         Coordinates coordinates = new Coordinates();
         coordinates.setLatitude(37.308835);
         coordinates.setLongitude(-121.99);
@@ -123,6 +128,7 @@ public class ChifanheroRestaurantServiceImplIT {
         coordinates.setLongitude(-121.99);
         Restaurant notToExpire = new Restaurant();
         notToExpire.setPlaceId(placeId);
+        notToExpire.setId("testDataShouldNotExpire");
         notToExpire.setName(name);
         notToExpire.setCoordinates(coordinates);
         notToExpire.setGoogleName(googleName2);
@@ -142,6 +148,7 @@ public class ChifanheroRestaurantServiceImplIT {
         String placeId = "testMarkRecommendation";
         String googleName1 = "googlename1";
         Restaurant restaurant = new Restaurant();
+        restaurant.setId("testMarkRecommendation");
         restaurant.setPlaceId(placeId);
         Coordinates coordinates = new Coordinates();
         coordinates.setLatitude(37.308835);
@@ -172,6 +179,7 @@ public class ChifanheroRestaurantServiceImplIT {
         Restaurant restaurant = new Restaurant();
         restaurant.setPlaceId(googlePlaceId);
         restaurant.setGoogleName(googleName);
+        restaurant.setId(IdGenerator.getNewObjectId());
         return restaurant;
     }
 

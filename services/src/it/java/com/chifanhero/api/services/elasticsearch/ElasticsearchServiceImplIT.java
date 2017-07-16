@@ -37,7 +37,7 @@ public class ElasticsearchServiceImplIT {
             "            \"coordinates\" : {\"type\" : \"geo_point\", \"store\": \"true\"},\n" +
             "            \"_created_at\" : {\"type\" : \"date\", \"format\" : \"date_time\", \"index\" : \"no\"},\n" +
             "            \"name\" : {\"type\" : \"string\", \"analyzer\": \"smartcn\", \"store\" : \"true\"},\n" +
-            "            \"english_name\" : {\"type\" : \"string\", \"store\" : \"true\"},\n" +
+            "            \"google_name\" : {\"type\" : \"string\", \"store\" : \"true\"},\n" +
             "            \"rating\": {\"type\" : \"double\", \"store\": \"true\"},\n" +
             "            \"google_place_id\": {\"type\" : \"string\", \"index\" : \"not_analyzed\", \"store\": \"true\"},\n" +
             "            \"_updated_at\" : {\"type\" : \"date\", \"format\" : \"date_time\", \"index\" : \"no\"}\n" +
@@ -89,7 +89,7 @@ public class ElasticsearchServiceImplIT {
         Assert.assertNotNull(response);
         Assert.assertTrue(response.getResults().size() == 2);
         response.getResults().forEach(result -> {
-            // source, name, english_name, rating, coordinates, google_place_id
+            // source, name, google_name, rating, coordinates, google_place_id
             Assert.assertEquals(Source.CHIFANHERO, result.getSource());
             Assert.assertNotNull(result.getName());
             Assert.assertNotNull(result.getGoogleName());
@@ -116,7 +116,7 @@ public class ElasticsearchServiceImplIT {
         Assert.assertNotNull(response);
         Assert.assertTrue(response.getResults().size() == 2);
         response.getResults().forEach(result -> {
-            // source, name, english_name, rating, coordinates, google_place_id
+            // source, name, google_name, rating, coordinates, google_place_id
             Assert.assertEquals(Source.CHIFANHERO, result.getSource());
             Assert.assertNotNull(result.getName());
             Assert.assertNotNull(result.getGoogleName());
@@ -144,7 +144,7 @@ public class ElasticsearchServiceImplIT {
         Assert.assertNotNull(response);
         Assert.assertTrue(response.getResults().size() == 1);
         Restaurant restaurant = response.getResults().get(0);
-        // source, name, english_name, rating, coordinates, google_place_id
+        // source, name, google_name, rating, coordinates, google_place_id
         Assert.assertEquals(Source.CHIFANHERO, restaurant.getSource());
         Assert.assertEquals("韶山印象", restaurant.getName());
         Assert.assertEquals("Hunan Impression", restaurant.getGoogleName());
@@ -172,7 +172,7 @@ public class ElasticsearchServiceImplIT {
         Assert.assertNotNull(response);
         Assert.assertTrue(response.getResults().size() == 2);
         response.getResults().forEach(result -> {
-            // source, name, english_name, rating, coordinates, google_place_id
+            // source, name, google_name, rating, coordinates, google_place_id
             Assert.assertEquals(Source.CHIFANHERO, result.getSource());
             Assert.assertNotNull(result.getName());
             Assert.assertNotNull(result.getGoogleName());

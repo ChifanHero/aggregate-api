@@ -50,7 +50,7 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
         MongoCollection<Document> collection = getRestaurantCollection();
         List<UpdateOneModel<Document>> upserts = entities.stream().map(entity -> {
             Bson filter = Filters.eq(KeyNames.GOOGLE_PLACE_ID, entity.getPlaceId());
-            Document setOnInsertDocument = new Document(KeyNames.ID, IdGenerator.getNewObjectId());
+            Document setOnInsertDocument = new Document(KeyNames.ID, entity.getId());
             setOnInsertDocument.append(KeyNames.CREATED_AT, new Date());
             // set rating on insert just to get initial rating
             Optional.ofNullable(entity.getRating()).ifPresent(rating -> setOnInsertDocument.append(KeyNames.RATING, rating));

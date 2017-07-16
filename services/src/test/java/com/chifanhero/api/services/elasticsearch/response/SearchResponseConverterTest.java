@@ -31,7 +31,7 @@ public class SearchResponseConverterTest {
                 "        \"_id\": \"CRtOfsEDHc\",\n" +
                 "        \"_score\": 6.8208194,\n" +
                 "        \"_source\": {\n" +
-                "          \"english_name\": \"Hunan Impression\",\n" +
+                "          \"google_name\": \"Hunan Impression\",\n" +
                 "          \"google_place_id\": \"1234\",\n" +
                 "          \"rating\": 4.8,\n" +
                 "          \"name\": \"韶山印象\",\n" +

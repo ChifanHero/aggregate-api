@@ -3,6 +3,7 @@ package com.chifanhero.api.services.google.client.request.converters;
 import com.chifanhero.api.models.google.PlacesSearchResponse;
 import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
+import com.chifanhero.api.services.chifanhero.document.IdGenerator;
 import com.google.common.base.Preconditions;
 
 import java.util.List;
@@ -19,7 +20,11 @@ public class ResponseConverter {
         Preconditions.checkNotNull(placesSearchResponse);
         RestaurantSearchResponse restaurantSearchResponse = new RestaurantSearchResponse();
         Optional.ofNullable(placesSearchResponse.getResults()).ifPresent(results -> {
-            List<Restaurant> restaurants = results.stream().map(RestaurantConverter::toRestaurant).collect(Collectors.toList());
+            List<Restaurant> restaurants = results.stream().map(place -> {
+                Restaurant restaurant = RestaurantConverter.toRestaurant(place);
+                restaurant.setId(IdGenerator.getNewObjectId());
+                return restaurant;
+            }).collect(Collectors.toList());
             restaurantSearchResponse.setResults(restaurants);
         });
         return restaurantSearchResponse;

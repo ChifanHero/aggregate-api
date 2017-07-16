@@ -2,6 +2,7 @@ package com.chifanhero.api.services.google.client.request.converters;
 
 import com.chifanhero.api.models.google.Place;
 import com.chifanhero.api.models.google.PlacesSearchResponse;
+import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,5 +24,7 @@ public class ResponseConverterTest {
         placesSearchResponse.setResults(results);
         RestaurantSearchResponse restaurantSearchResponse = ResponseConverter.toRestaurantSearchResponse(placesSearchResponse);
         Assert.assertTrue(restaurantSearchResponse.getResults().size() == 1);
+        Restaurant restaurant = restaurantSearchResponse.getResults().get(0);
+        Assert.assertNotNull(restaurant.getId());
     }
 }

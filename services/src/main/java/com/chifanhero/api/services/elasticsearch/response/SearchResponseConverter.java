@@ -40,7 +40,7 @@ public class SearchResponseConverter {
         Restaurant restaurant = new Restaurant();
         restaurant.setSource(Source.CHIFANHERO);
         JSONObject source = hit.getJSONObject("_source");
-        if (hit.has("_score")) {
+        if (hit.has("_score") && !hit.isNull("_score")) {
             restaurant.setScore(hit.getDouble("_score"));
         }
         if (source.has(FieldNames.NAME)) {

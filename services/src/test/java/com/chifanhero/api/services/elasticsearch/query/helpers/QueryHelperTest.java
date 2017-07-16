@@ -126,7 +126,7 @@ public class QueryHelperTest {
                 "            },\n" +
                 "            {\n" +
                 "              \"match\" : {\n" +
-                "                \"english_name\" : {\n" +
+                "                \"google_name\" : {\n" +
                 "                  \"query\" : \"韶山冲\",\n" +
                 "                  \"operator\" : \"OR\",\n" +
                 "                  \"prefix_length\" : 0,\n" +
@@ -207,7 +207,7 @@ public class QueryHelperTest {
                 "            },\n" +
                 "            {\n" +
                 "              \"match\" : {\n" +
-                "                \"english_name\" : {\n" +
+                "                \"google_name\" : {\n" +
                 "                  \"query\" : \"韶山冲\",\n" +
                 "                  \"operator\" : \"OR\",\n" +
                 "                  \"prefix_length\" : 0,\n" +
