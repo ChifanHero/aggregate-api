@@ -14,8 +14,8 @@ import com.chifanhero.api.services.google.client.request.NearBySearchRequestPara
 import com.chifanhero.api.services.google.client.request.PlaceDetailRequestParams;
 import com.chifanhero.api.services.google.client.request.TextSearchRequestParams;
 import com.chifanhero.api.services.google.client.request.converters.NearBySearchRequestConverter;
-import com.chifanhero.api.services.google.client.request.converters.ResponseConverter;
-import com.chifanhero.api.services.google.client.request.converters.RestaurantConverter;
+import com.chifanhero.api.services.google.client.response.converters.ResponseConverter;
+import com.chifanhero.api.services.google.client.response.converters.RestaurantConverter;
 import com.chifanhero.api.services.google.client.request.converters.TextSearchRequestConverter;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
@@ -28,9 +28,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 /**

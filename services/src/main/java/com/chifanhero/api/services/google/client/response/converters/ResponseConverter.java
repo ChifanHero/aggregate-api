@@ -1,4 +1,4 @@
-package com.chifanhero.api.services.google.client.request.converters;
+package com.chifanhero.api.services.google.client.response.converters;
 
 import com.chifanhero.api.models.google.PlacesSearchResponse;
 import com.chifanhero.api.models.response.Restaurant;

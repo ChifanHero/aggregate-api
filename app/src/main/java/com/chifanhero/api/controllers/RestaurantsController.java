@@ -75,10 +75,10 @@ public class RestaurantsController {
         ListenableFuture<RestaurantSearchResponse> calculatedFuture = Futures.transform(fulfillRestaurantFuture, new CalculateDistanceFunction(nearbySearchRequest.getLocation()));
         ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(calculatedFuture, new FilterFunction(nearbySearchRequest));
         ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(filteredFuture, new SortFunction(SortOrder.valueOf(nearbySearchRequest.getSortOrder().toUpperCase())));
-//        ListenableFuture<RestaurantSearchResponse> result = Futures.transform(sortedFuture, new CalculateDistanceFunction(nearbySearchRequest.getLocation()));
-        fulfillRestaurantFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, sortedFuture), executorService);
+        ListenableFuture<RestaurantSearchResponse> transformedFuture = Futures.transform(sortedFuture, new ModelNormalizeFunction());
+        transformedFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, sortedFuture), executorService);
         try {
-            return sortedFuture.get();
+            return transformedFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -98,9 +98,9 @@ public class RestaurantsController {
         ListenableFuture<RestaurantSearchResponse> calculatedFuture = Futures.transform(fulfillRestaurantFuture, new CalculateDistanceFunction(textSearchRequest.getLocation()));
         ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(calculatedFuture, new FilterFunction(textSearchRequest));
         ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(filteredFuture, new SortFunction(SortOrder.valueOf(textSearchRequest.getSortOrder().toUpperCase())));
-//        ListenableFuture<RestaurantSearchResponse> result = Futures.transform(sortedFuture, new CalculateDistanceFunction(textSearchRequest.getLocation()));
+        ListenableFuture<RestaurantSearchResponse> transformedFuture = Futures.transform(sortedFuture, new ModelNormalizeFunction());
         try {
-            return sortedFuture.get();
+            return transformedFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }

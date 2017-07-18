@@ -43,6 +43,9 @@ public class SearchResponseConverter {
         if (hit.has("_score") && !hit.isNull("_score")) {
             restaurant.setScore(hit.getDouble("_score"));
         }
+        if (hit.has("_id") && !hit.isNull("_id")) {
+            restaurant.setId(hit.getString("_id"));
+        }
         if (source.has(FieldNames.NAME)) {
             restaurant.setName(source.getString(FieldNames.NAME));
         }

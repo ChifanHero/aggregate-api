@@ -1,4 +1,4 @@
-package com.chifanhero.api.services.google.client.request.converters;
+package com.chifanhero.api.services.google.client.response.converters;
 
 import com.chifanhero.api.models.google.Coordinates;
 import com.chifanhero.api.models.google.Geometry;
@@ -6,6 +6,7 @@ import com.chifanhero.api.models.google.Photo;
 import com.chifanhero.api.models.google.Place;
 import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.models.response.Source;
+import com.chifanhero.api.services.google.client.response.converters.RestaurantConverter;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class Picture {
 
-    @JsonProperty("photo_reference")
+    @JsonProperty("google_photo_reference")
     private String photoReference;
     private String url;
 

@@ -37,7 +37,15 @@ public class FilterFunction implements Function<RestaurantSearchResponse, Restau
         filterByOpennow(input);
         filterByDistance(input);
         filterByRating(input);
+        filterPermenatelyClosed(input);
         return input;
+    }
+
+    private void filterPermenatelyClosed(RestaurantSearchResponse input) {
+        Optional.ofNullable(input.getResults()).ifPresent(restaurants -> {
+            List<Restaurant> filtered = restaurants.stream().filter(restaurant -> !Boolean.TRUE.equals(restaurant.getPermanentlyClosed())).collect(Collectors.toList());
+            input.setResults(filtered);
+        });
     }
 
     private void filterBlacklisted(RestaurantSearchResponse input) {

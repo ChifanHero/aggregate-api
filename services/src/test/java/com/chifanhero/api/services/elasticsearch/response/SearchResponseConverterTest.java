@@ -53,6 +53,7 @@ public class SearchResponseConverterTest {
         Assert.assertEquals("韶山印象", restaurant.getName());
         Assert.assertEquals("Hunan Impression", restaurant.getGoogleName());
         Assert.assertEquals("1234", restaurant.getPlaceId());
+        Assert.assertEquals("CRtOfsEDHc", restaurant.getId());
         Assert.assertEquals(new Double(4.8), restaurant.getRating());
         Assert.assertEquals(new Double(37.3088354), restaurant.getCoordinates().getLatitude());
         Assert.assertEquals(new Double(-121.9938008), restaurant.getCoordinates().getLongitude());
