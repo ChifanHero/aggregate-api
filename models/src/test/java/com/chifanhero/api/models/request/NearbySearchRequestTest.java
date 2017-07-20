@@ -159,7 +159,7 @@ public class NearbySearchRequestTest {
         NearbySearchRequest nearbySearchRequest = new NearbySearchRequest();
         Assert.assertEquals(SortOrder.BEST_MATCH.getValue(), nearbySearchRequest.getSortOrder());
         Assert.assertEquals("restaurant", nearbySearchRequest.getType());
-        Assert.assertEquals("chinese food", nearbySearchRequest.getKeyword());
+        Assert.assertEquals("中餐", nearbySearchRequest.getKeyword());
         Assert.assertEquals(null, nearbySearchRequest.getOpenNow());
     }
 
