@@ -9,6 +9,7 @@ import com.chifanhero.api.utils.GeoUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
@@ -35,10 +36,30 @@ public class GoogleNearbySearchTask implements Callable<RestaurantSearchResponse
                 location.setLon(coordinates[1]);
                 locations.add(location);
             }
-            return googlePlacesService.nearBySearch(nearbySearchRequest, locations);
+            RestaurantSearchResponse restaurantSearchResponse = googlePlacesService.nearBySearch(nearbySearchRequest, locations);
+            if (restaurantSearchResponse != null && (restaurantSearchResponse.getResults() == null || restaurantSearchResponse.getResults().isEmpty())) {
+                nearbySearchRequest.setKeyword("chinese+food");
+                RestaurantSearchResponse backupResponse = googlePlacesService.nearBySearch(nearbySearchRequest, locations);
+                markBackupResponse(backupResponse);
+                return backupResponse;
+            } else {
+                return restaurantSearchResponse;
+            }
         } else {
-            return googlePlacesService.nearBySearch(nearbySearchRequest);
+            RestaurantSearchResponse restaurantSearchResponse = googlePlacesService.nearBySearch(nearbySearchRequest);
+            if (restaurantSearchResponse != null && (restaurantSearchResponse.getResults() == null || restaurantSearchResponse.getResults().isEmpty())) {
+                nearbySearchRequest.setKeyword("chinese+food");
+                RestaurantSearchResponse backupResponse = googlePlacesService.nearBySearch(nearbySearchRequest);
+                markBackupResponse(backupResponse);
+                return backupResponse;
+            } else {
+                return restaurantSearchResponse;
+            }
         }
 
+    }
+
+    private void markBackupResponse(RestaurantSearchResponse backupResponse) {
+        Optional.ofNullable(backupResponse).map(RestaurantSearchResponse::getResults).ifPresent(restaurants -> restaurants.forEach(restaurant -> restaurant.setShowOnly(true)));
     }
 }

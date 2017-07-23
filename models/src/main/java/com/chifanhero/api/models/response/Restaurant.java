@@ -53,6 +53,9 @@ public class Restaurant {
     @JsonIgnore
     private Double score;
 
+    @JsonIgnore
+    private Boolean showOnly;
+
     public String getAddress() {
         return address;
     }
@@ -187,6 +190,14 @@ public class Restaurant {
 
     public void setScore(Double score) {
         this.score = score;
+    }
+
+    public Boolean getShowOnly() {
+        return showOnly;
+    }
+
+    public void setShowOnly(Boolean showOnly) {
+        this.showOnly = showOnly;
     }
 
     public void applyPatch(Restaurant patch) {
