@@ -1,13 +1,16 @@
 package com.chifanhero.api.services.chifanhero;
 
+import com.chifanhero.api.common.exceptions.ChifanheroException;
 import com.chifanhero.api.configs.ChifanheroConfigs;
 import com.chifanhero.api.models.response.Restaurant;
-import com.chifanhero.api.services.chifanhero.document.DocumentConverter;
-import com.chifanhero.api.services.chifanhero.document.IdGenerator;
+import com.chifanhero.api.models.response.UserInfo;
+import com.chifanhero.api.services.chifanhero.document.RestaurantDocumentConverter;
+import com.chifanhero.api.services.chifanhero.document.UserInfoDocumentConverter;
 import com.chifanhero.api.utils.DateUtil;
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.Block;
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -55,7 +58,7 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
             // set rating on insert just to get initial rating
             Optional.ofNullable(entity.getRating()).ifPresent(rating -> setOnInsertDocument.append(KeyNames.RATING, rating));
             Document updateDocument = new Document("$setOnInsert", setOnInsertDocument);
-            Document setDocument = DocumentConverter.toDocument(entity);
+            Document setDocument = RestaurantDocumentConverter.toDocument(entity);
             setDocument.append(KeyNames.UPDATED_AT, new Date());
             setDocument.append(KeyNames.EXPIRE_AT, expireAt);
             updateDocument.append("$set", setDocument);
@@ -73,7 +76,7 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
         ImmutableMap.Builder<String, Restaurant> results = new ImmutableMap.Builder<>();
         MongoCollection<Document> collection = getRestaurantCollection();
         collection.find(Filters.in(KeyNames.GOOGLE_PLACE_ID, googlePlaceIds)).forEach((Block<? super Document>) document -> {
-            Restaurant restaurant = DocumentConverter.toResult(document);
+            Restaurant restaurant = RestaurantDocumentConverter.toResult(document);
             results.put(restaurant.getPlaceId(), restaurant);
         });
         return results.build();
@@ -118,8 +121,58 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
         }
     }
 
+    @Override
+    public void trackViewCount(String restaurantId) {
+        MongoCollection<Document> collection = getRestaurantCollection();
+        UpdateOptions options = new UpdateOptions().upsert(false);
+        Bson filter = Filters.eq(KeyNames.ID, restaurantId);
+        Document updateDocument = new Document();
+        Document incrementDocument = new Document(KeyNames.VIEW_COUNT, 1);
+        updateDocument.append("$inc", incrementDocument);
+        collection.updateOne(filter, updateDocument, options);
+    }
+
+    @Override
+    public void tryPublishRestaurant(String restaurantId) {
+        MongoCollection<Document> collection = getRestaurantCollection();
+        Bson idFilter = Filters.eq(KeyNames.ID, restaurantId);
+        Bson viewCountFilter = Filters.gte(KeyNames.VIEW_COUNT, 3);
+        Bson filter = Filters.and(idFilter, viewCountFilter);
+        Document onHoldDocument = new Document(KeyNames.ON_HOLD, false);
+        Document updateDocument = new Document("$set", onHoldDocument);
+        collection.findOneAndUpdate(filter, updateDocument);
+    }
+
+    @Override
+    public UserInfo createNewUser(String userId) throws ChifanheroException {
+        if (getUser(userId) != null) {
+            throw new ChifanheroException("UserInfo existing");
+        }
+        MongoCollection<Document> collection = getUserInfoCollection();
+        Document newUser = new Document(KeyNames.ID, userId);
+        collection.insertOne(newUser);
+        return getUser(userId);
+    }
+
+    @Override
+    public UserInfo getUser(String userId) {
+        MongoCollection<Document> collection = getUserInfoCollection();
+        Bson filter = Filters.eq(KeyNames.ID, userId);
+        FindIterable<Document> existings = collection.find(filter);
+        if (existings == null) {
+            return null;
+        }
+        Document first = existings.first();
+        return UserInfoDocumentConverter.toUserInfo(first);
+    }
+
     private MongoCollection<Document> getRestaurantCollection() {
         MongoDatabase database = mongoClient.getDatabase(ChifanheroConfigs.MONGO_DATABASE);
         return database.getCollection(ChifanheroConfigs.MONGO_COLLECTION_RESTAURANT);
+    }
+
+    private MongoCollection<Document> getUserInfoCollection() {
+        MongoDatabase database = mongoClient.getDatabase(ChifanheroConfigs.MONGO_DATABASE);
+        return database.getCollection(ChifanheroConfigs.MONGO_COLLECTION_USERINFO);
     }
 }

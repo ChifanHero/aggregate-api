@@ -19,6 +19,8 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -104,5 +106,10 @@ public class RestaurantsController {
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @RequestMapping(value = "/track", method = RequestMethod.HEAD)
+    public void trackView(@RequestParam(value = "restaurantId") String restaurantId, @RequestParam(value = "userId") String userId, HttpServletResponse response) {
+        response.setStatus(202);
     }
 }

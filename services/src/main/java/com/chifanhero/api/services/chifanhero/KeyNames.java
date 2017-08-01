@@ -15,5 +15,7 @@ public class KeyNames {
     public final static String RATING = "rating";
     public final static String UPDATED_AT = "_updated_at";
     public final static String EXPIRE_AT = "expire_at";
+    public final static String VIEW_COUNT = "view_count";
+    public final static String ON_HOLD = "on_hold";
 
 }

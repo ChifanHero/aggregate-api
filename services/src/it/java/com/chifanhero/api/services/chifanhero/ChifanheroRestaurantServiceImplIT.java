@@ -1,8 +1,10 @@
 package com.chifanhero.api.services.chifanhero;
 
+import com.chifanhero.api.common.exceptions.ChifanheroException;
 import com.chifanhero.api.configs.ChifanheroConfigs;
 import com.chifanhero.api.models.response.Coordinates;
 import com.chifanhero.api.models.response.Restaurant;
+import com.chifanhero.api.models.response.UserInfo;
 import com.chifanhero.api.services.chifanhero.document.IdGenerator;
 import com.chifanhero.api.services.it.MongoClientFactory;
 import com.chifanhero.api.utils.DateUtil;
@@ -165,6 +167,20 @@ public class ChifanheroRestaurantServiceImplIT {
         Assert.assertEquals(googleName1, rest.getGoogleName());
         Assert.assertNotNull(rest.getCoordinates());
         Assert.assertEquals(true, rest.getRecommendationCandidate());
+    }
+
+    @Test
+    public void testCreateNewUser() throws ChifanheroException {
+        String id = "testCreateNewUser" + System.currentTimeMillis();
+        UserInfo newUser = service.createNewUser(id);
+        Assert.assertEquals(id, newUser.getUserId());
+    }
+
+    @Test(expected = ChifanheroException.class)
+    public void testCreateNewUserExisting() throws ChifanheroException {
+        String id = "testCreateNewUserExisting" + System.currentTimeMillis();
+        service.createNewUser(id);
+        service.createNewUser(id);
     }
 
     private List<Restaurant> createResults(ImmutableMap<String, String> placeidName) {
