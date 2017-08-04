@@ -60,6 +60,6 @@ public class GoogleNearbySearchTask implements Callable<RestaurantSearchResponse
     }
 
     private void markBackupResponse(RestaurantSearchResponse backupResponse) {
-        Optional.ofNullable(backupResponse).map(RestaurantSearchResponse::getResults).ifPresent(restaurants -> restaurants.forEach(restaurant -> restaurant.setShowOnly(true)));
+        Optional.ofNullable(backupResponse).map(RestaurantSearchResponse::getResults).ifPresent(restaurants -> restaurants.forEach(restaurant -> restaurant.setOnHold(true)));
     }
 }

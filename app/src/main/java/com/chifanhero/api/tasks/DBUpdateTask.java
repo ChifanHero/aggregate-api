@@ -29,9 +29,8 @@ public class DBUpdateTask implements Runnable {
             try {
                 RestaurantSearchResponse restaurantSearchResponse = responseFuture.get();
                 Optional.ofNullable(restaurantSearchResponse.getResults()).ifPresent(restaurants -> {
-                    List<Restaurant> toSave = restaurants.stream().filter(restaurant -> !Boolean.TRUE.equals(restaurant.getShowOnly())).collect(Collectors.toList());
-                    chifanheroRestaurantService.bulkUpsert(toSave);
-                    chifanheroRestaurantService.markRecommendations(toSave);
+                    chifanheroRestaurantService.bulkUpsert(restaurants);
+                    chifanheroRestaurantService.markRecommendations(restaurants);
                 });
             } catch (InterruptedException | ExecutionException e) {
                 // ignore

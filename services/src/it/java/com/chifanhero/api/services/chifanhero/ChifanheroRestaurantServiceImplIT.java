@@ -175,6 +175,31 @@ public class ChifanheroRestaurantServiceImplIT {
     }
 
     @Test
+    public void testMarkRecommendationNegative() {
+        String placeId = "testMarkRecommendationNegative";
+        String googleName1 = "googlename1";
+        Restaurant restaurant = new Restaurant();
+        restaurant.setId("testMarkRecommendationNegative");
+        restaurant.setPlaceId(placeId);
+        Coordinates coordinates = new Coordinates();
+        coordinates.setLatitude(37.308835);
+        coordinates.setLongitude(-121.99);
+        restaurant.setCoordinates(coordinates);
+        restaurant.setGoogleName(googleName1);
+        restaurant.setOnHold(true);
+        service.bulkUpsert(Collections.singletonList(restaurant), new Date());
+        restaurant.setRating(4.5);
+        service.markRecommendations(Collections.singletonList(restaurant));
+        Map<String, Restaurant> restaurants = service.batchGetByGooglePlaceId(Collections.singletonList(placeId));
+        Assert.assertTrue(restaurants.size() == 1);
+        Restaurant rest = restaurants.get(placeId);
+        Assert.assertEquals(placeId, rest.getPlaceId());
+        Assert.assertEquals(googleName1, rest.getGoogleName());
+        Assert.assertNotNull(rest.getCoordinates());
+        Assert.assertNull(rest.getRecommendationCandidate());
+    }
+
+    @Test
     public void testCreateNewUser() throws ChifanheroException {
         String id = "testCreateNewUser" + System.currentTimeMillis();
         UserInfo newUser = service.createNewUser(id);

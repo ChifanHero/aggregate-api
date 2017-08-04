@@ -106,7 +106,9 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
             List<UpdateOneModel<Document>> upserts = restaurants.stream().filter(
                     restaurant -> restaurant.getRating() != null && restaurant.getRating() > 4.0
             ).map(restaurant -> {
-                Bson filter = Filters.eq(KeyNames.GOOGLE_PLACE_ID, restaurant.getPlaceId());
+                Bson placeIdFilter = Filters.eq(KeyNames.GOOGLE_PLACE_ID, restaurant.getPlaceId());
+                Bson onHoldFilter = Filters.eq(KeyNames.ON_HOLD, false);
+                Bson filter = Filters.and(placeIdFilter, onHoldFilter);
                 Document updateDocument = new Document();
                 Document setDocument = new Document();
                 setDocument.append(KeyNames.IS_RECOMMENDATION_CANDIDATE, true);
