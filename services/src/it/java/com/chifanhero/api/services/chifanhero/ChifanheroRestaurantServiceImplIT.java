@@ -11,11 +11,16 @@ import com.chifanhero.api.utils.DateUtil;
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.Block;
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.DeleteOneModel;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -181,6 +186,48 @@ public class ChifanheroRestaurantServiceImplIT {
         String id = "testCreateNewUserExisting" + System.currentTimeMillis();
         service.createNewUser(id);
         service.createNewUser(id);
+    }
+
+    @Test
+    public void testTrackViewCount() {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setId("testTrackViewCount");
+        restaurant.setPlaceId("testTrackViewCount");
+        service.bulkUpsert(Collections.singletonList(restaurant));
+        service.trackViewCount("testTrackViewCount", "uid1");
+        service.trackViewCount("testTrackViewCount", "uid2");
+        service.trackViewCount("testTrackViewCount", "uid3");
+        service.trackViewCount("testTrackViewCount", "uid3");
+        Document document = getRestaurant("testTrackViewCount");
+        Assert.assertEquals(4, document.getInteger(KeyNames.VIEW_COUNT).intValue());
+        List views = document.get(KeyNames.VIEWS_N, List.class);
+        Assert.assertEquals(3, views.size());
+    }
+
+    @Test
+    public void testTryPublishRestaurant() {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setId("testTryPublishRestaurant");
+        restaurant.setPlaceId("testTryPublishRestaurant");
+        restaurant.setOnHold(true);
+        service.bulkUpsert(Collections.singletonList(restaurant));
+        Document restaurantDocument = getRestaurant("testTryPublishRestaurant");
+        assert restaurantDocument.getBoolean(KeyNames.ON_HOLD);
+        service.trackViewCount("testTryPublishRestaurant", "uid1");
+        service.trackViewCount("testTryPublishRestaurant", "uid2");
+        service.trackViewCount("testTryPublishRestaurant", "uid3");
+        service.tryPublishRestaurant("testTryPublishRestaurant");
+        restaurantDocument = getRestaurant("testTryPublishRestaurant");
+        Assert.assertFalse(restaurantDocument.getBoolean(KeyNames.ON_HOLD));
+    }
+
+    private Document getRestaurant(String id) {
+        MongoCollection<Document> restaurantCollection =
+                mongoClient.getDatabase(ChifanheroConfigs.MONGO_DATABASE)
+                        .getCollection(ChifanheroConfigs.MONGO_COLLECTION_RESTAURANT);
+        Bson filter = Filters.eq(KeyNames.ID, id);
+        FindIterable<Document> documents = restaurantCollection.find(filter);
+        return documents.first();
     }
 
     private List<Restaurant> createResults(ImmutableMap<String, String> placeidName) {

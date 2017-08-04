@@ -22,10 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import javax.print.Doc;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
@@ -55,6 +53,7 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
             Bson filter = Filters.eq(KeyNames.GOOGLE_PLACE_ID, entity.getPlaceId());
             Document setOnInsertDocument = new Document(KeyNames.ID, entity.getId());
             setOnInsertDocument.append(KeyNames.CREATED_AT, new Date());
+            setOnInsertDocument.append(KeyNames.ON_HOLD, entity.isOnHold());
             // set rating on insert just to get initial rating
             Optional.ofNullable(entity.getRating()).ifPresent(rating -> setOnInsertDocument.append(KeyNames.RATING, rating));
             Document updateDocument = new Document("$setOnInsert", setOnInsertDocument);
@@ -122,13 +121,28 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
     }
 
     @Override
-    public void trackViewCount(String restaurantId) {
+    public void trackViewCount(String restaurantId, String userId) {
+        // view: {userId: 1234, timestamp: 99887722}
+        // views_n: [
+        //  {userId: 1234, timestamp: 9224322},
+        //  {userId: 2345, timestamp: 9876312}
+        // ]
         MongoCollection<Document> collection = getRestaurantCollection();
         UpdateOptions options = new UpdateOptions().upsert(false);
         Bson filter = Filters.eq(KeyNames.ID, restaurantId);
         Document updateDocument = new Document();
         Document incrementDocument = new Document(KeyNames.VIEW_COUNT, 1);
         updateDocument.append("$inc", incrementDocument);
+        Document addToSetDocument = new Document();
+        Document views = new Document();
+//        Document newView = new Document();
+//        newView.append("userId", userId).append("timestamp", System.currentTimeMillis());
+        views.append("$each", Collections.singletonList(userId));
+//        Document sortDocument = new Document("timestamp", 1);
+//        views.append("$sort", sortDocument);
+        views.append("$slice", -3);
+        addToSetDocument.append(KeyNames.VIEWS_N, views);
+        updateDocument.append("$addToSet", addToSetDocument);
         collection.updateOne(filter, updateDocument, options);
     }
 
@@ -136,7 +150,7 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
     public void tryPublishRestaurant(String restaurantId) {
         MongoCollection<Document> collection = getRestaurantCollection();
         Bson idFilter = Filters.eq(KeyNames.ID, restaurantId);
-        Bson viewCountFilter = Filters.gte(KeyNames.VIEW_COUNT, 3);
+        Bson viewCountFilter = Filters.size(KeyNames.VIEWS_N, 3);
         Bson filter = Filters.and(idFilter, viewCountFilter);
         Document onHoldDocument = new Document(KeyNames.ON_HOLD, false);
         Document updateDocument = new Document("$set", onHoldDocument);

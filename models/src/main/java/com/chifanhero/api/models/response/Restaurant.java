@@ -56,6 +56,8 @@ public class Restaurant {
     @JsonIgnore
     private Boolean showOnly;
 
+    private boolean onHold;
+
     public String getAddress() {
         return address;
     }
@@ -198,6 +200,14 @@ public class Restaurant {
 
     public void setShowOnly(Boolean showOnly) {
         this.showOnly = showOnly;
+    }
+
+    public boolean isOnHold() {
+        return onHold;
+    }
+
+    public void setOnHold(boolean onHold) {
+        this.onHold = onHold;
     }
 
     public void applyPatch(Restaurant patch) {

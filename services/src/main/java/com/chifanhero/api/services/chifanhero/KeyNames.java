@@ -17,5 +17,6 @@ public class KeyNames {
     public final static String EXPIRE_AT = "expire_at";
     public final static String VIEW_COUNT = "view_count";
     public final static String ON_HOLD = "on_hold";
+    public final static String VIEWS_N = "views_n";
 
 }

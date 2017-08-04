@@ -22,7 +22,7 @@ public interface ChifanheroRestaurantService {
 
     void markRecommendations(List<Restaurant> restaurants);
 
-    void trackViewCount(String restaurantId);
+    void trackViewCount(String restaurantId, String userId);
 
     void tryPublishRestaurant(String restaurantId);
 
