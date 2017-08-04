@@ -5,6 +5,7 @@ import com.chifanhero.api.models.request.TextSearchRequest;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
 import com.chifanhero.api.services.google.GooglePlacesService;
 
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
@@ -22,6 +23,10 @@ public class GoogleTextSearchTask implements Callable<RestaurantSearchResponse> 
 
     @Override
     public RestaurantSearchResponse call() throws Exception {
-        return googlePlacesService.textSearch(textSearchRequest);
+        RestaurantSearchResponse restaurantSearchResponse = googlePlacesService.textSearch(textSearchRequest);
+        Optional.ofNullable(restaurantSearchResponse)
+                .map(RestaurantSearchResponse::getResults)
+                .ifPresent(restaurants -> restaurants.forEach(restaurant -> restaurant.setOnHold(true)));
+        return restaurantSearchResponse;
     }
 }
