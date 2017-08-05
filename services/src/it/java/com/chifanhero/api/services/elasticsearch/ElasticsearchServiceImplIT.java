@@ -40,7 +40,9 @@ public class ElasticsearchServiceImplIT {
             "            \"google_name\" : {\"type\" : \"string\", \"store\" : \"true\"},\n" +
             "            \"rating\": {\"type\" : \"double\", \"store\": \"true\"},\n" +
             "            \"google_place_id\": {\"type\" : \"string\", \"index\" : \"not_analyzed\", \"store\": \"true\"},\n" +
-            "            \"_updated_at\" : {\"type\" : \"date\", \"format\" : \"date_time\", \"index\" : \"no\"}\n" +
+            "            \"blacklisted\":{\"type\":\"boolean\", \"index\" : \"not_analyzed\", \"store\": \"true\"},\n" +
+            "            \"_updated_at\" : {\"type\" : \"date\", \"format\" : \"date_time\", \"index\" : \"no\"},\n" +
+            "            \"on_hold\" : {\"type\" : \"boolean\", \"index\" : \"not_analyzed\", \"store\": \"true\"}\n" +
             "        }\n" +
             "}";
     private final static String SETTINGS = "{\n" +
@@ -170,7 +172,7 @@ public class ElasticsearchServiceImplIT {
         textSearchRequest.validate();
         RestaurantSearchResponse response = service.textSearch(textSearchRequest);
         Assert.assertNotNull(response);
-        Assert.assertTrue(response.getResults().size() == 2);
+        Assert.assertTrue(response.getResults().size() == 1);
         response.getResults().forEach(result -> {
             // source, name, google_name, rating, coordinates, google_place_id
             Assert.assertEquals(Source.CHIFANHERO, result.getSource());
@@ -181,7 +183,6 @@ public class ElasticsearchServiceImplIT {
             Assert.assertNotNull(result.getCoordinates());
         });
         Assert.assertEquals("巴蜀风", response.getResults().get(0).getName());
-        Assert.assertEquals("巴蜀风2", response.getResults().get(1).getName());
     }
 
     private static void putMapping() {
@@ -194,11 +195,11 @@ public class ElasticsearchServiceImplIT {
 
     private static void prepareTestData() {
         List<XContentBuilder> documents = new ArrayList<>();
-        XContentBuilder document1 = createDocument("韶山印象", "Hunan Impression", 3.5, BAY_AREA_COORDINATES, "googleplaceid");
-        XContentBuilder document2 = createDocument("巴蜀风", "Szechuan Chili", 5.0, BAY_AREA_COORDINATES2, "googleplaceid");
-        XContentBuilder document3 = createDocument("巴蜀风2", "Szechuan Chili", 4.0, BAY_AREA_COORDINATES2, "googleplaceid");
-        XContentBuilder document4 = createDocument("老酒门", "Lao Jiu Men", 3.5, LOS_ANGELES_COORDINATES, "googleplaceid");
-        XContentBuilder document5 = createDocument("思烤吧", "Si Kao Ba", 5.0, LOS_ANGELES_COORDINATES2, "googleplaceid");
+        XContentBuilder document1 = createDocument("韶山印象", "Hunan Impression", 3.5, BAY_AREA_COORDINATES, "googleplaceid", false);
+        XContentBuilder document2 = createDocument("巴蜀风", "Szechuan Chili", 5.0, BAY_AREA_COORDINATES2, "googleplaceid", false);
+        XContentBuilder document3 = createDocument("巴蜀风2", "Szechuan Chili", 4.0, BAY_AREA_COORDINATES2, "googleplaceid", true);
+        XContentBuilder document4 = createDocument("老酒门", "Lao Jiu Men", 3.5, LOS_ANGELES_COORDINATES, "googleplaceid", false);
+        XContentBuilder document5 = createDocument("思烤吧", "Si Kao Ba", 5.0, LOS_ANGELES_COORDINATES2, "googleplaceid", false);
         documents.add(document1);
         documents.add(document2);
         documents.add(document3);
@@ -220,7 +221,7 @@ public class ElasticsearchServiceImplIT {
         }
     }
 
-    private static XContentBuilder createDocument(String name, String englishName, Double rating, Double[] geoPoint, String googlePlaceId) {
+    private static XContentBuilder createDocument(String name, String englishName, Double rating, Double[] geoPoint, String googlePlaceId, boolean onHold) {
         try {
             return jsonBuilder()
                     .startObject()
@@ -229,6 +230,7 @@ public class ElasticsearchServiceImplIT {
                     .field(FieldNames.RATING, rating)
                     .field(FieldNames.COORDINATES, geoPoint)
                     .field(FieldNames.GOOGLE_PLACE_ID, googlePlaceId)
+                    .field(FieldNames.ON_HOLD, onHold)
                     .endObject();
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -54,6 +54,23 @@ public class QueryHelperTest {
                 "          \"ignore_unmapped\" : false,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must_not\" : [\n" +
+                "            {\n" +
+                "              \"term\" : {\n" +
+                "                \"on_hold\" : {\n" +
+                "                  \"value\" : true,\n" +
+                "                  \"boost\" : 1.0\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"disable_coord\" : false,\n" +
+                "          \"adjust_pure_negative\" : true,\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
                 "      }\n" +
                 "    ],\n" +
                 "    \"disable_coord\" : false,\n" +
@@ -83,6 +100,23 @@ public class QueryHelperTest {
                 "          \"distance_type\" : \"arc\",\n" +
                 "          \"validation_method\" : \"STRICT\",\n" +
                 "          \"ignore_unmapped\" : false,\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must_not\" : [\n" +
+                "            {\n" +
+                "              \"term\" : {\n" +
+                "                \"on_hold\" : {\n" +
+                "                  \"value\" : true,\n" +
+                "                  \"boost\" : 1.0\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"disable_coord\" : false,\n" +
+                "          \"adjust_pure_negative\" : true,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
                 "      }\n" +
@@ -167,6 +201,23 @@ public class QueryHelperTest {
                 "          \"ignore_unmapped\" : false,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must_not\" : [\n" +
+                "            {\n" +
+                "              \"term\" : {\n" +
+                "                \"on_hold\" : {\n" +
+                "                  \"value\" : true,\n" +
+                "                  \"boost\" : 1.0\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"disable_coord\" : false,\n" +
+                "          \"adjust_pure_negative\" : true,\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
                 "      }\n" +
                 "    ],\n" +
                 "    \"disable_coord\" : false,\n" +
@@ -235,6 +286,23 @@ public class QueryHelperTest {
                 "          \"distance_type\" : \"arc\",\n" +
                 "          \"validation_method\" : \"STRICT\",\n" +
                 "          \"ignore_unmapped\" : false,\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must_not\" : [\n" +
+                "            {\n" +
+                "              \"term\" : {\n" +
+                "                \"on_hold\" : {\n" +
+                "                  \"value\" : true,\n" +
+                "                  \"boost\" : 1.0\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"disable_coord\" : false,\n" +
+                "          \"adjust_pure_negative\" : true,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
                 "      }\n" +

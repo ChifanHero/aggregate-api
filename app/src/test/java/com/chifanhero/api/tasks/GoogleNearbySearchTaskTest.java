@@ -79,6 +79,6 @@ public class GoogleNearbySearchTaskTest {
         GoogleNearbySearchTask googleNearbySearchTask = new GoogleNearbySearchTask(nearbySearchRequest, mockService);
         RestaurantSearchResponse response = googleNearbySearchTask.call();
         Assert.assertTrue(response.getResults().size() == 1);
-        Assert.assertTrue(response.getResults().get(0).getShowOnly());
+        Assert.assertTrue(response.getResults().get(0).isOnHold());
     }
 }
