@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import javax.print.Doc;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
@@ -55,7 +54,7 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
             setOnInsertDocument.append(KeyNames.CREATED_AT, new Date());
             setOnInsertDocument.append(KeyNames.ON_HOLD, entity.isOnHold());
             // set rating on insert just to get initial rating
-            Optional.ofNullable(entity.getRating()).ifPresent(rating -> setOnInsertDocument.append(KeyNames.RATING, rating));
+            Optional.ofNullable(entity.getRating()).ifPresent(rating -> setOnInsertDocument.append(KeyNames.GOOGLE_RATING, rating));
             Document updateDocument = new Document("$setOnInsert", setOnInsertDocument);
             Document setDocument = RestaurantDocumentConverter.toDocument(entity);
             setDocument.append(KeyNames.UPDATED_AT, new Date());
@@ -94,6 +93,7 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
         unsetDocument.append(KeyNames.GOOGLE_NAME, "");
         unsetDocument.append(KeyNames.COORDINATES, "");
         unsetDocument.append(KeyNames.EXPIRE_AT, "");
+        unsetDocument.append(KeyNames.GOOGLE_RATING, "");
         Document updateDocument = new Document("$unset", unsetDocument);
         collection.updateOne(filter, updateDocument);
     }

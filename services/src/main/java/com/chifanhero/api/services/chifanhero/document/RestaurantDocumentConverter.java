@@ -34,7 +34,7 @@ public class RestaurantDocumentConverter {
         restaurant.setGoogleName(document.getString(KeyNames.GOOGLE_NAME));
         restaurant.setPlaceId(document.getString(KeyNames.GOOGLE_PLACE_ID));
         restaurant.setRecommendationCandidate(document.getBoolean(KeyNames.IS_RECOMMENDATION_CANDIDATE));
-        restaurant.setRating(document.getDouble(KeyNames.RATING));
+        restaurant.setRating(document.getDouble(KeyNames.GOOGLE_RATING));
         Optional.ofNullable(document.get(KeyNames.COORDINATES)).ifPresent(lonlat -> {
             List<Double> lonlatList = (List<Double>) lonlat;
             Coordinates coordinates = new Coordinates();
