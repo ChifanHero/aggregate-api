@@ -1,6 +1,7 @@
 package com.chifanhero.api.services.chifanhero;
 
 import com.chifanhero.api.common.exceptions.ChifanheroException;
+import com.chifanhero.api.configs.AppConfigs;
 import com.chifanhero.api.configs.ChifanheroConfigs;
 import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.models.response.UserInfo;
@@ -142,7 +143,7 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
         views.append("$each", Collections.singletonList(userId));
 //        Document sortDocument = new Document("timestamp", 1);
 //        views.append("$sort", sortDocument);
-        views.append("$slice", -3);
+        views.append("$slice", -10);
         addToSetDocument.append(KeyNames.VIEWS_N, views);
         updateDocument.append("$addToSet", addToSetDocument);
         collection.updateOne(filter, updateDocument, options);
@@ -152,7 +153,7 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
     public void tryPublishRestaurant(String restaurantId) {
         MongoCollection<Document> collection = getRestaurantCollection();
         Bson idFilter = Filters.eq(KeyNames.ID, restaurantId);
-        Bson viewCountFilter = Filters.size(KeyNames.VIEWS_N, 3);
+        Bson viewCountFilter = Filters.size(KeyNames.VIEWS_N, AppConfigs.MIN_USER_VIEWS);
         Bson filter = Filters.and(idFilter, viewCountFilter);
         Document onHoldDocument = new Document(KeyNames.ON_HOLD, false);
         Document updateDocument = new Document("$set", onHoldDocument);

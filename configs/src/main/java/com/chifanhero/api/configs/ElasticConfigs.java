@@ -18,10 +18,10 @@ public class ElasticConfigs {
 
     static {
         String prefix = ConfigHelper.getPrefix(ElasticConfigs.class);
-        HOSTS = ConfigHelper.getPropertyAsList(Host.class, "HOSTS", Collections.singletonList(new Host("ec2-34-212-245-174.us-west-2.compute.amazonaws.com", 9200)), (String str) -> {
+        HOSTS = ConfigHelper.getPropertyAsList(Host.class, prefix + "HOSTS", Collections.singletonList(new Host("ec2-34-212-245-174.us-west-2.compute.amazonaws.com", 9200)), (String str) -> {
             String[] elements = str.split(":");
             return new Host(elements[0], Integer.valueOf(elements[1]));
         });
-        CLUSTER_NAME = ConfigHelper.getProperty("CLUSTER_NAME", "chifanhero");
+        CLUSTER_NAME = ConfigHelper.getProperty(prefix + "CLUSTER_NAME", "chifanhero");
     }
 }

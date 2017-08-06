@@ -1,2 +1,2 @@
 cd app/target
-eb deploy Sample-env
+eb deploy Production
