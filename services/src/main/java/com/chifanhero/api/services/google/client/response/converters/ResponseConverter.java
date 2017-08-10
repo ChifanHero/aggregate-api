@@ -22,7 +22,8 @@ public class ResponseConverter {
         Optional.ofNullable(placesSearchResponse.getResults()).ifPresent(results -> {
             List<Restaurant> restaurants = results.stream().map(place -> {
                 Restaurant restaurant = RestaurantConverter.toRestaurant(place);
-                restaurant.setId(IdGenerator.getNewObjectId());
+//                restaurant.setId(IdGenerator.getNewObjectId());
+                restaurant.setId(restaurant.getPlaceId());
                 return restaurant;
             }).collect(Collectors.toList());
             restaurantSearchResponse.setResults(restaurants);

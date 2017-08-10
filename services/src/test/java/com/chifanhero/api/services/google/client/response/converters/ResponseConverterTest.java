@@ -21,11 +21,12 @@ public class ResponseConverterTest {
         PlacesSearchResponse placesSearchResponse = new PlacesSearchResponse();
         List<Place> results = new ArrayList<>();
         Place place = new Place();
+        place.setPlaceId("placeid");
         results.add(place);
         placesSearchResponse.setResults(results);
         RestaurantSearchResponse restaurantSearchResponse = ResponseConverter.toRestaurantSearchResponse(placesSearchResponse);
         Assert.assertTrue(restaurantSearchResponse.getResults().size() == 1);
         Restaurant restaurant = restaurantSearchResponse.getResults().get(0);
-        Assert.assertNotNull(restaurant.getId());
+        Assert.assertEquals("placeid", restaurant.getId());
     }
 }
