@@ -109,7 +109,7 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
         if (restaurants != null) {
             MongoCollection<Document> collection = getRestaurantCollection();
             List<UpdateOneModel<Document>> upserts = restaurants.stream().filter(
-                    restaurant -> restaurant.getRating() != null && restaurant.getRating() > 4.0
+                    restaurant -> restaurant.getRating() != null && restaurant.getRating() >= 4.0
             ).map(restaurant -> {
                 Bson placeIdFilter = Filters.eq(KeyNames.GOOGLE_PLACE_ID, restaurant.getPlaceId());
                 Bson onHoldFilter = Filters.eq(KeyNames.ON_HOLD, false);
