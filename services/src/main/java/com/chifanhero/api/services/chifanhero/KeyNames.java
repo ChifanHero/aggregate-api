@@ -18,5 +18,6 @@ public class KeyNames {
     public final static String VIEW_COUNT = "view_count";
     public final static String ON_HOLD = "on_hold";
     public final static String VIEWS_N = "views_n";
+    public final static String PROFILE_PHOTO_REFERENCE = "profile_photo_reference";
 
 }

@@ -3,6 +3,7 @@ package com.chifanhero.api.services.chifanhero;
 import com.chifanhero.api.common.exceptions.ChifanheroException;
 import com.chifanhero.api.configs.AppConfigs;
 import com.chifanhero.api.configs.ChifanheroConfigs;
+import com.chifanhero.api.models.response.Picture;
 import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.models.response.UserInfo;
 import com.chifanhero.api.services.chifanhero.document.RestaurantDocumentConverter;
@@ -56,6 +57,8 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
             setOnInsertDocument.append(KeyNames.ON_HOLD, entity.isOnHold());
             // set rating on insert just to get initial rating
             Optional.ofNullable(entity.getRating()).ifPresent(rating -> setOnInsertDocument.append(KeyNames.GOOGLE_RATING, rating));
+            Optional.ofNullable(entity.getPicture()).map(Picture::getPhotoReference)
+                    .ifPresent(photoReference -> setOnInsertDocument.append(KeyNames.PROFILE_PHOTO_REFERENCE, photoReference));
             Document updateDocument = new Document("$setOnInsert", setOnInsertDocument);
             Document setDocument = RestaurantDocumentConverter.toDocument(entity);
             setDocument.append(KeyNames.UPDATED_AT, new Date());
@@ -95,6 +98,7 @@ public class ChifanheroRestaurantServiceImpl implements ChifanheroRestaurantServ
         unsetDocument.append(KeyNames.COORDINATES, "");
         unsetDocument.append(KeyNames.EXPIRE_AT, "");
         unsetDocument.append(KeyNames.GOOGLE_RATING, "");
+        unsetDocument.append(KeyNames.PROFILE_PHOTO_REFERENCE, "");
         Document updateDocument = new Document("$unset", unsetDocument);
         collection.updateOne(filter, updateDocument);
     }
