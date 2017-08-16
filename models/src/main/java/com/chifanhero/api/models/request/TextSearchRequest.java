@@ -91,7 +91,7 @@ public class TextSearchRequest extends SearchRequest<TextSearchRequest> {
         } else if (radius <= 0 || radius > 50000) {
             errors.add(new Error(ErrorMessage.INVALID_RADIUS, ErrorLevel.ERROR));
         }
-        if ((!SortOrder.HOTTEST.getValue().equals(sortOrder))
+        if ((!SortOrder.RATING.getValue().equals(sortOrder))
                 && (!SortOrder.NEAREST.getValue().equals(sortOrder))
                 && (!SortOrder.BEST_MATCH.getValue().equals(sortOrder))) {
             errors.add(new Error(ErrorMessage.INVALID_SORT_ORDER, ErrorLevel.ERROR));

@@ -30,7 +30,7 @@ public class SortFunction implements Function<RestaurantSearchResponse, Restaura
                     }
                     return restaurant1.getDistance() >= restaurant2.getDistance()? 1: -1;
                 });
-            } else if (sortOrder == SortOrder.HOTTEST) {
+            } else if (sortOrder == SortOrder.RATING) {
                 restaurants.sort((restaurant1, restaurant2) -> {
                     if (restaurant1.getRating() == null) {
                         return 1;

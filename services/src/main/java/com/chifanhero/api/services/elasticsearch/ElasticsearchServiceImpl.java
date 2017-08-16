@@ -40,7 +40,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
         SortBuilder sort = null;
         if (SortOrder.NEAREST.name().equals(nearbySearchRequest.getSortOrder())) {
             sort = SortHelper.buildGeoDistanceSort(FieldNames.COORDINATES, nearbySearchRequest.getLocation().getLat(), nearbySearchRequest.getLocation().getLon(), DistanceUnit.MILES);
-        } else if (SortOrder.HOTTEST.name().equals(nearbySearchRequest.getSortOrder())) {
+        } else if (SortOrder.RATING.name().equals(nearbySearchRequest.getSortOrder())) {
             sort = SortHelper.buildSort(FieldNames.RATING, org.elasticsearch.search.sort.SortOrder.DESC);
         }
         String request = RequestHelper.buildSearchRequest(query, sort);
@@ -54,7 +54,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
         SortBuilder sort = null;
         if (SortOrder.NEAREST.name().equals(textSearchRequest.getSortOrder())) {
             sort = SortHelper.buildGeoDistanceSort(FieldNames.COORDINATES, textSearchRequest.getLocation().getLat(), textSearchRequest.getLocation().getLon(), DistanceUnit.MILES);
-        } else if (SortOrder.HOTTEST.name().equals(textSearchRequest.getSortOrder())) {
+        } else if (SortOrder.RATING.name().equals(textSearchRequest.getSortOrder())) {
             sort = SortHelper.buildSort(FieldNames.RATING, org.elasticsearch.search.sort.SortOrder.DESC);
         }
         String request = RequestHelper.buildSearchRequest(query, sort);

@@ -104,14 +104,14 @@ public class ElasticsearchServiceImplIT {
     }
 
     @Test
-    public void testNearbySearchHottest() {
+    public void testNearbySearchRating() {
         NearbySearchRequest nearbySearchRequest = new NearbySearchRequest();
         Location location = new Location();
         location.setLat(LOS_ANGELES_COORDINATES[1]);
         location.setLon(LOS_ANGELES_COORDINATES[0]);
         nearbySearchRequest.setLocation(location);
         nearbySearchRequest.setRadius(2000);
-        nearbySearchRequest.setSortOrder(SortOrder.HOTTEST.name());
+        nearbySearchRequest.setSortOrder(SortOrder.RATING.name());
         ElasticsearchServiceImpl service = new ElasticsearchServiceImpl(ELASTIC_REST_CLIENT);
         nearbySearchRequest.validate();
         RestaurantSearchResponse response = service.nearBySearch(nearbySearchRequest);
@@ -159,7 +159,7 @@ public class ElasticsearchServiceImplIT {
     }
 
     @Test
-    public void testTextSearchHottest() {
+    public void testTextSearchRating() {
         TextSearchRequest textSearchRequest = new TextSearchRequest();
         textSearchRequest.setQuery("巴蜀风");
         Location location = new Location();
@@ -167,7 +167,7 @@ public class ElasticsearchServiceImplIT {
         location.setLon(BAY_AREA_COORDINATES[0]);
         textSearchRequest.setLocation(location);
         textSearchRequest.setRadius(2000);
-        textSearchRequest.setSortOrder(SortOrder.HOTTEST.name());
+        textSearchRequest.setSortOrder(SortOrder.RATING.name());
         ElasticsearchServiceImpl service = new ElasticsearchServiceImpl(ELASTIC_REST_CLIENT);
         textSearchRequest.validate();
         RestaurantSearchResponse response = service.textSearch(textSearchRequest);

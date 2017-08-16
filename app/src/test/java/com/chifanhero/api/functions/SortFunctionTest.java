@@ -26,10 +26,10 @@ public class SortFunctionTest {
     }
 
     @Test
-    public void testHottest() {
+    public void testRating() {
         RestaurantSearchResponse input = new RestaurantSearchResponse();
         input.setResults(Arrays.asList(createRestaurant("1", 4.0, null), createRestaurant("2", 5.0, null), createRestaurant("3", null, null)));
-        SortFunction sortFunction = new SortFunction(SortOrder.HOTTEST);
+        SortFunction sortFunction = new SortFunction(SortOrder.RATING);
         RestaurantSearchResponse response = sortFunction.apply(input);
         Assert.assertNotNull(response);
         Assert.assertEquals("2", response.getResults().get(0).getId());
