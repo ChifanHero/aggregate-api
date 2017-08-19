@@ -1,6 +1,8 @@
 package com.chifanhero.api.functions;
 
 import com.chifanhero.api.models.request.NearbySearchRequest;
+import com.chifanhero.api.models.response.Distance;
+import com.chifanhero.api.models.response.DistanceUnit;
 import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
 import org.junit.Assert;
@@ -51,7 +53,7 @@ public class FilterFunctionTest {
         RestaurantSearchResponse response = filterFunction.apply(createInputForRadiusTest());
         Assert.assertNotNull(response);
         Assert.assertEquals(1, response.getResults().size());
-        Assert.assertTrue(response.getResults().get(0).getDistance() == 1.5);
+        Assert.assertTrue(response.getResults().get(0).getDistance().getValue() == 1.5);
     }
 
     @Test
@@ -88,10 +90,13 @@ public class FilterFunctionTest {
         return input;
     }
 
-    private Restaurant createRestaurant(Boolean opennow, Double rating, Double distance) {
+    private Restaurant createRestaurant(Boolean opennow, Double rating, Double distanceValue) {
         Restaurant restaurant = new Restaurant();
         restaurant.setOpenNow(opennow);
         restaurant.setRating(rating);
+        Distance distance = new Distance();
+        distance.setValue(distanceValue);
+        distance.setUnit(DistanceUnit.mi);
         restaurant.setDistance(distance);
         return restaurant;
     }

@@ -1,9 +1,7 @@
 package com.chifanhero.api.functions;
 
 import com.chifanhero.api.models.request.Location;
-import com.chifanhero.api.models.response.Coordinates;
-import com.chifanhero.api.models.response.Restaurant;
-import com.chifanhero.api.models.response.RestaurantSearchResponse;
+import com.chifanhero.api.models.response.*;
 import com.chifanhero.api.utils.DistanceCalculator;
 import com.google.common.base.Function;
 
@@ -28,7 +26,10 @@ public class CalculateDistanceFunction implements Function<RestaurantSearchRespo
             Coordinates coordinates = restaurant.getCoordinates();
             if (coordinates != null) {
                 Double distanceInMi = DistanceCalculator.getDistanceInMi(center.getLat(), center.getLon(), coordinates.getLatitude(), coordinates.getLongitude(), 2);
-                restaurant.setDistance(distanceInMi);
+                Distance distance = new Distance();
+                distance.setValue(distanceInMi);
+                distance.setUnit(DistanceUnit.mi);
+                restaurant.setDistance(distance);
             }
         }));
         return input;

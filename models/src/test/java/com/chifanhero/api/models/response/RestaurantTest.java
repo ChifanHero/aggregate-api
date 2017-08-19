@@ -70,7 +70,7 @@ public class RestaurantTest {
         Assert.assertEquals("photoReference", restaurant.getPicture().getPhotoReference());
         Assert.assertFalse(restaurant.getPermanentlyClosed());
         Assert.assertFalse(restaurant.getOpenNow());
-        Assert.assertTrue(restaurant.getDistance() == 2.5);
+        Assert.assertTrue(restaurant.getDistance().getValue() == 2.5);
         Assert.assertNotNull(restaurant.getCoordinates());
         Assert.assertTrue(restaurant.getCoordinates().getLatitude() == 37.2);
         Assert.assertTrue(restaurant.getCoordinates().getLongitude() == -121.3);
@@ -79,7 +79,7 @@ public class RestaurantTest {
 
     private Restaurant createRestaurant(String name, String englishName, String placeId, String address, String phone,
                                         Double rating, Picture picture, Boolean permanentlyClosed,
-                                        Boolean openNow, Double distance, Coordinates coordinates, Boolean blacklisted) {
+                                        Boolean openNow, Double distanceValue, Coordinates coordinates, Boolean blacklisted) {
         Restaurant restaurant = new Restaurant();
         restaurant.setName(name);
         restaurant.setGoogleName(englishName);
@@ -90,6 +90,9 @@ public class RestaurantTest {
         restaurant.setPicture(picture);
         restaurant.setPermanentlyClosed(permanentlyClosed);
         restaurant.setOpenNow(openNow);
+        Distance distance = new Distance();
+        distance.setValue(distanceValue);
+        distance.setUnit(DistanceUnit.mi);
         restaurant.setDistance(distance);
         restaurant.setCoordinates(coordinates);
         restaurant.setBlacklisted(blacklisted);

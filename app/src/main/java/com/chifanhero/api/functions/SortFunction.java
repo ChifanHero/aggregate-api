@@ -22,13 +22,13 @@ public class SortFunction implements Function<RestaurantSearchResponse, Restaura
         Optional.ofNullable(input.getResults()).ifPresent(restaurants -> {
             if (sortOrder == SortOrder.NEAREST) {
                 restaurants.sort((restaurant1, restaurant2) -> {
-                    if (restaurant1.getDistance() == null) {
+                    if (restaurant1.getDistance() == null || restaurant1.getDistance().getValue() == null) {
                         return 1;
                     }
-                    if (restaurant2.getDistance() == null) {
+                    if (restaurant2.getDistance() == null || restaurant2.getDistance().getValue() == null) {
                         return -1;
                     }
-                    return restaurant1.getDistance() >= restaurant2.getDistance()? 1: -1;
+                    return restaurant1.getDistance().getValue() >= restaurant2.getDistance().getValue()? 1: -1;
                 });
             } else if (sortOrder == SortOrder.RATING) {
                 restaurants.sort((restaurant1, restaurant2) -> {

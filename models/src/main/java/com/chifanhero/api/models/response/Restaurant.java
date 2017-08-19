@@ -39,7 +39,7 @@ public class Restaurant {
     @JsonIgnore
     private Boolean openNow;
 
-    private Double distance;
+    private Distance distance;
 
     @JsonIgnore
     private Coordinates coordinates;
@@ -154,11 +154,11 @@ public class Restaurant {
         this.openNow = openNow;
     }
 
-    public Double getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
-    public void setDistance(Double distance) {
+    public void setDistance(Distance distance) {
         this.distance = distance;
     }
 

@@ -1,6 +1,8 @@
 package com.chifanhero.api.functions;
 
 import com.chifanhero.api.models.request.SortOrder;
+import com.chifanhero.api.models.response.Distance;
+import com.chifanhero.api.models.response.DistanceUnit;
 import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
 import org.junit.Assert;
@@ -37,10 +39,13 @@ public class SortFunctionTest {
         Assert.assertEquals("3", response.getResults().get(2).getId());
     }
 
-    private Restaurant createRestaurant(String id, Double rating, Double distance) {
+    private Restaurant createRestaurant(String id, Double rating, Double distanceValue) {
         Restaurant restaurant = new Restaurant();
         restaurant.setId(id);
         restaurant.setRating(rating);
+        Distance distance = new Distance();
+        distance.setValue(distanceValue);
+        distance.setUnit(DistanceUnit.mi);
         restaurant.setDistance(distance);
         return restaurant;
     }
