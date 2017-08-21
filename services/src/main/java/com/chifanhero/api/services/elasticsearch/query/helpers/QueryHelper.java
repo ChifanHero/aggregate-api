@@ -52,8 +52,13 @@ public class QueryHelper {
                 .distance(distance, distanceUnit);
     }
 
-    private static RangeQueryBuilder buildRatingFilterQuery(double minScore) {
-        return QueryBuilders.rangeQuery(FieldNames.RATING).gte(minScore);
+    private static BoolQueryBuilder buildRatingFilterQuery(double minScore) {
+        BoolQueryBuilder ratingQuery = QueryBuilders.boolQuery();
+        ratingQuery.must(QueryBuilders.rangeQuery(FieldNames.RATING).gte(minScore));
+        BoolQueryBuilder googleRatingQuery = QueryBuilders.boolQuery();
+        googleRatingQuery.mustNot(QueryBuilders.existsQuery(FieldNames.RATING)).must(QueryBuilders.rangeQuery(FieldNames.GOOGLE_RATING).gte(minScore));
+        BoolQueryBuilder filterQuery = QueryBuilders.boolQuery().should(ratingQuery).should(googleRatingQuery);
+        return filterQuery;
     }
 
     private static org.elasticsearch.index.query.QueryBuilder buildTextQuery(String keyword) {
