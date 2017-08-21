@@ -24,13 +24,7 @@ public class RequestHelperTest {
         String searchRequest = RequestHelper.buildSearchRequest(
                 QueryHelper.buildNearbySearchQuery(nearbySearchRequest)
                 , SortHelper.buildSort(FieldNames.RATING, SortOrder.DESC));
-        String expected = "{\"query\":{\"bool\":{\"filter\":[{\"range\":{\"rating\":{\"include_lower\":true," +
-                "\"include_upper\":true,\"from\":3,\"boost\":1,\"to\":null}}},{\"geo_distance\":{\"distance\":5000," +
-                "\"distance_type\":\"arc\",\"coordinates\":[-121.993827,37.30891649999999],\"boost\":1," +
-                "\"validation_method\":" +
-                "\"STRICT\",\"ignore_unmapped\":false}},{\"bool\":{\"adjust_pure_negative\":true,\"must_not\":[{\"term\":{" +
-                "\"on_hold\":{\"boost\":1,\"value\":true}}}],\"boost\":1,\"disable_coord\":false}}],\"adjust_pure_negative" +
-                "\":true,\"boost\":1,\"disable_coord\":false}},\"sort\":[{\"rating\":{\"order\":\"desc\"}}]}";
+        String expected = "{\"size\":200,\"query\":{\"bool\":{\"filter\":[{\"range\":{\"rating\":{\"include_lower\":true,\"include_upper\":true,\"from\":3,\"boost\":1,\"to\":null}}},{\"geo_distance\":{\"distance\":5000,\"distance_type\":\"arc\",\"coordinates\":[-121.993827,37.30891649999999],\"boost\":1,\"validation_method\":\"STRICT\",\"ignore_unmapped\":false}},{\"bool\":{\"adjust_pure_negative\":true,\"must_not\":[{\"term\":{\"on_hold\":{\"boost\":1,\"value\":true}}}],\"boost\":1,\"disable_coord\":false}}],\"adjust_pure_negative\":true,\"boost\":1,\"disable_coord\":false}},\"from\":0,\"sort\":[{\"rating\":{\"order\":\"desc\"}}]}";
         Assert.assertEquals(expected, searchRequest);
     }
 }

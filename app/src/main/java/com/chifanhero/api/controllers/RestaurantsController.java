@@ -79,9 +79,10 @@ public class RestaurantsController {
         ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(calculatedFuture, new FilterFunction(nearbySearchRequest));
         ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(filteredFuture, new SortFunction(SortOrder.valueOf(nearbySearchRequest.getSortOrder().toUpperCase())));
         ListenableFuture<RestaurantSearchResponse> transformedFuture = Futures.transform(sortedFuture, new ModelNormalizeFunction());
-        transformedFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, sortedFuture), executorService);
+        ListenableFuture<RestaurantSearchResponse> finalFuture = Futures.transform(transformedFuture, new ResponseTruncateFunction());
+        transformedFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, finalFuture), executorService);
         try {
-            return transformedFuture.get();
+            return finalFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }

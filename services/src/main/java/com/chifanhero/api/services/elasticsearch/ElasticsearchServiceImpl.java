@@ -38,7 +38,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     public RestaurantSearchResponse nearBySearch(NearbySearchRequest nearbySearchRequest) {
         QueryBuilder query = QueryHelper.buildNearbySearchQuery(nearbySearchRequest);
         SortBuilder sort = null;
-        if (SortOrder.NEAREST.name().equals(nearbySearchRequest.getSortOrder())) {
+        if (SortOrder.NEAREST.getValue().equals(nearbySearchRequest.getSortOrder())) {
             sort = SortHelper.buildGeoDistanceSort(FieldNames.COORDINATES, nearbySearchRequest.getLocation().getLat(), nearbySearchRequest.getLocation().getLon(), DistanceUnit.MILES);
         } else if (SortOrder.RATING.name().equals(nearbySearchRequest.getSortOrder())) {
             sort = SortHelper.buildSort(FieldNames.RATING, org.elasticsearch.search.sort.SortOrder.DESC);
