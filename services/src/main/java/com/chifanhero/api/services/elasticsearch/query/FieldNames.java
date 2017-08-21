@@ -12,4 +12,5 @@ public class FieldNames {
     public final static String GOOGLE_PLACE_ID = "google_place_id";
     public final static String BLACKLISTED = "blacklisted";
     public final static String ON_HOLD = "on_hold";
+    public final static String GOOGLE_RATING = "google_rating";
 }
