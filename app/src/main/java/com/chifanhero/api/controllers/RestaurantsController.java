@@ -60,12 +60,12 @@ public class RestaurantsController {
             searchResponse.setErrors(errors);
             return searchResponse;
         }
-        if (nearbySearchRequest.getOpenNow() != Boolean.TRUE) {
-            searchResponse = cache.getIfPresent(CacheKeyRetriever.from(nearbySearchRequest));
-            if (searchResponse != null) {
-                return searchResponse;
-            }
-        }
+//        if (nearbySearchRequest.getOpenNow() != Boolean.TRUE) {
+//            searchResponse = cache.getIfPresent(CacheKeyRetriever.from(nearbySearchRequest));
+//            if (searchResponse != null) {
+//                return searchResponse;
+//            }
+//        }
         ElasticNearbySearchTask elasticNearbySearchTask = new ElasticNearbySearchTask(nearbySearchRequest, elasticsearchService);
         GoogleNearbySearchTask googleNearbySearchTask = new GoogleNearbySearchTask(nearbySearchRequest, googlePlacesService);
         ListenableFuture<RestaurantSearchResponse> elasticNearbySearchFuture = executorService.submit(elasticNearbySearchTask);
