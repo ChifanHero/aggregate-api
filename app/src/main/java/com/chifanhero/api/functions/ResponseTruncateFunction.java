@@ -12,7 +12,11 @@ public class ResponseTruncateFunction implements Function<RestaurantSearchRespon
 
     @Override
     public RestaurantSearchResponse apply(RestaurantSearchResponse input) {
-        Optional.ofNullable(input.getResults()).ifPresent(restaurants -> input.setResults(restaurants.subList(0, 20)));
+        Optional.ofNullable(input.getResults()).ifPresent(restaurants -> {
+            if (restaurants.size() > 20) {
+                input.setResults(restaurants.subList(0, 20));
+            }
+        });
         return input;
     }
 }
