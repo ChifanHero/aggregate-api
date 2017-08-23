@@ -19,10 +19,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -111,7 +108,7 @@ public class RestaurantsController {
     }
 
     @RequestMapping(value = "/track", method = RequestMethod.POST)
-    public void trackView(TrackingRequest trackingRequest, HttpServletResponse response) {
+    public void trackView(@RequestBody TrackingRequest trackingRequest, HttpServletResponse response) {
         if (trackingRequest == null || trackingRequest.getRestaurantId() == null || trackingRequest.getUserIdentifier() == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
