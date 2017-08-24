@@ -9,6 +9,7 @@ import com.chifanhero.api.models.request.TextSearchRequest;
 import com.chifanhero.api.models.request.TrackingRequest;
 import com.chifanhero.api.models.response.Error;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
+import com.chifanhero.api.models.response.TrackingResponse;
 import com.chifanhero.api.services.chifanhero.ChifanheroRestaurantService;
 import com.chifanhero.api.services.elasticsearch.ElasticsearchService;
 import com.chifanhero.api.services.google.GooglePlacesService;
@@ -108,12 +109,16 @@ public class RestaurantsController {
     }
 
     @RequestMapping(value = "/track", method = RequestMethod.POST)
-    public void trackView(@RequestBody TrackingRequest trackingRequest, HttpServletResponse response) {
+    public TrackingResponse trackView(@RequestBody TrackingRequest trackingRequest, HttpServletResponse response) {
+        TrackingResponse trackingResponse = new TrackingResponse();
         if (trackingRequest == null || trackingRequest.getRestaurantId() == null || trackingRequest.getUserIdentifier() == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            trackingResponse.setSuccess(false);
+            return trackingResponse;
         }
         chifanheroRestaurantService.trackViewCount(trackingRequest.getRestaurantId(), trackingRequest.getUserIdentifier());
         chifanheroRestaurantService.tryPublishRestaurant(trackingRequest.getRestaurantId());
+        trackingResponse.setSuccess(true);
+        return trackingResponse;
     }
 }
