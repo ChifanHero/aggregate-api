@@ -36,25 +36,25 @@ public class GoogleNearbySearchTask implements Callable<RestaurantSearchResponse
                 location.setLon(coordinates[1]);
                 locations.add(location);
             }
-            RestaurantSearchResponse restaurantSearchResponse = googlePlacesService.nearBySearch(nearbySearchRequest, locations);
-            if (restaurantSearchResponse != null && (restaurantSearchResponse.getResults() == null || restaurantSearchResponse.getResults().isEmpty())) {
-                nearbySearchRequest.setKeyword("chinese+food");
-                RestaurantSearchResponse backupResponse = googlePlacesService.nearBySearch(nearbySearchRequest, locations);
-                markBackupResponse(backupResponse);
-                return backupResponse;
-            } else {
-                return restaurantSearchResponse;
-            }
+            return googlePlacesService.nearBySearch(nearbySearchRequest, locations);
+//            if (restaurantSearchResponse != null && (restaurantSearchResponse.getResults() == null || restaurantSearchResponse.getResults().isEmpty())) {
+//                nearbySearchRequest.setKeyword("chinese+food");
+//                RestaurantSearchResponse backupResponse = googlePlacesService.nearBySearch(nearbySearchRequest, locations);
+//                markBackupResponse(backupResponse);
+//                return backupResponse;
+//            } else {
+//                return restaurantSearchResponse;
+//            }
         } else {
-            RestaurantSearchResponse restaurantSearchResponse = googlePlacesService.nearBySearch(nearbySearchRequest);
-            if (restaurantSearchResponse != null && (restaurantSearchResponse.getResults() == null || restaurantSearchResponse.getResults().isEmpty())) {
-                nearbySearchRequest.setKeyword("chinese+food");
-                RestaurantSearchResponse backupResponse = googlePlacesService.nearBySearch(nearbySearchRequest);
-                markBackupResponse(backupResponse);
-                return backupResponse;
-            } else {
-                return restaurantSearchResponse;
-            }
+            return googlePlacesService.nearBySearch(nearbySearchRequest);
+//            if (restaurantSearchResponse != null && (restaurantSearchResponse.getResults() == null || restaurantSearchResponse.getResults().isEmpty())) {
+//                nearbySearchRequest.setKeyword("chinese+food");
+//                RestaurantSearchResponse backupResponse = googlePlacesService.nearBySearch(nearbySearchRequest);
+//                markBackupResponse(backupResponse);
+//                return backupResponse;
+//            } else {
+//                return restaurantSearchResponse;
+//            }
         }
 
     }

@@ -62,7 +62,7 @@ public class GoogleNearbySearchTaskTest {
         Assert.assertTrue(response == restaurantSearchResponse);
     }
 
-    @Test
+//    @Test
     public void testChineseFoodSearch() throws Exception {
         NearbySearchRequest nearbySearchRequest = new NearbySearchRequest();
         nearbySearchRequest.setRadius(1999);
