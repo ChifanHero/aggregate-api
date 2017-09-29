@@ -16,7 +16,7 @@ public class TextSearchRequest extends SearchRequest<TextSearchRequest> {
     private Location location;
     private Integer radius;
     private String sortOrder = SortOrder.BEST_MATCH.getValue();
-    private Boolean openNow = false;
+    private Boolean openNow;
     private Double rating;
 
     public String getQuery() {
