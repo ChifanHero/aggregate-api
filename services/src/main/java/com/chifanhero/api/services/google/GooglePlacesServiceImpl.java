@@ -25,9 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import javax.swing.text.html.Option;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -78,10 +77,25 @@ public class GooglePlacesServiceImpl implements GooglePlacesService {
             List<PlacesSearchResponse> placesSearchResponses = resultFuture.get();
             List<RestaurantSearchResponse> converted = placesSearchResponses.stream().map(ResponseConverter::toRestaurantSearchResponse).collect(Collectors.toList());
             RestaurantSearchResponse searchResponse = new RestaurantSearchResponse();
+            List<Restaurant> restaurants = new ArrayList<>();
+            Set<String> restaurantIdSet = new HashSet<>();
             converted.forEach(restaurantSearchResponse -> {
-                searchResponse.setResults(restaurantSearchResponse.getResults());
-                searchResponse.setErrors(restaurantSearchResponse.getErrors());
+                if (restaurantSearchResponse.getResults() != null) {
+                    restaurantSearchResponse.getResults().forEach(restaurant -> {
+                        if (!restaurantIdSet.contains(restaurant.getPlaceId())) {
+                            restaurantIdSet.add(restaurant.getPlaceId());
+                            restaurants.add(restaurant);
+                        }
+                    });
+                }
+                if (restaurantSearchResponse.getErrors() != null) {
+                    if (searchResponse.getErrors() == null) {
+                        searchResponse.setErrors(new ArrayList<>());
+                    }
+                    searchResponse.getErrors().addAll(restaurantSearchResponse.getErrors());
+                }
             });
+            searchResponse.setResults(restaurants);
             return searchResponse;
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
