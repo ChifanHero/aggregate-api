@@ -81,7 +81,7 @@ public class RestaurantsController {
         ListenableFuture<RestaurantSearchResponse> truncatedFuture = Futures.transform(transformedFuture, new ResponseTruncateFunction());
 //        detailedFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, truncatedFuture), executorService);
         try {
-            return truncatedFuture  .get();
+            return truncatedFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }

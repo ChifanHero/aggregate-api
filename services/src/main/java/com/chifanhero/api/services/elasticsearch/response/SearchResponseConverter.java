@@ -62,35 +62,35 @@ public class SearchResponseConverter {
         restaurant.setSource(Source.CHIFANHERO);
         JSONObject source = hit.getJSONObject("_source");
         if (hit.has("_score") && !hit.isNull("_score")) {
-            restaurant.setScore(hit.getDouble("_score"));
+            restaurant.setScore(hit.optDouble("_score"));
         }
         if (hit.has("_id") && !hit.isNull("_id")) {
-            restaurant.setId(hit.getString("_id"));
+            restaurant.setId(hit.optString("_id"));
         }
         if (source.has(FieldNames.NAME)) {
-            restaurant.setName(source.getString(FieldNames.NAME));
+            restaurant.setName(source.optString(FieldNames.NAME));
         }
         if (source.has(FieldNames.GOOGLE_NAME)) {
-            restaurant.setGoogleName(source.getString(FieldNames.GOOGLE_NAME));
+            restaurant.setGoogleName(source.optString(FieldNames.GOOGLE_NAME));
         }
         if (source.has(FieldNames.GOOGLE_RATING)) {
-            restaurant.setRating(source.getDouble(FieldNames.GOOGLE_RATING));
+            restaurant.setRating(source.optDouble(FieldNames.GOOGLE_RATING));
         }
         if (source.has(FieldNames.RATING)) {
-            restaurant.setRating(source.getDouble(FieldNames.RATING));
+            restaurant.setRating(source.optDouble(FieldNames.RATING));
         }
         if (source.has(FieldNames.GOOGLE_PLACE_ID)) {
-            restaurant.setPlaceId(source.getString(FieldNames.GOOGLE_PLACE_ID));
+            restaurant.setPlaceId(source.optString(FieldNames.GOOGLE_PLACE_ID));
         }
         if (source.has(FieldNames.COORDINATES)) {
             JSONArray lonlat = source.getJSONArray(FieldNames.COORDINATES);
             Coordinates coordinates = new Coordinates();
-            coordinates.setLongitude(lonlat.getDouble(0));
-            coordinates.setLatitude(lonlat.getDouble(1));
+            coordinates.setLongitude(lonlat.optDouble(0));
+            coordinates.setLatitude(lonlat.optDouble(1));
             restaurant.setCoordinates(coordinates);
         }
         if (source.has(FieldNames.BLACKLISTED)) {
-            restaurant.setBlacklisted(source.getBoolean(FieldNames.BLACKLISTED));
+            restaurant.setBlacklisted(source.optBoolean(FieldNames.BLACKLISTED));
         }
         return restaurant;
     }
