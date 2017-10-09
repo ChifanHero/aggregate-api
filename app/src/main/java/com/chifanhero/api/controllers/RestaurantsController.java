@@ -74,14 +74,14 @@ public class RestaurantsController {
         ListenableFuture<RestaurantSearchResponse> dedupeFuture = Futures.transform(listListenableFuture, new RestaurantsMergeFunction(new RestaurantDeduper()));
         ListenableFuture<RestaurantSearchResponse> fulfillRestaurantFuture = Futures.transform(dedupeFuture, new FillRestaurantsFunction(googlePlacesService));
         ListenableFuture<RestaurantSearchResponse> calculatedFuture = Futures.transform(fulfillRestaurantFuture, new CalculateDistanceFunction(nearbySearchRequest.getLocation()));
-        ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(calculatedFuture, new FilterFunction(nearbySearchRequest));
+        ListenableFuture<RestaurantSearchResponse> detailedFuture = Futures.transform(calculatedFuture, new RetrieveDetailFunction(elasticsearchService));
+        ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(detailedFuture, new FilterFunction(nearbySearchRequest));
         ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(filteredFuture, new SortFunction(SortOrder.valueOf(nearbySearchRequest.getSortOrder().toUpperCase())));
         ListenableFuture<RestaurantSearchResponse> transformedFuture = Futures.transform(sortedFuture, new ModelNormalizeFunction());
         ListenableFuture<RestaurantSearchResponse> truncatedFuture = Futures.transform(transformedFuture, new ResponseTruncateFunction());
-        ListenableFuture<RestaurantSearchResponse> detailedFuture = Futures.transform(truncatedFuture, new RetrieveDetailFunction(elasticsearchService));
 //        detailedFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, truncatedFuture), executorService);
         try {
-            return detailedFuture.get();
+            return truncatedFuture  .get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -99,12 +99,12 @@ public class RestaurantsController {
         ListenableFuture<RestaurantSearchResponse> dedupeFuture = Futures.transform(listListenableFuture, new RestaurantsMergeFunction(new RestaurantDeduper()));
         ListenableFuture<RestaurantSearchResponse> fulfillRestaurantFuture = Futures.transform(dedupeFuture, new FillRestaurantsFunction(googlePlacesService));
         ListenableFuture<RestaurantSearchResponse> calculatedFuture = Futures.transform(fulfillRestaurantFuture, new CalculateDistanceFunction(textSearchRequest.getLocation()));
-        ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(calculatedFuture, new FilterFunction(textSearchRequest));
+        ListenableFuture<RestaurantSearchResponse> detailedFuture = Futures.transform(calculatedFuture, new RetrieveDetailFunction(elasticsearchService));
+        ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(detailedFuture, new FilterFunction(textSearchRequest));
         ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(filteredFuture, new SortFunction(SortOrder.valueOf(textSearchRequest.getSortOrder().toUpperCase())));
         ListenableFuture<RestaurantSearchResponse> transformedFuture = Futures.transform(sortedFuture, new ModelNormalizeFunction());
-        ListenableFuture<RestaurantSearchResponse> detailedFuture = Futures.transform(transformedFuture, new RetrieveDetailFunction(elasticsearchService));
         try {
-            return detailedFuture.get();
+            return transformedFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }

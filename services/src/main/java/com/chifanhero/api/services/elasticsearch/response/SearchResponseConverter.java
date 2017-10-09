@@ -55,7 +55,9 @@ public class SearchResponseConverter {
     }
 
     private static Restaurant toRestaurant(JSONObject hit) {
-        Preconditions.checkNotNull(hit);
+        if (hit == null || !hit.has("_source")) {
+            return null;
+        }
         Restaurant restaurant = new Restaurant();
         restaurant.setSource(Source.CHIFANHERO);
         JSONObject source = hit.getJSONObject("_source");
