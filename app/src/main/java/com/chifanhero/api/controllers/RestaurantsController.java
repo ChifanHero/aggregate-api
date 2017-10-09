@@ -77,10 +77,11 @@ public class RestaurantsController {
         ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(calculatedFuture, new FilterFunction(nearbySearchRequest));
         ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(filteredFuture, new SortFunction(SortOrder.valueOf(nearbySearchRequest.getSortOrder().toUpperCase())));
         ListenableFuture<RestaurantSearchResponse> transformedFuture = Futures.transform(sortedFuture, new ModelNormalizeFunction());
-        ListenableFuture<RestaurantSearchResponse> finalFuture = Futures.transform(transformedFuture, new ResponseTruncateFunction());
-        transformedFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, finalFuture), executorService);
+        ListenableFuture<RestaurantSearchResponse> truncatedFuture = Futures.transform(transformedFuture, new ResponseTruncateFunction());
+        ListenableFuture<RestaurantSearchResponse> detailedFuture = Futures.transform(truncatedFuture, new RetrieveDetailFunction(elasticsearchService));
+//        detailedFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, truncatedFuture), executorService);
         try {
-            return finalFuture.get();
+            return detailedFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -101,8 +102,9 @@ public class RestaurantsController {
         ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(calculatedFuture, new FilterFunction(textSearchRequest));
         ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(filteredFuture, new SortFunction(SortOrder.valueOf(textSearchRequest.getSortOrder().toUpperCase())));
         ListenableFuture<RestaurantSearchResponse> transformedFuture = Futures.transform(sortedFuture, new ModelNormalizeFunction());
+        ListenableFuture<RestaurantSearchResponse> detailedFuture = Futures.transform(transformedFuture, new RetrieveDetailFunction(elasticsearchService));
         try {
-            return transformedFuture.get();
+            return detailedFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }

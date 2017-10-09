@@ -13,15 +13,17 @@ import com.chifanhero.api.services.elasticsearch.client.ElasticsearchRestClient;
 import com.chifanhero.api.services.elasticsearch.query.FieldNames;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
+import org.elasticsearch.ThreadPermission;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static org.asynchttpclient.Dsl.asyncHttpClient;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
@@ -183,6 +185,26 @@ public class ElasticsearchServiceImplIT {
             Assert.assertNotNull(result.getCoordinates());
         });
         Assert.assertEquals("巴蜀风", response.getResults().get(0).getName());
+    }
+
+    @Test
+    public void testBatchGetRestaurant() throws IOException, InterruptedException {
+        XContentBuilder document1 = createDocument("testBatchGetRestaurant1", "testBatchGetRestaurant1", 3.5, BAY_AREA_COORDINATES, "googleplaceid", false);
+        XContentBuilder document2 = createDocument("testBatchGetRestaurant2", "testBatchGetRestaurant2", 5.0, BAY_AREA_COORDINATES2, "googleplaceid", false);
+        String id1 = IdGenerator.getNewObjectId();
+        String id2 = IdGenerator.getNewObjectId();
+        ELASTIC_REST_CLIENT.indexDocument(ElasticsearchServiceImpl.INDEX, ElasticsearchServiceImpl.TYPE, id1, document1.string());
+        ELASTIC_REST_CLIENT.indexDocument(ElasticsearchServiceImpl.INDEX, ElasticsearchServiceImpl.TYPE, id2, document2.string());
+        Thread.sleep(1000);
+        ElasticsearchServiceImpl service = new ElasticsearchServiceImpl(ELASTIC_REST_CLIENT);
+        Map<String, Restaurant> restaurantMap = service.batchGetRestaurant(new HashSet<>(Arrays.asList(id1, id2)));
+        Assert.assertNotNull(restaurantMap);
+        Restaurant restaurant1 = restaurantMap.get(id1);
+        Restaurant restaurant2 = restaurantMap.get(id2);
+        Assert.assertNotNull(restaurant1);
+        Assert.assertNotNull(restaurant2);
+        Assert.assertEquals("testBatchGetRestaurant1", restaurant1.getName());
+        Assert.assertEquals("testBatchGetRestaurant2", restaurant2.getName());
     }
 
     private static void putMapping() {

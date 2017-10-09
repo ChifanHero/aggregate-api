@@ -10,7 +10,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Convert elasticsearch response to domain response
@@ -19,7 +21,9 @@ import java.util.List;
 public class SearchResponseConverter {
 
     public static RestaurantSearchResponse toLocalSearchResponse(JSONObject searchResponse) {
-        Preconditions.checkNotNull(searchResponse);
+        if (searchResponse == null) {
+            return null;
+        }
         RestaurantSearchResponse response = new RestaurantSearchResponse();
         if (searchResponse.has("hits")) {
             JSONObject hits = searchResponse.getJSONObject("hits");
@@ -27,12 +31,27 @@ public class SearchResponseConverter {
                 JSONArray hitsArray = hits.getJSONArray("hits");
                 List<Restaurant> results = new ArrayList<>();
                 for (int i = 0; i < hitsArray.length(); i++) {
-                    results.add(SearchResponseConverter.toRestaurant(hitsArray.getJSONObject(i)));
+                    results.add(toRestaurant(hitsArray.getJSONObject(i)));
                 }
                 response.setResults(results);
             }
         }
         return response;
+    }
+
+    public static Map<String, Restaurant> convertBatchGetResponse(JSONObject batchGetResponse) {
+        if (batchGetResponse == null) {
+            return null;
+        }
+        Map<String, Restaurant> result = new HashMap<>();
+        if (batchGetResponse.has("docs")) {
+            JSONArray docsArray = batchGetResponse.getJSONArray("docs");
+            for (int i = 0; i < docsArray.length(); i++) {
+                Restaurant restaurant = toRestaurant(docsArray.getJSONObject(i));
+                result.put(restaurant.getId(), restaurant);
+            }
+        }
+        return result;
     }
 
     private static Restaurant toRestaurant(JSONObject hit) {
