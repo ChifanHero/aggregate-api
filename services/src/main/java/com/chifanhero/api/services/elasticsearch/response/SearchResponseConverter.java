@@ -48,7 +48,9 @@ public class SearchResponseConverter {
             JSONArray docsArray = batchGetResponse.getJSONArray("docs");
             for (int i = 0; i < docsArray.length(); i++) {
                 Restaurant restaurant = toRestaurant(docsArray.getJSONObject(i));
-                result.put(restaurant.getId(), restaurant);
+                if (restaurant != null) {
+                    result.put(restaurant.getId(), restaurant);
+                }
             }
         }
         return result;
