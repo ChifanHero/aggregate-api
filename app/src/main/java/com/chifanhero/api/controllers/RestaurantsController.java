@@ -53,6 +53,9 @@ public class RestaurantsController {
     @RequestMapping("/nearBy")
     public RestaurantSearchResponse nearBySearch(NearbySearchRequest nearbySearchRequest, HttpServletResponse response) {
         RestaurantSearchResponse searchResponse = new RestaurantSearchResponse();
+        if (nearbySearchRequest.getRadius() == null) {
+            nearbySearchRequest.setRadius(8000);
+        }
         List<Error> errors = nearbySearchRequest.validate();
         if (!errors.isEmpty()) {
             searchResponse.setErrors(errors);
@@ -89,6 +92,9 @@ public class RestaurantsController {
 
     @RequestMapping("/text")
     public RestaurantSearchResponse textSearch(TextSearchRequest textSearchRequest, HttpServletResponse response) {
+        if (textSearchRequest.getRadius() == null) {
+            textSearchRequest.setRadius(50000);
+        }
         ElasticTextSearchTask elasticTextSearchTask = new ElasticTextSearchTask(textSearchRequest, elasticsearchService);
         GoogleTextSearchTask googleTextSearchTask = new GoogleTextSearchTask(textSearchRequest, googlePlacesService);
         ListenableFuture<RestaurantSearchResponse> elasticTextSearchFuture = executorService.submit(elasticTextSearchTask);
