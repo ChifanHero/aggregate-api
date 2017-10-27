@@ -39,7 +39,7 @@ public class Restaurant {
     @JsonIgnore
     private Boolean openNow;
 
-    private Double distance;
+    private Distance distance;
 
     @JsonIgnore
     private Coordinates coordinates;
@@ -49,6 +49,14 @@ public class Restaurant {
 
     @JsonIgnore
     private Boolean blacklisted;
+
+    @JsonIgnore
+    private Double score;
+
+    @JsonIgnore
+    private Boolean showOnly;
+
+    private boolean onHold;
 
     public String getAddress() {
         return address;
@@ -146,11 +154,11 @@ public class Restaurant {
         this.openNow = openNow;
     }
 
-    public Double getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
-    public void setDistance(Double distance) {
+    public void setDistance(Distance distance) {
         this.distance = distance;
     }
 
@@ -178,6 +186,30 @@ public class Restaurant {
         this.blacklisted = blacklisted;
     }
 
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
+    }
+
+    public Boolean getShowOnly() {
+        return showOnly;
+    }
+
+    public void setShowOnly(Boolean showOnly) {
+        this.showOnly = showOnly;
+    }
+
+    public boolean isOnHold() {
+        return onHold;
+    }
+
+    public void setOnHold(boolean onHold) {
+        this.onHold = onHold;
+    }
+
     public void applyPatch(Restaurant patch) {
         if (patch == null) {
             return;
@@ -197,5 +229,6 @@ public class Restaurant {
         distance = distance == null? patch.getDistance(): distance;
         coordinates = coordinates == null? patch.getCoordinates(): coordinates;
         blacklisted = blacklisted == null? patch.getBlacklisted(): blacklisted;
+        score = score == null? patch.getScore(): score;
     }
 }

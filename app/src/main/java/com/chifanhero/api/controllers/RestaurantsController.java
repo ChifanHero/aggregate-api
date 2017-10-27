@@ -6,8 +6,10 @@ import com.chifanhero.api.helpers.RestaurantDeduper;
 import com.chifanhero.api.models.request.NearbySearchRequest;
 import com.chifanhero.api.models.request.SortOrder;
 import com.chifanhero.api.models.request.TextSearchRequest;
+import com.chifanhero.api.models.request.TrackingRequest;
 import com.chifanhero.api.models.response.Error;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
+import com.chifanhero.api.models.response.TrackingResponse;
 import com.chifanhero.api.services.chifanhero.ChifanheroRestaurantService;
 import com.chifanhero.api.services.elasticsearch.ElasticsearchService;
 import com.chifanhero.api.services.google.GooglePlacesService;
@@ -18,8 +20,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -52,17 +53,20 @@ public class RestaurantsController {
     @RequestMapping("/nearBy")
     public RestaurantSearchResponse nearBySearch(NearbySearchRequest nearbySearchRequest, HttpServletResponse response) {
         RestaurantSearchResponse searchResponse = new RestaurantSearchResponse();
+        if (nearbySearchRequest.getRadius() == null) {
+            nearbySearchRequest.setRadius(8000);
+        }
         List<Error> errors = nearbySearchRequest.validate();
         if (!errors.isEmpty()) {
             searchResponse.setErrors(errors);
             return searchResponse;
         }
-        if (nearbySearchRequest.getOpenNow() != Boolean.TRUE) {
-            searchResponse = cache.getIfPresent(CacheKeyRetriever.from(nearbySearchRequest));
-            if (searchResponse != null) {
-                return searchResponse;
-            }
-        }
+//        if (nearbySearchRequest.getOpenNow() != Boolean.TRUE) {
+//            searchResponse = cache.getIfPresent(CacheKeyRetriever.from(nearbySearchRequest));
+//            if (searchResponse != null) {
+//                return searchResponse;
+//            }
+//        }
         ElasticNearbySearchTask elasticNearbySearchTask = new ElasticNearbySearchTask(nearbySearchRequest, elasticsearchService);
         GoogleNearbySearchTask googleNearbySearchTask = new GoogleNearbySearchTask(nearbySearchRequest, googlePlacesService);
         ListenableFuture<RestaurantSearchResponse> elasticNearbySearchFuture = executorService.submit(elasticNearbySearchTask);
@@ -73,12 +77,14 @@ public class RestaurantsController {
         ListenableFuture<RestaurantSearchResponse> dedupeFuture = Futures.transform(listListenableFuture, new RestaurantsMergeFunction(new RestaurantDeduper()));
         ListenableFuture<RestaurantSearchResponse> fulfillRestaurantFuture = Futures.transform(dedupeFuture, new FillRestaurantsFunction(googlePlacesService));
         ListenableFuture<RestaurantSearchResponse> calculatedFuture = Futures.transform(fulfillRestaurantFuture, new CalculateDistanceFunction(nearbySearchRequest.getLocation()));
-        ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(calculatedFuture, new FilterFunction(nearbySearchRequest));
+        ListenableFuture<RestaurantSearchResponse> detailedFuture = Futures.transform(calculatedFuture, new RetrieveDetailFunction(elasticsearchService));
+        ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(detailedFuture, new FilterFunction(nearbySearchRequest));
         ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(filteredFuture, new SortFunction(SortOrder.valueOf(nearbySearchRequest.getSortOrder().toUpperCase())));
-//        ListenableFuture<RestaurantSearchResponse> result = Futures.transform(sortedFuture, new CalculateDistanceFunction(nearbySearchRequest.getLocation()));
-        fulfillRestaurantFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, sortedFuture), executorService);
+        ListenableFuture<RestaurantSearchResponse> transformedFuture = Futures.transform(sortedFuture, new ModelNormalizeFunction());
+        ListenableFuture<RestaurantSearchResponse> truncatedFuture = Futures.transform(transformedFuture, new ResponseTruncateFunction());
+//        detailedFuture.addListener(new CacheUpdateTask(cache, nearbySearchRequest, truncatedFuture), executorService);
         try {
-            return sortedFuture.get();
+            return truncatedFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -86,6 +92,9 @@ public class RestaurantsController {
 
     @RequestMapping("/text")
     public RestaurantSearchResponse textSearch(TextSearchRequest textSearchRequest, HttpServletResponse response) {
+        if (textSearchRequest.getRadius() == null) {
+            textSearchRequest.setRadius(50000);
+        }
         ElasticTextSearchTask elasticTextSearchTask = new ElasticTextSearchTask(textSearchRequest, elasticsearchService);
         GoogleTextSearchTask googleTextSearchTask = new GoogleTextSearchTask(textSearchRequest, googlePlacesService);
         ListenableFuture<RestaurantSearchResponse> elasticTextSearchFuture = executorService.submit(elasticTextSearchTask);
@@ -96,13 +105,28 @@ public class RestaurantsController {
         ListenableFuture<RestaurantSearchResponse> dedupeFuture = Futures.transform(listListenableFuture, new RestaurantsMergeFunction(new RestaurantDeduper()));
         ListenableFuture<RestaurantSearchResponse> fulfillRestaurantFuture = Futures.transform(dedupeFuture, new FillRestaurantsFunction(googlePlacesService));
         ListenableFuture<RestaurantSearchResponse> calculatedFuture = Futures.transform(fulfillRestaurantFuture, new CalculateDistanceFunction(textSearchRequest.getLocation()));
-        ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(calculatedFuture, new FilterFunction(textSearchRequest));
+        ListenableFuture<RestaurantSearchResponse> detailedFuture = Futures.transform(calculatedFuture, new RetrieveDetailFunction(elasticsearchService));
+        ListenableFuture<RestaurantSearchResponse> filteredFuture = Futures.transform(detailedFuture, new FilterFunction(textSearchRequest));
         ListenableFuture<RestaurantSearchResponse> sortedFuture = Futures.transform(filteredFuture, new SortFunction(SortOrder.valueOf(textSearchRequest.getSortOrder().toUpperCase())));
-//        ListenableFuture<RestaurantSearchResponse> result = Futures.transform(sortedFuture, new CalculateDistanceFunction(textSearchRequest.getLocation()));
+        ListenableFuture<RestaurantSearchResponse> transformedFuture = Futures.transform(sortedFuture, new ModelNormalizeFunction());
         try {
-            return sortedFuture.get();
+            return transformedFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @RequestMapping(value = "/track", method = RequestMethod.POST)
+    public TrackingResponse trackView(@RequestBody TrackingRequest trackingRequest, HttpServletResponse response) {
+        TrackingResponse trackingResponse = new TrackingResponse();
+        if (trackingRequest == null || trackingRequest.getRestaurantId() == null || trackingRequest.getUserIdentifier() == null) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            trackingResponse.setSuccess(false);
+            return trackingResponse;
+        }
+        chifanheroRestaurantService.trackViewCount(trackingRequest.getRestaurantId(), trackingRequest.getUserIdentifier());
+        chifanheroRestaurantService.tryPublishRestaurant(trackingRequest.getRestaurantId());
+        trackingResponse.setSuccess(true);
+        return trackingResponse;
     }
 }

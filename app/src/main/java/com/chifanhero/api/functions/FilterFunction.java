@@ -37,7 +37,15 @@ public class FilterFunction implements Function<RestaurantSearchResponse, Restau
         filterByOpennow(input);
         filterByDistance(input);
         filterByRating(input);
+        filterPermenatelyClosed(input);
         return input;
+    }
+
+    private void filterPermenatelyClosed(RestaurantSearchResponse input) {
+        Optional.ofNullable(input.getResults()).ifPresent(restaurants -> {
+            List<Restaurant> filtered = restaurants.stream().filter(restaurant -> !Boolean.TRUE.equals(restaurant.getPermanentlyClosed())).collect(Collectors.toList());
+            input.setResults(filtered);
+        });
     }
 
     private void filterBlacklisted(RestaurantSearchResponse input) {
@@ -60,7 +68,8 @@ public class FilterFunction implements Function<RestaurantSearchResponse, Restau
         if (radius != null) {
             Double radiusInMi = ((double) radius) / (1.6d * 1000.0d);
             Optional.ofNullable(input.getResults()).ifPresent(restaurants -> {
-                List<Restaurant> filtered = restaurants.stream().filter(restaurant -> restaurant.getDistance() != null && restaurant.getDistance() <= radiusInMi).collect(Collectors.toList());
+                List<Restaurant> filtered = restaurants.stream().filter(restaurant ->
+                        restaurant.getDistance() != null && restaurant.getDistance().getValue()!= null && restaurant.getDistance().getValue() <= radiusInMi).collect(Collectors.toList());
                 input.setResults(filtered);
             });
         }

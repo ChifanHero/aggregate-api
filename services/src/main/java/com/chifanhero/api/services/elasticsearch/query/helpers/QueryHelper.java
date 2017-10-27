@@ -16,14 +16,12 @@ public class QueryHelper {
         if (nearbySearchRequest.getRating() != null) {
             boolQueryBuilder.filter(buildRatingFilterQuery(nearbySearchRequest.getRating()));
         }
-        boolQueryBuilder.filter(
-                buildGeoDistanceQuery(
-                        nearbySearchRequest.getLocation().getLat(),
-                        nearbySearchRequest.getLocation().getLon(),
-                        nearbySearchRequest.getRadius(),
-                        DistanceUnit.METERS
-                )
-        );
+        boolQueryBuilder.filter(buildGeoDistanceQuery(
+                nearbySearchRequest.getLocation().getLat(),
+                nearbySearchRequest.getLocation().getLon(),
+                nearbySearchRequest.getRadius(),
+                DistanceUnit.METERS
+        )).filter(buildOnHolderQuery());
         return boolQueryBuilder;
     }
 
@@ -33,14 +31,18 @@ public class QueryHelper {
         if (textSearchRequest.getRating() != null) {
             boolQueryBuilder.filter(buildRatingFilterQuery(textSearchRequest.getRating()));
         }
-        boolQueryBuilder.filter(
-                buildGeoDistanceQuery(
-                        textSearchRequest.getLocation().getLat(),
-                        textSearchRequest.getLocation().getLon(),
-                        textSearchRequest.getRadius(),
-                        DistanceUnit.METERS
-                )
-        );
+        boolQueryBuilder.filter(buildGeoDistanceQuery(
+                textSearchRequest.getLocation().getLat(),
+                textSearchRequest.getLocation().getLon(),
+                textSearchRequest.getRadius(),
+                DistanceUnit.METERS
+        )).filter(buildOnHolderQuery());
+        return boolQueryBuilder;
+    }
+
+    private static org.elasticsearch.index.query.QueryBuilder buildOnHolderQuery() {
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        boolQueryBuilder.mustNot(QueryBuilders.termQuery(FieldNames.ON_HOLD, true));
         return boolQueryBuilder;
     }
 
@@ -50,8 +52,13 @@ public class QueryHelper {
                 .distance(distance, distanceUnit);
     }
 
-    private static RangeQueryBuilder buildRatingFilterQuery(double minScore) {
-        return QueryBuilders.rangeQuery(FieldNames.RATING).gte(minScore);
+    private static BoolQueryBuilder buildRatingFilterQuery(double minScore) {
+        BoolQueryBuilder ratingQuery = QueryBuilders.boolQuery();
+        ratingQuery.must(QueryBuilders.rangeQuery(FieldNames.RATING).gte(minScore));
+        BoolQueryBuilder googleRatingQuery = QueryBuilders.boolQuery();
+        googleRatingQuery.mustNot(QueryBuilders.existsQuery(FieldNames.RATING)).must(QueryBuilders.rangeQuery(FieldNames.GOOGLE_RATING).gte(minScore));
+        BoolQueryBuilder filterQuery = QueryBuilders.boolQuery().should(ratingQuery).should(googleRatingQuery);
+        return filterQuery;
     }
 
     private static org.elasticsearch.index.query.QueryBuilder buildTextQuery(String keyword) {

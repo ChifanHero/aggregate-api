@@ -13,15 +13,17 @@ import com.chifanhero.api.services.elasticsearch.client.ElasticsearchRestClient;
 import com.chifanhero.api.services.elasticsearch.query.FieldNames;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
+import org.elasticsearch.ThreadPermission;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static org.asynchttpclient.Dsl.asyncHttpClient;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
@@ -37,10 +39,12 @@ public class ElasticsearchServiceImplIT {
             "            \"coordinates\" : {\"type\" : \"geo_point\", \"store\": \"true\"},\n" +
             "            \"_created_at\" : {\"type\" : \"date\", \"format\" : \"date_time\", \"index\" : \"no\"},\n" +
             "            \"name\" : {\"type\" : \"string\", \"analyzer\": \"smartcn\", \"store\" : \"true\"},\n" +
-            "            \"english_name\" : {\"type\" : \"string\", \"store\" : \"true\"},\n" +
+            "            \"google_name\" : {\"type\" : \"string\", \"store\" : \"true\"},\n" +
             "            \"rating\": {\"type\" : \"double\", \"store\": \"true\"},\n" +
             "            \"google_place_id\": {\"type\" : \"string\", \"index\" : \"not_analyzed\", \"store\": \"true\"},\n" +
-            "            \"_updated_at\" : {\"type\" : \"date\", \"format\" : \"date_time\", \"index\" : \"no\"}\n" +
+            "            \"blacklisted\":{\"type\":\"boolean\", \"index\" : \"not_analyzed\", \"store\": \"true\"},\n" +
+            "            \"_updated_at\" : {\"type\" : \"date\", \"format\" : \"date_time\", \"index\" : \"no\"},\n" +
+            "            \"on_hold\" : {\"type\" : \"boolean\", \"index\" : \"not_analyzed\", \"store\": \"true\"}\n" +
             "        }\n" +
             "}";
     private final static String SETTINGS = "{\n" +
@@ -89,7 +93,7 @@ public class ElasticsearchServiceImplIT {
         Assert.assertNotNull(response);
         Assert.assertTrue(response.getResults().size() == 2);
         response.getResults().forEach(result -> {
-            // source, name, english_name, rating, coordinates, google_place_id
+            // source, name, google_name, rating, coordinates, google_place_id
             Assert.assertEquals(Source.CHIFANHERO, result.getSource());
             Assert.assertNotNull(result.getName());
             Assert.assertNotNull(result.getGoogleName());
@@ -102,21 +106,21 @@ public class ElasticsearchServiceImplIT {
     }
 
     @Test
-    public void testNearbySearchHottest() {
+    public void testNearbySearchRating() {
         NearbySearchRequest nearbySearchRequest = new NearbySearchRequest();
         Location location = new Location();
         location.setLat(LOS_ANGELES_COORDINATES[1]);
         location.setLon(LOS_ANGELES_COORDINATES[0]);
         nearbySearchRequest.setLocation(location);
         nearbySearchRequest.setRadius(2000);
-        nearbySearchRequest.setSortOrder(SortOrder.HOTTEST.name());
+        nearbySearchRequest.setSortOrder(SortOrder.RATING.name());
         ElasticsearchServiceImpl service = new ElasticsearchServiceImpl(ELASTIC_REST_CLIENT);
         nearbySearchRequest.validate();
         RestaurantSearchResponse response = service.nearBySearch(nearbySearchRequest);
         Assert.assertNotNull(response);
         Assert.assertTrue(response.getResults().size() == 2);
         response.getResults().forEach(result -> {
-            // source, name, english_name, rating, coordinates, google_place_id
+            // source, name, google_name, rating, coordinates, google_place_id
             Assert.assertEquals(Source.CHIFANHERO, result.getSource());
             Assert.assertNotNull(result.getName());
             Assert.assertNotNull(result.getGoogleName());
@@ -144,7 +148,7 @@ public class ElasticsearchServiceImplIT {
         Assert.assertNotNull(response);
         Assert.assertTrue(response.getResults().size() == 1);
         Restaurant restaurant = response.getResults().get(0);
-        // source, name, english_name, rating, coordinates, google_place_id
+        // source, name, google_name, rating, coordinates, google_place_id
         Assert.assertEquals(Source.CHIFANHERO, restaurant.getSource());
         Assert.assertEquals("韶山印象", restaurant.getName());
         Assert.assertEquals("Hunan Impression", restaurant.getGoogleName());
@@ -157,7 +161,7 @@ public class ElasticsearchServiceImplIT {
     }
 
     @Test
-    public void testTextSearchHottest() {
+    public void testTextSearchRating() {
         TextSearchRequest textSearchRequest = new TextSearchRequest();
         textSearchRequest.setQuery("巴蜀风");
         Location location = new Location();
@@ -165,14 +169,14 @@ public class ElasticsearchServiceImplIT {
         location.setLon(BAY_AREA_COORDINATES[0]);
         textSearchRequest.setLocation(location);
         textSearchRequest.setRadius(2000);
-        textSearchRequest.setSortOrder(SortOrder.HOTTEST.name());
+        textSearchRequest.setSortOrder(SortOrder.RATING.name());
         ElasticsearchServiceImpl service = new ElasticsearchServiceImpl(ELASTIC_REST_CLIENT);
         textSearchRequest.validate();
         RestaurantSearchResponse response = service.textSearch(textSearchRequest);
         Assert.assertNotNull(response);
-        Assert.assertTrue(response.getResults().size() == 2);
+        Assert.assertTrue(response.getResults().size() == 1);
         response.getResults().forEach(result -> {
-            // source, name, english_name, rating, coordinates, google_place_id
+            // source, name, google_name, rating, coordinates, google_place_id
             Assert.assertEquals(Source.CHIFANHERO, result.getSource());
             Assert.assertNotNull(result.getName());
             Assert.assertNotNull(result.getGoogleName());
@@ -181,7 +185,26 @@ public class ElasticsearchServiceImplIT {
             Assert.assertNotNull(result.getCoordinates());
         });
         Assert.assertEquals("巴蜀风", response.getResults().get(0).getName());
-        Assert.assertEquals("巴蜀风2", response.getResults().get(1).getName());
+    }
+
+    @Test
+    public void testBatchGetRestaurant() throws IOException, InterruptedException {
+        XContentBuilder document1 = createDocument("testBatchGetRestaurant1", "testBatchGetRestaurant1", 3.5, BAY_AREA_COORDINATES, "googleplaceid", false);
+        XContentBuilder document2 = createDocument("testBatchGetRestaurant2", "testBatchGetRestaurant2", 5.0, BAY_AREA_COORDINATES2, "googleplaceid", false);
+        String id1 = IdGenerator.getNewObjectId();
+        String id2 = IdGenerator.getNewObjectId();
+        ELASTIC_REST_CLIENT.indexDocument(ElasticsearchServiceImpl.INDEX, ElasticsearchServiceImpl.TYPE, id1, document1.string());
+        ELASTIC_REST_CLIENT.indexDocument(ElasticsearchServiceImpl.INDEX, ElasticsearchServiceImpl.TYPE, id2, document2.string());
+        Thread.sleep(1000);
+        ElasticsearchServiceImpl service = new ElasticsearchServiceImpl(ELASTIC_REST_CLIENT);
+        Map<String, Restaurant> restaurantMap = service.batchGetRestaurant(new HashSet<>(Arrays.asList(id1, id2)));
+        Assert.assertNotNull(restaurantMap);
+        Restaurant restaurant1 = restaurantMap.get(id1);
+        Restaurant restaurant2 = restaurantMap.get(id2);
+        Assert.assertNotNull(restaurant1);
+        Assert.assertNotNull(restaurant2);
+        Assert.assertEquals("testBatchGetRestaurant1", restaurant1.getName());
+        Assert.assertEquals("testBatchGetRestaurant2", restaurant2.getName());
     }
 
     private static void putMapping() {
@@ -194,11 +217,11 @@ public class ElasticsearchServiceImplIT {
 
     private static void prepareTestData() {
         List<XContentBuilder> documents = new ArrayList<>();
-        XContentBuilder document1 = createDocument("韶山印象", "Hunan Impression", 3.5, BAY_AREA_COORDINATES, "googleplaceid");
-        XContentBuilder document2 = createDocument("巴蜀风", "Szechuan Chili", 5.0, BAY_AREA_COORDINATES2, "googleplaceid");
-        XContentBuilder document3 = createDocument("巴蜀风2", "Szechuan Chili", 4.0, BAY_AREA_COORDINATES2, "googleplaceid");
-        XContentBuilder document4 = createDocument("老酒门", "Lao Jiu Men", 3.5, LOS_ANGELES_COORDINATES, "googleplaceid");
-        XContentBuilder document5 = createDocument("思烤吧", "Si Kao Ba", 5.0, LOS_ANGELES_COORDINATES2, "googleplaceid");
+        XContentBuilder document1 = createDocument("韶山印象", "Hunan Impression", 3.5, BAY_AREA_COORDINATES, "googleplaceid", false);
+        XContentBuilder document2 = createDocument("巴蜀风", "Szechuan Chili", 5.0, BAY_AREA_COORDINATES2, "googleplaceid", false);
+        XContentBuilder document3 = createDocument("巴蜀风2", "Szechuan Chili", 4.0, BAY_AREA_COORDINATES2, "googleplaceid", true);
+        XContentBuilder document4 = createDocument("老酒门", "Lao Jiu Men", 3.5, LOS_ANGELES_COORDINATES, "googleplaceid", false);
+        XContentBuilder document5 = createDocument("思烤吧", "Si Kao Ba", 5.0, LOS_ANGELES_COORDINATES2, "googleplaceid", false);
         documents.add(document1);
         documents.add(document2);
         documents.add(document3);
@@ -220,7 +243,7 @@ public class ElasticsearchServiceImplIT {
         }
     }
 
-    private static XContentBuilder createDocument(String name, String englishName, Double rating, Double[] geoPoint, String googlePlaceId) {
+    private static XContentBuilder createDocument(String name, String englishName, Double rating, Double[] geoPoint, String googlePlaceId, boolean onHold) {
         try {
             return jsonBuilder()
                     .startObject()
@@ -229,6 +252,7 @@ public class ElasticsearchServiceImplIT {
                     .field(FieldNames.RATING, rating)
                     .field(FieldNames.COORDINATES, geoPoint)
                     .field(FieldNames.GOOGLE_PLACE_ID, googlePlaceId)
+                    .field(FieldNames.ON_HOLD, onHold)
                     .endObject();
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -14,7 +14,7 @@ public class NearbySearchRequest extends SearchRequest<NearbySearchRequest> {
     private Location location;
     private Integer radius;
     private String type = "restaurant";
-    private String keyword = "chinese food";
+    private String keyword = "中餐";
     private String sortOrder = SortOrder.BEST_MATCH.getValue();
     private Boolean openNow;
     private Double rating;
@@ -88,7 +88,7 @@ public class NearbySearchRequest extends SearchRequest<NearbySearchRequest> {
         } else if (radius <= 0 || radius > 50000) {
             errors.add(new Error(ErrorMessage.INVALID_RADIUS, ErrorLevel.ERROR));
         }
-        if ((!SortOrder.HOTTEST.getValue().equals(sortOrder))
+        if ((!SortOrder.RATING.getValue().equals(sortOrder))
                 && (!SortOrder.NEAREST.getValue().equals(sortOrder))
                 && (!SortOrder.BEST_MATCH.getValue().equals(sortOrder))) {
             errors.add(new Error(ErrorMessage.INVALID_SORT_ORDER, ErrorLevel.ERROR));

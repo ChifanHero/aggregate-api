@@ -3,17 +3,18 @@ package com.chifanhero.api.services.elasticsearch.client;
 import com.chifanhero.api.configs.ElasticConfigs;
 import com.chifanhero.api.configs.type.Host;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 import org.apache.http.HttpHeaders;
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.Response;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -85,5 +86,32 @@ public class ElasticsearchRestClient {
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    //http://ec2-54-69-87-122.us-west-2.compute.amazonaws.com:9200/chifanhero/Restaurant/_mget
+    public JSONObject batchGet(String index, String type, Set<String> ids) {
+        Preconditions.checkNotNull(index);
+        Preconditions.checkNotNull(type);
+        Preconditions.checkNotNull(ids);
+        JSONObject request = new JSONObject();
+        JSONArray idArray = new JSONArray();
+        ids.forEach(id -> {
+            JSONObject idObj = new JSONObject();
+            idObj.put("_id", id);
+            idArray.put(idObj);
+        });
+        request.put("docs", idArray);
+        String endPoint = baseUrl + index + "/" + type + "/_mget";
+        try {
+            return httpClient.preparePost(endPoint).setHeader(HttpHeaders.CONTENT_TYPE, "application/json; charset=utf-8").setBody(request.toString()).execute(new AsyncCompletionHandler<JSONObject>() {
+                @Override
+                public JSONObject onCompleted(Response response) throws Exception {
+                    return new JSONObject(response.getResponseBody(Charset.forName("UTF-8")));
+                }
+            }).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

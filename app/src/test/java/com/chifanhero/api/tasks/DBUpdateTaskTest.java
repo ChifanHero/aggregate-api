@@ -31,4 +31,24 @@ public class DBUpdateTaskTest {
         dbUpdateTask.run();
         EasyMock.verify(mockService);
     }
+
+    @Test
+    public void testOnHold() {
+        ChifanheroRestaurantService mockService = EasyMock.mock(ChifanheroRestaurantService.class);
+        Restaurant restaurant = new Restaurant();
+        Restaurant onHoldRestaurant = new Restaurant();
+        onHoldRestaurant.setOnHold(true);
+        List<Restaurant> restaurants = Arrays.asList(restaurant, onHoldRestaurant);
+        RestaurantSearchResponse response = new RestaurantSearchResponse();
+        response.setResults(restaurants);
+        CompletableFuture<RestaurantSearchResponse> future = CompletableFuture.completedFuture(response);
+        mockService.bulkUpsert(restaurants);
+        EasyMock.expectLastCall();
+        mockService.markRecommendations(restaurants);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockService);
+        DBUpdateTask dbUpdateTask = new DBUpdateTask(mockService, future);
+        dbUpdateTask.run();
+        EasyMock.verify(mockService);
+    }
 }

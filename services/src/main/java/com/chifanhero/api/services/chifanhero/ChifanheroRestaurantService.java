@@ -1,6 +1,8 @@
 package com.chifanhero.api.services.chifanhero;
 
+import com.chifanhero.api.common.exceptions.ChifanheroException;
 import com.chifanhero.api.models.response.Restaurant;
+import com.chifanhero.api.models.response.UserInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -19,4 +21,12 @@ public interface ChifanheroRestaurantService {
     void expireData();
 
     void markRecommendations(List<Restaurant> restaurants);
+
+    void trackViewCount(String restaurantId, String userId);
+
+    void tryPublishRestaurant(String restaurantId);
+
+    UserInfo createNewUser(String userId) throws ChifanheroException;
+
+    UserInfo getUser(String userId);
 }

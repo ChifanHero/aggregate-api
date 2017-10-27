@@ -13,6 +13,8 @@ public class RequestHelper {
     public static String buildSearchRequest(QueryBuilder query, SortBuilder sort) {
         JSONObject request = new JSONObject();
         JSONObject jsonQuery = new JSONObject(query.toString());
+        request.put("from", 0);
+        request.put("size", 20);
         request.put("query", jsonQuery);
         if (sort != null) {
             JSONObject jsonSort = new JSONObject(sort.toString());

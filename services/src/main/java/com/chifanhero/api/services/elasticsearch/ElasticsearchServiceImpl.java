@@ -3,6 +3,7 @@ package com.chifanhero.api.services.elasticsearch;
 import com.chifanhero.api.models.request.NearbySearchRequest;
 import com.chifanhero.api.models.request.SortOrder;
 import com.chifanhero.api.models.request.TextSearchRequest;
+import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
 import com.chifanhero.api.services.elasticsearch.client.ElasticsearchRestClient;
 import com.chifanhero.api.services.elasticsearch.query.FieldNames;
@@ -16,6 +17,10 @@ import org.elasticsearch.search.sort.SortBuilder;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Elasticsearch API
@@ -38,9 +43,9 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     public RestaurantSearchResponse nearBySearch(NearbySearchRequest nearbySearchRequest) {
         QueryBuilder query = QueryHelper.buildNearbySearchQuery(nearbySearchRequest);
         SortBuilder sort = null;
-        if (SortOrder.NEAREST.name().equals(nearbySearchRequest.getSortOrder())) {
+        if (SortOrder.NEAREST.getValue().equals(nearbySearchRequest.getSortOrder())) {
             sort = SortHelper.buildGeoDistanceSort(FieldNames.COORDINATES, nearbySearchRequest.getLocation().getLat(), nearbySearchRequest.getLocation().getLon(), DistanceUnit.MILES);
-        } else if (SortOrder.HOTTEST.name().equals(nearbySearchRequest.getSortOrder())) {
+        } else if (SortOrder.RATING.name().equals(nearbySearchRequest.getSortOrder())) {
             sort = SortHelper.buildSort(FieldNames.RATING, org.elasticsearch.search.sort.SortOrder.DESC);
         }
         String request = RequestHelper.buildSearchRequest(query, sort);
@@ -54,11 +59,20 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
         SortBuilder sort = null;
         if (SortOrder.NEAREST.name().equals(textSearchRequest.getSortOrder())) {
             sort = SortHelper.buildGeoDistanceSort(FieldNames.COORDINATES, textSearchRequest.getLocation().getLat(), textSearchRequest.getLocation().getLon(), DistanceUnit.MILES);
-        } else if (SortOrder.HOTTEST.name().equals(textSearchRequest.getSortOrder())) {
+        } else if (SortOrder.RATING.name().equals(textSearchRequest.getSortOrder())) {
             sort = SortHelper.buildSort(FieldNames.RATING, org.elasticsearch.search.sort.SortOrder.DESC);
         }
         String request = RequestHelper.buildSearchRequest(query, sort);
         JSONObject searchResponse = restClient.search(INDEX, TYPE, request);
         return SearchResponseConverter.toLocalSearchResponse(searchResponse);
+    }
+
+    @Override
+    public Map<String, Restaurant> batchGetRestaurant(Set<String> restaurantIds) {
+        if (restaurantIds == null || restaurantIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        JSONObject batchGetResponse = restClient.batchGet(INDEX, TYPE, restaurantIds);
+        return SearchResponseConverter.convertBatchGetResponse(batchGetResponse);
     }
 }

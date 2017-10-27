@@ -1,18 +1,26 @@
 package com.chifanhero.api.services.chifanhero;
 
+import com.chifanhero.api.common.exceptions.ChifanheroException;
 import com.chifanhero.api.configs.ChifanheroConfigs;
 import com.chifanhero.api.models.response.Coordinates;
 import com.chifanhero.api.models.response.Restaurant;
+import com.chifanhero.api.models.response.UserInfo;
+import com.chifanhero.api.services.chifanhero.document.IdGenerator;
 import com.chifanhero.api.services.it.MongoClientFactory;
 import com.chifanhero.api.utils.DateUtil;
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.Block;
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.DeleteOneModel;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,17 +70,20 @@ public class ChifanheroRestaurantServiceImplIT {
     public void testSetOnInsert() {
         Restaurant restaurant = new Restaurant();
         restaurant.setPlaceId("testSetOnInsert");
+        restaurant.setId("123456");
         restaurant.setRating(4.5);
         List<Restaurant> restaurants = Collections.singletonList(restaurant);
         service.bulkUpsert(restaurants);
         restaurant = new Restaurant();
         restaurant.setPlaceId("testSetOnInsert");
+        restaurant.setId("1234567");
         restaurant.setRating(3.5);
         restaurants = Collections.singletonList(restaurant);
         service.bulkUpsert(restaurants);
         Map<String, Restaurant> results = service.batchGetByGooglePlaceId(Collections.singletonList("testSetOnInsert"));
         Restaurant result = results.get("testSetOnInsert");
         Assert.assertTrue(result.getRating() == 4.5);
+        Assert.assertEquals("123456", result.getId());
     }
 
     @Test
@@ -97,6 +108,7 @@ public class ChifanheroRestaurantServiceImplIT {
         String placeId = "testDataShouldExpire";
         Restaurant toExpire = new Restaurant();
         toExpire.setPlaceId(placeId);
+        toExpire.setId("testDataShouldExpire");
         Coordinates coordinates = new Coordinates();
         coordinates.setLatitude(37.308835);
         coordinates.setLongitude(-121.99);
@@ -123,6 +135,7 @@ public class ChifanheroRestaurantServiceImplIT {
         coordinates.setLongitude(-121.99);
         Restaurant notToExpire = new Restaurant();
         notToExpire.setPlaceId(placeId);
+        notToExpire.setId("testDataShouldNotExpire");
         notToExpire.setName(name);
         notToExpire.setCoordinates(coordinates);
         notToExpire.setGoogleName(googleName2);
@@ -142,6 +155,7 @@ public class ChifanheroRestaurantServiceImplIT {
         String placeId = "testMarkRecommendation";
         String googleName1 = "googlename1";
         Restaurant restaurant = new Restaurant();
+        restaurant.setId("testMarkRecommendation");
         restaurant.setPlaceId(placeId);
         Coordinates coordinates = new Coordinates();
         coordinates.setLatitude(37.308835);
@@ -160,6 +174,87 @@ public class ChifanheroRestaurantServiceImplIT {
         Assert.assertEquals(true, rest.getRecommendationCandidate());
     }
 
+    @Test
+    public void testMarkRecommendationNegative() {
+        String placeId = "testMarkRecommendationNegative";
+        String googleName1 = "googlename1";
+        Restaurant restaurant = new Restaurant();
+        restaurant.setId("testMarkRecommendationNegative");
+        restaurant.setPlaceId(placeId);
+        Coordinates coordinates = new Coordinates();
+        coordinates.setLatitude(37.308835);
+        coordinates.setLongitude(-121.99);
+        restaurant.setCoordinates(coordinates);
+        restaurant.setGoogleName(googleName1);
+        restaurant.setOnHold(true);
+        service.bulkUpsert(Collections.singletonList(restaurant), new Date());
+        restaurant.setRating(4.5);
+        service.markRecommendations(Collections.singletonList(restaurant));
+        Map<String, Restaurant> restaurants = service.batchGetByGooglePlaceId(Collections.singletonList(placeId));
+        Assert.assertTrue(restaurants.size() == 1);
+        Restaurant rest = restaurants.get(placeId);
+        Assert.assertEquals(placeId, rest.getPlaceId());
+        Assert.assertEquals(googleName1, rest.getGoogleName());
+        Assert.assertNotNull(rest.getCoordinates());
+        Assert.assertNull(rest.getRecommendationCandidate());
+    }
+
+    @Test
+    public void testCreateNewUser() throws ChifanheroException {
+        String id = "testCreateNewUser" + System.currentTimeMillis();
+        UserInfo newUser = service.createNewUser(id);
+        Assert.assertEquals(id, newUser.getUserId());
+    }
+
+    @Test(expected = ChifanheroException.class)
+    public void testCreateNewUserExisting() throws ChifanheroException {
+        String id = "testCreateNewUserExisting" + System.currentTimeMillis();
+        service.createNewUser(id);
+        service.createNewUser(id);
+    }
+
+    @Test
+    public void testTrackViewCount() {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setId("testTrackViewCount");
+        restaurant.setPlaceId("testTrackViewCount");
+        service.bulkUpsert(Collections.singletonList(restaurant));
+        service.trackViewCount("testTrackViewCount", "uid1");
+        service.trackViewCount("testTrackViewCount", "uid2");
+        service.trackViewCount("testTrackViewCount", "uid3");
+        service.trackViewCount("testTrackViewCount", "uid3");
+        Document document = getRestaurant("testTrackViewCount");
+        Assert.assertEquals(4, document.getInteger(KeyNames.VIEW_COUNT).intValue());
+        List views = document.get(KeyNames.VIEWS_N, List.class);
+        Assert.assertEquals(3, views.size());
+    }
+
+    @Test
+    public void testTryPublishRestaurant() {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setId("testTryPublishRestaurant");
+        restaurant.setPlaceId("testTryPublishRestaurant");
+        restaurant.setOnHold(true);
+        service.bulkUpsert(Collections.singletonList(restaurant));
+        Document restaurantDocument = getRestaurant("testTryPublishRestaurant");
+        assert restaurantDocument.getBoolean(KeyNames.ON_HOLD);
+        service.trackViewCount("testTryPublishRestaurant", "uid1");
+        service.trackViewCount("testTryPublishRestaurant", "uid2");
+        service.trackViewCount("testTryPublishRestaurant", "uid3");
+        service.tryPublishRestaurant("testTryPublishRestaurant");
+        restaurantDocument = getRestaurant("testTryPublishRestaurant");
+        Assert.assertFalse(restaurantDocument.getBoolean(KeyNames.ON_HOLD));
+    }
+
+    private Document getRestaurant(String id) {
+        MongoCollection<Document> restaurantCollection =
+                mongoClient.getDatabase(ChifanheroConfigs.MONGO_DATABASE)
+                        .getCollection(ChifanheroConfigs.MONGO_COLLECTION_RESTAURANT);
+        Bson filter = Filters.eq(KeyNames.ID, id);
+        FindIterable<Document> documents = restaurantCollection.find(filter);
+        return documents.first();
+    }
+
     private List<Restaurant> createResults(ImmutableMap<String, String> placeidName) {
         List<Restaurant> restaurants = new ArrayList<>();
         for (Map.Entry<String, String> entry : placeidName.entrySet()) {
@@ -172,6 +267,7 @@ public class ChifanheroRestaurantServiceImplIT {
         Restaurant restaurant = new Restaurant();
         restaurant.setPlaceId(googlePlaceId);
         restaurant.setGoogleName(googleName);
+        restaurant.setId(IdGenerator.getNewObjectId());
         return restaurant;
     }
 

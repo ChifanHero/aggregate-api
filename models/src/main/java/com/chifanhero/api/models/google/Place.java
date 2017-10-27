@@ -41,6 +41,8 @@ public class Place {
     @JsonProperty("price_level")
     private Integer priceLevel;
 
+    private String vicinity;
+
     public String getFormattedAddress() {
         return formattedAddress;
     }
@@ -143,5 +145,13 @@ public class Place {
 
     public void setGeometry(Geometry geometry) {
         this.geometry = geometry;
+    }
+
+    public String getVicinity() {
+        return vicinity;
+    }
+
+    public void setVicinity(String vicinity) {
+        this.vicinity = vicinity;
     }
 }

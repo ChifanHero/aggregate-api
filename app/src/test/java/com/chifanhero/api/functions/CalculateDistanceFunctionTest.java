@@ -29,7 +29,7 @@ public class CalculateDistanceFunctionTest {
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getResults());
         Restaurant restaurant = response.getResults().get(0);
-        Assert.assertTrue(restaurant.getDistance().doubleValue() == DistanceCalculator.getDistanceInMi(37.56, -121.34, 37.57, -121.12, 2).doubleValue());
+        Assert.assertTrue(restaurant.getDistance().getValue().doubleValue() == DistanceCalculator.getDistanceInMi(37.56, -121.34, 37.57, -121.12, 2).doubleValue());
     }
 
     private Restaurant createRestaurant() {

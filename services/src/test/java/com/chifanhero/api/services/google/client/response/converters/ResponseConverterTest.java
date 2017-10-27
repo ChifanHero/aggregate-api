@@ -1,8 +1,10 @@
-package com.chifanhero.api.services.google.client.request.converters;
+package com.chifanhero.api.services.google.client.response.converters;
 
 import com.chifanhero.api.models.google.Place;
 import com.chifanhero.api.models.google.PlacesSearchResponse;
+import com.chifanhero.api.models.response.Restaurant;
 import com.chifanhero.api.models.response.RestaurantSearchResponse;
+import com.chifanhero.api.services.google.client.response.converters.ResponseConverter;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,9 +21,12 @@ public class ResponseConverterTest {
         PlacesSearchResponse placesSearchResponse = new PlacesSearchResponse();
         List<Place> results = new ArrayList<>();
         Place place = new Place();
+        place.setPlaceId("placeid");
         results.add(place);
         placesSearchResponse.setResults(results);
         RestaurantSearchResponse restaurantSearchResponse = ResponseConverter.toRestaurantSearchResponse(placesSearchResponse);
         Assert.assertTrue(restaurantSearchResponse.getResults().size() == 1);
+        Restaurant restaurant = restaurantSearchResponse.getResults().get(0);
+        Assert.assertEquals("placeid", restaurant.getId());
     }
 }

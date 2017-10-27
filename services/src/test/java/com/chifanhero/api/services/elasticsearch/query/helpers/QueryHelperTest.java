@@ -32,14 +32,60 @@ public class QueryHelperTest {
                 "  \"bool\" : {\n" +
                 "    \"filter\" : [\n" +
                 "      {\n" +
-                "        \"range\" : {\n" +
-                "          \"rating\" : {\n" +
-                "            \"from\" : 3.0,\n" +
-                "            \"to\" : null,\n" +
-                "            \"include_lower\" : true,\n" +
-                "            \"include_upper\" : true,\n" +
-                "            \"boost\" : 1.0\n" +
-                "          }\n" +
+                "        \"bool\" : {\n" +
+                "          \"should\" : [\n" +
+                "            {\n" +
+                "              \"bool\" : {\n" +
+                "                \"must\" : [\n" +
+                "                  {\n" +
+                "                    \"range\" : {\n" +
+                "                      \"rating\" : {\n" +
+                "                        \"from\" : 3.0,\n" +
+                "                        \"to\" : null,\n" +
+                "                        \"include_lower\" : true,\n" +
+                "                        \"include_upper\" : true,\n" +
+                "                        \"boost\" : 1.0\n" +
+                "                      }\n" +
+                "                    }\n" +
+                "                  }\n" +
+                "                ],\n" +
+                "                \"disable_coord\" : false,\n" +
+                "                \"adjust_pure_negative\" : true,\n" +
+                "                \"boost\" : 1.0\n" +
+                "              }\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"bool\" : {\n" +
+                "                \"must\" : [\n" +
+                "                  {\n" +
+                "                    \"range\" : {\n" +
+                "                      \"google_rating\" : {\n" +
+                "                        \"from\" : 3.0,\n" +
+                "                        \"to\" : null,\n" +
+                "                        \"include_lower\" : true,\n" +
+                "                        \"include_upper\" : true,\n" +
+                "                        \"boost\" : 1.0\n" +
+                "                      }\n" +
+                "                    }\n" +
+                "                  }\n" +
+                "                ],\n" +
+                "                \"must_not\" : [\n" +
+                "                  {\n" +
+                "                    \"exists\" : {\n" +
+                "                      \"field\" : \"rating\",\n" +
+                "                      \"boost\" : 1.0\n" +
+                "                    }\n" +
+                "                  }\n" +
+                "                ],\n" +
+                "                \"disable_coord\" : false,\n" +
+                "                \"adjust_pure_negative\" : true,\n" +
+                "                \"boost\" : 1.0\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"disable_coord\" : false,\n" +
+                "          \"adjust_pure_negative\" : true,\n" +
+                "          \"boost\" : 1.0\n" +
                 "        }\n" +
                 "      },\n" +
                 "      {\n" +
@@ -52,6 +98,23 @@ public class QueryHelperTest {
                 "          \"distance_type\" : \"arc\",\n" +
                 "          \"validation_method\" : \"STRICT\",\n" +
                 "          \"ignore_unmapped\" : false,\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must_not\" : [\n" +
+                "            {\n" +
+                "              \"term\" : {\n" +
+                "                \"on_hold\" : {\n" +
+                "                  \"value\" : true,\n" +
+                "                  \"boost\" : 1.0\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"disable_coord\" : false,\n" +
+                "          \"adjust_pure_negative\" : true,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
                 "      }\n" +
@@ -83,6 +146,23 @@ public class QueryHelperTest {
                 "          \"distance_type\" : \"arc\",\n" +
                 "          \"validation_method\" : \"STRICT\",\n" +
                 "          \"ignore_unmapped\" : false,\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must_not\" : [\n" +
+                "            {\n" +
+                "              \"term\" : {\n" +
+                "                \"on_hold\" : {\n" +
+                "                  \"value\" : true,\n" +
+                "                  \"boost\" : 1.0\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"disable_coord\" : false,\n" +
+                "          \"adjust_pure_negative\" : true,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
                 "      }\n" +
@@ -126,7 +206,7 @@ public class QueryHelperTest {
                 "            },\n" +
                 "            {\n" +
                 "              \"match\" : {\n" +
-                "                \"english_name\" : {\n" +
+                "                \"google_name\" : {\n" +
                 "                  \"query\" : \"韶山冲\",\n" +
                 "                  \"operator\" : \"OR\",\n" +
                 "                  \"prefix_length\" : 0,\n" +
@@ -145,14 +225,60 @@ public class QueryHelperTest {
                 "    ],\n" +
                 "    \"filter\" : [\n" +
                 "      {\n" +
-                "        \"range\" : {\n" +
-                "          \"rating\" : {\n" +
-                "            \"from\" : 3.0,\n" +
-                "            \"to\" : null,\n" +
-                "            \"include_lower\" : true,\n" +
-                "            \"include_upper\" : true,\n" +
-                "            \"boost\" : 1.0\n" +
-                "          }\n" +
+                "        \"bool\" : {\n" +
+                "          \"should\" : [\n" +
+                "            {\n" +
+                "              \"bool\" : {\n" +
+                "                \"must\" : [\n" +
+                "                  {\n" +
+                "                    \"range\" : {\n" +
+                "                      \"rating\" : {\n" +
+                "                        \"from\" : 3.0,\n" +
+                "                        \"to\" : null,\n" +
+                "                        \"include_lower\" : true,\n" +
+                "                        \"include_upper\" : true,\n" +
+                "                        \"boost\" : 1.0\n" +
+                "                      }\n" +
+                "                    }\n" +
+                "                  }\n" +
+                "                ],\n" +
+                "                \"disable_coord\" : false,\n" +
+                "                \"adjust_pure_negative\" : true,\n" +
+                "                \"boost\" : 1.0\n" +
+                "              }\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"bool\" : {\n" +
+                "                \"must\" : [\n" +
+                "                  {\n" +
+                "                    \"range\" : {\n" +
+                "                      \"google_rating\" : {\n" +
+                "                        \"from\" : 3.0,\n" +
+                "                        \"to\" : null,\n" +
+                "                        \"include_lower\" : true,\n" +
+                "                        \"include_upper\" : true,\n" +
+                "                        \"boost\" : 1.0\n" +
+                "                      }\n" +
+                "                    }\n" +
+                "                  }\n" +
+                "                ],\n" +
+                "                \"must_not\" : [\n" +
+                "                  {\n" +
+                "                    \"exists\" : {\n" +
+                "                      \"field\" : \"rating\",\n" +
+                "                      \"boost\" : 1.0\n" +
+                "                    }\n" +
+                "                  }\n" +
+                "                ],\n" +
+                "                \"disable_coord\" : false,\n" +
+                "                \"adjust_pure_negative\" : true,\n" +
+                "                \"boost\" : 1.0\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"disable_coord\" : false,\n" +
+                "          \"adjust_pure_negative\" : true,\n" +
+                "          \"boost\" : 1.0\n" +
                 "        }\n" +
                 "      },\n" +
                 "      {\n" +
@@ -165,6 +291,23 @@ public class QueryHelperTest {
                 "          \"distance_type\" : \"arc\",\n" +
                 "          \"validation_method\" : \"STRICT\",\n" +
                 "          \"ignore_unmapped\" : false,\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must_not\" : [\n" +
+                "            {\n" +
+                "              \"term\" : {\n" +
+                "                \"on_hold\" : {\n" +
+                "                  \"value\" : true,\n" +
+                "                  \"boost\" : 1.0\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"disable_coord\" : false,\n" +
+                "          \"adjust_pure_negative\" : true,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
                 "      }\n" +
@@ -207,7 +350,7 @@ public class QueryHelperTest {
                 "            },\n" +
                 "            {\n" +
                 "              \"match\" : {\n" +
-                "                \"english_name\" : {\n" +
+                "                \"google_name\" : {\n" +
                 "                  \"query\" : \"韶山冲\",\n" +
                 "                  \"operator\" : \"OR\",\n" +
                 "                  \"prefix_length\" : 0,\n" +
@@ -235,6 +378,23 @@ public class QueryHelperTest {
                 "          \"distance_type\" : \"arc\",\n" +
                 "          \"validation_method\" : \"STRICT\",\n" +
                 "          \"ignore_unmapped\" : false,\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must_not\" : [\n" +
+                "            {\n" +
+                "              \"term\" : {\n" +
+                "                \"on_hold\" : {\n" +
+                "                  \"value\" : true,\n" +
+                "                  \"boost\" : 1.0\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"disable_coord\" : false,\n" +
+                "          \"adjust_pure_negative\" : true,\n" +
                 "          \"boost\" : 1.0\n" +
                 "        }\n" +
                 "      }\n" +
